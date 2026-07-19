@@ -1,0 +1,73 @@
+# Auditoria de segurança agendada (squad de segurança — ver agents/security/).
+# Quinzenal (dias 1 e 15) + acionável manualmente. Custo zero (ferramentas
+# open source/free). Passos que dependem de Node só rodam quando há package.json.
+name: security-audit
+on:
+  schedule:
+    - cron: '0 6 1,15 * *' # 06:00 UTC nos dias 1 e 15
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'Escopo (quinzenal|mensal|trimestral)'
+        default: 'quinzenal'
+
+jobs:
+  secrets-scan:
+    name: Segredos (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2
+
+  dependency-audit:
+    name: Dependências e CVEs (security-researcher)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: npm audit
+        if: hashFiles('package.json') != ''
+        run: |
+          npm ci
+          npm audit --audit-level=moderate || true
+      - name: Trivy (filesystem + deps)
+        uses: aquasecurity/trivy-action@master
+        with: { scan-type: fs, format: sarif, output: trivy.sarif }
+      - uses: actions/upload-artifact@v4
+        with: { name: trivy-sarif, path: trivy.sarif, retention-days: 30 }
+
+  sast:
+    name: SAST (CodeQL security-extended)
+    runs-on: ubuntu-latest
+    permissions: { security-events: write, contents: read }
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if ls **/*.ts **/*.js >/dev/null 2>&1 || [ -f package.json ]; then echo "js=true" >> "$GITHUB_OUTPUT"; else echo "js=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: github/codeql-action/init@v3
+        if: steps.check.outputs.js == 'true'
+        with: { languages: javascript-typescript, queries: security-extended }
+      - uses: github/codeql-action/analyze@v3
+        if: steps.check.outputs.js == 'true'
+        with: { upload: never, output: codeql-results }
+      - uses: actions/upload-artifact@v4
+        if: steps.check.outputs.js == 'true'
+        with: { name: codeql-sarif, path: codeql-results/, retention-days: 30 }
+
+  open-report:
+    name: Abre issue de acompanhamento da auditoria (devsecops)
+    runs-on: ubuntu-latest
+    needs: [secrets-scan, dependency-audit, sast]
+    if: always()
+    permissions: { issues: write }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Abre issue da auditoria
+        run: |
+          gh issue create --repo "${GITHUB_REPOSITORY}" \
+            --title "[sec] Auditoria agendada — $(date +%Y-%m-%d)" \
+            --label security \
+            --body "Auditoria automática concluída. Revisar os artefatos (trivy/codeql) e anexar o relatório manual da squad em security/reports/ conforme security-audit-protocol.md." || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

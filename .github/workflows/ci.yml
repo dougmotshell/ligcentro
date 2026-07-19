@@ -1,0 +1,117 @@
+# CI — roda em cada push/PR. Portão de qualidade (o deploy é da Vercel, via
+# integração Git — este CI NÃO faz deploy). Enquanto o repo for só docs (sem
+# package.json), os jobs de código são pulados e o CI fica verde; assim que a
+# Fase 0 adicionar o app Next.js, o pipeline completo passa a valer sozinho.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect:
+    name: Detecta app
+    runs-on: ubuntu-latest
+    outputs:
+      has_app: ${{ steps.check.outputs.has_app }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f package.json ]; then echo "has_app=true" >> "$GITHUB_OUTPUT"; else echo "has_app=false" >> "$GITHUB_OUTPUT"; fi
+
+  lint-type:
+    name: Lint + Typecheck
+    needs: detect
+    if: needs.detect.outputs.has_app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+
+  unit:
+    name: Testes unitários
+    needs: detect
+    if: needs.detect.outputs.has_app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run test:unit -- --coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: coverage, path: coverage/, retention-days: 7 }
+
+  build:
+    name: Build (Next.js)
+    needs: detect
+    if: needs.detect.outputs.has_app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with: { name: next-build, path: .next/, retention-days: 7 }
+
+  e2e:
+    name: Testes E2E (Playwright)
+    needs: [detect, build]
+    if: needs.detect.outputs.has_app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: playwright-report, path: playwright-report/, retention-days: 7 }
+
+  security:
+    name: Segurança (SCA + segredos + SAST)
+    runs-on: ubuntu-latest
+    permissions: { security-events: write, contents: read, actions: read }
+    steps:
+      # fetch-depth: 0 — o gitleaks escaneia o range de commits do push.
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Secret scanning (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+      - name: Auditoria de dependências
+        if: hashFiles('package.json') != ''
+        run: |
+          npm ci
+          npm audit --audit-level=high
+
+  # Gate final: verde se o app ainda não existe OU se todos os jobs passaram.
+  # É este check único que a branch protection deve exigir.
+  ci-passed:
+    name: CI aprovado
+    needs: [detect, lint-type, unit, build, e2e, security]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verifica resultados
+        run: |
+          if [ "${{ needs.detect.outputs.has_app }}" != "true" ]; then
+            echo "Repo sem app (só docs) — CI verde por padrão."; exit 0
+          fi
+          for r in "${{ needs.lint-type.result }}" "${{ needs.unit.result }}" "${{ needs.build.result }}" "${{ needs.e2e.result }}" "${{ needs.security.result }}"; do
+            if [ "$r" != "success" ]; then echo "Job falhou: $r"; exit 1; fi
+          done
+          echo "Todos os jobs de CI passaram."

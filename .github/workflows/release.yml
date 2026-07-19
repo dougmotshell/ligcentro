@@ -1,0 +1,49 @@
+# Release — SOMENTE via tag semver (vX.Y.Z). Revalida a suíte e publica o
+# GitHub Release. O deploy de PRODUÇÃO é feito pela integração Git da Vercel
+# (push na main → ligcentro.vercel.app); este workflow NÃO chama a Vercel para
+# não duplicar deploy. Marcar a release é o carimbo humano da versão.
+name: release
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'   # semver estrito (vMAJOR.MINOR.PATCH)
+      - 'v[0-9]+.[0-9]+.[0-9]+-*' # pré-releases (v1.2.0-rc.1)
+
+jobs:
+  verify:
+    name: Revalida antes de marcar a release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f package.json ]; then echo "has_app=true" >> "$GITHUB_OUTPUT"; else echo "has_app=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.has_app == 'true'
+        with: { node-version: 22, cache: npm }
+      - name: Suíte completa
+        if: steps.check.outputs.has_app == 'true'
+        run: |
+          npm ci
+          npm run typecheck
+          npm run lint
+          npm run test:unit
+          npm run build
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+
+  publish-release:
+    name: Publica GitHub Release
+    needs: [verify]
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Cria release (pré-release se a tag tiver sufixo)
+        run: |
+          PRERELEASE=""
+          [[ "${GITHUB_REF_NAME}" == *-* ]] && PRERELEASE="--prerelease"
+          gh release create "${GITHUB_REF_NAME}" --generate-notes $PRERELEASE
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
