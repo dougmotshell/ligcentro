@@ -21,8 +21,8 @@ Linktree, Beacons, Bento e afins.
 
 | Subpasta | Pergunta que responde |
 |---|---|
-| [`competitors/`](./competitors/) | *Quem já faz isso, como cobram e onde deixam a desejar?* — panorama do mercado, análise competitiva e alternativas open source |
-| [`reverse-engineering/linktree/`](./reverse-engineering/linktree/) | *Como o líder de mercado é construído por dentro?* — engenharia reversa do Linktree (C4 + ADRs + specs) usada como arquitetura de referência |
+| [`competitors/`](./competitors/) | *Quem já faz isso, como cobram e onde deixam a desejar?* (largura) — panorama do mercado, análise competitiva e alternativas open source |
+| [`reverse-engineering/`](./reverse-engineering/) | *Como cada concorrente é construído por dentro?* (profundidade) — engenharia reversa do Linktree (C4 + ADRs + specs), Beacons, Bento, Carrd, Stan Store e LinkStack |
 
 ## Fluxo de leitura recomendado
 
@@ -30,7 +30,7 @@ Linktree, Beacons, Bento e afins.
 flowchart LR
     PAN["Panorama do mercado<br/>(concorrentes)"] --> COMP["Análise competitiva<br/>(features + preço)"]
     COMP --> OSS["Alternativas open source<br/>(o que dá pra reusar)"]
-    COMP --> RE["Engenharia reversa<br/>do Linktree"]
+    COMP --> RE["Engenharia reversa<br/>de cada concorrente"]
     OSS --> PLAN["Planos de implementação<br/>do ligcentro"]
     RE --> PLAN
 ```

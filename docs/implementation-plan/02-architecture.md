@@ -43,7 +43,7 @@ flowchart TB
 | Camada | Escolha | Por quê |
 |---|---|---|
 | Framework | **Next.js 15 (App Router) + TypeScript** | Unifica SSR/SSG do perfil público e o dashboard React num só projeto; ótimo no free tier da Vercel |
-| Hospedagem | **Vercel (Hobby/free)** | Deploy trivial, CDN global, serverless/edge inclusos; caminho de portabilidade documentado |
+| Hospedagem | **Vercel (Hobby/free) hoje → VPS amanhã** | Deploy trivial via integração Git (o repo já está ligado a `ligcentro.vercel.app`: push na `main` = produção, PR = preview); CDN global e serverless/edge inclusos. Quando o volume/soberania exigir, o mesmo app sobe num VPS via `docker compose` (portabilidade abaixo) |
 | Dados | **Supabase — Postgres + RLS** | Postgres gerenciado grátis; RLS dá multi-tenant seguro sem backend custom pesado |
 | Auth | **Supabase Auth** | E-mail/senha + OAuth (Google/GitHub) prontos; barato de operar |
 | Storage | **Supabase Storage** | Avatares e imagens de fundo |

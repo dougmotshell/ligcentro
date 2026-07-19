@@ -19,6 +19,7 @@
 | 04 | [Modelo de dados](./04-data-model.md) | Entidades, esquema Postgres, RLS, multi-tenant |
 | 05 | [Analytics e privacidade](./05-analytics-privacy.md) | Como medimos cliques/visitas sem trair o visitante (LGPD) |
 | 06 | [Monetização](./06-monetization.md) | Modelo de negócio, planos, 0% de taxa como diferencial |
+| 07 | [Vantagem competitiva](./07-competitive-edge.md) | Como o ligcentro supera cada concorrente (síntese da engenharia reversa) + viabilidade a custo zero (Vercel hoje, VPS amanhã) |
 
 ## Princípios que atravessam todos os planos
 
