@@ -1,4 +1,13 @@
-# Documentação de Arquitetura — LikHub
+# Engenharia Reversa do Linktree — arquitetura de referência
+
+> **Nota de contexto (ligcentro)**
+> Este conjunto é **pesquisa de mercado**: a engenharia reversa do líder da
+> categoria (Linktree), usada como *arquitetura de referência* para o **ligcentro**.
+> Onde o texto original diz **"LikHub"**, leia **"ligcentro"** — é o nome anterior
+> do mesmo produto (o produto foi renomeado; ver
+> [`../../../implementation-plan/`](../../../implementation-plan/) para as decisões de
+> arquitetura *próprias* do ligcentro, que divergem deste referencial sempre que
+> faz sentido para um produto de free tier enxuto).
 
 > **Origem deste documento**
 > Este conjunto de documentos nasceu de uma **engenharia reversa do Linktree**

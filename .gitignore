@@ -1,0 +1,29 @@
+# deps
+node_modules/
+.pnp
+.pnp.js
+
+# builds
+dist/
+build/
+.next/
+out/
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# vercel / supabase local
+.vercel/
+.supabase/
+
+# testes / cobertura
+coverage/
+playwright-report/
+test-results/
+
+# sistema
+.DS_Store
+*.log
+npm-debug.log*
