@@ -1,6 +1,6 @@
 # TCK-0002: Fase 1 — Perfil público (leitura)
 
-- **status:** in_progress
+- **status:** done
 - **owner:** frontend-developer + backend-developer
 - **created:** 2026-07-19 · **by:** Douglas
 - **type:** feature
@@ -34,6 +34,6 @@
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: ·
-- Evidência final: ·
-- Docs atualizados: ·
+- Commits: 5ea6511, 0a9b8a6, 7f329fa (fundação Fase 0 + Fase 1)
+- Evidência final: `curl http://localhost:3002/pt-BR/demo` → 200, título "Usuário Demo"; `curl /pt-BR/inexistente` → 404; `npm run build` ✓; `npm run lint` ✓; `npm run typecheck` ✓; `docker compose up` ✓
+- Docs atualizados: —
