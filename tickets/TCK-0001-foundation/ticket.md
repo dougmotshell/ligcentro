@@ -1,6 +1,6 @@
 # TCK-0001: Fase 0 — Fundação (scaffold do projeto)
 
-- **status:** in_progress
+- **status:** done
 - **owner:** devops-engineer + frontend-developer + backend-developer
 - **created:** 2026-07-19 · **by:** Douglas
 - **type:** infra
@@ -18,13 +18,13 @@
 
 ## Critérios de aceite
 
-- [ ] 1. `npm run build` termina sem erros (Next.js 15 + TypeScript + Tailwind).
-- [ ] 2. `npm run lint` e `npm run typecheck` passam sem erros.
-- [ ] 3. `docker compose up` sobe Postgres + app localmente; `curl localhost:3000` retorna 200.
-- [ ] 4. Página raiz (`/`) exibe "Hello, ligcentro" nos dois idiomas (pt-BR / en-US) via next-intl.
-- [ ] 5. Temas claro/escuro funcionam via CSS variables (design tokens básicos).
-- [ ] 6. Primeira migração SQL vazia versionada em `supabase/migrations/` (ou `db/migrations/`).
-- [ ] 7. CI (GitHub Actions) passa: lint + typecheck + build verde no PR.
+- [x] 1. `npm run build` termina sem erros (Next.js 15 + TypeScript + Tailwind).
+- [x] 2. `npm run lint` e `npm run typecheck` passam sem erros.
+- [x] 3. `docker compose up` sobe Postgres + app localmente; `curl localhost:3000` retorna 200.
+- [x] 4. Página raiz (`/`) exibe "Hello, ligcentro" nos dois idiomas (pt-BR / en-US) via next-intl.
+- [x] 5. Temas claro/escuro funcionam via CSS variables (design tokens básicos).
+- [x] 6. Primeira migração SQL vazia versionada em `db/migrations/`.
+- [x] 7. CI (GitHub Actions) passa: lint + typecheck + build verde no PR.
 
 ## Referências
 
@@ -33,8 +33,8 @@
 - Arquivos-alvo: `/` (raiz do projeto — arquivos novos)
 - Decisão de portabilidade: Supabase em produção; Postgres puro via `DATABASE_URL` em dev/QA (sem credencial Supabase obrigatória para rodar localmente)
 
-## Resolução (preenchido ao fechar)
+## Resolução
 
-- Commits: ·
-- Evidência final: ·
-- Docs atualizados: ·
+- Commits: `866b600` — TCK-0001: Fase 0 — scaffold completo da fundação
+- Evidência final: ver seção QA no log.md
+- Docs atualizados: memory/context/frontend.md · memory/context/backend.md · memory/context/devops.md
