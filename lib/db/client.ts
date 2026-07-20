@@ -1,9 +1,16 @@
 import postgres, { type Sql } from 'postgres';
 
-// Singleton para evitar múltiplas conexões em dev com hot reload.
 const globalForDb = globalThis as typeof globalThis & {
   db?: Sql;
 };
+
+function shouldUseSsl(databaseUrl: string): boolean {
+  if (process.env.DATABASE_SSL === 'true') {
+    return true;
+  }
+
+  return /supabase\.(co|in)/.test(databaseUrl);
+}
 
 export function getDb(): Sql {
   if (globalForDb.db) {
@@ -17,7 +24,7 @@ export function getDb(): Sql {
   }
 
   const db = postgres(databaseUrl, {
-    ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
+    ssl: shouldUseSsl(databaseUrl) ? 'require' : false,
     max: 10,
   });
 

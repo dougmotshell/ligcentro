@@ -54,5 +54,84 @@
       "publicProfile": "Public profile",
       "signOut": "Sign out"
     }
+  },
+  "Dashboard": {
+    "eyebrow": "Profile editor",
+    "title": "Build your ligcentro",
+    "description": "Edit avatar, bio, links and theme. Published changes appear on the public profile.",
+    "viewPublicProfile": "View public profile",
+    "analyticsCta": "View analytics",
+    "tabsAriaLabel": "Dashboard tabs",
+    "tabs": {
+      "profile": "Profile",
+      "blocks": "Blocks",
+      "themes": "Themes"
+    },
+    "themesTitle": "Ready-made themes",
+    "themesDescription": "Choose a visual base and update the public profile instantly.",
+    "profile": {
+      "displayName": "Display name",
+      "displayNameError": "Use between 2 and 80 characters.",
+      "bio": "Bio",
+      "bioError": "Bio can be up to 280 characters.",
+      "save": "Save profile",
+      "saving": "Saving...",
+      "requestError": "Profile could not be saved right now.",
+      "avatarTitle": "Avatar",
+      "avatarDescription": "Upload an image to customize your public profile.",
+      "chooseFile": "Choose file",
+      "upload": "Upload avatar",
+      "uploading": "Uploading...",
+      "avatarError": "The file could not be uploaded."
+    },
+    "blocks": {
+      "title": "Profile blocks",
+      "description": "Create links, social profiles and contact actions. Drag to reorder.",
+      "createCta": "New block",
+      "createTitle": "Create block",
+      "editTitle": "Edit block",
+      "modalDescription": "Configure the content and schedule for this block.",
+      "close": "Close modal",
+      "reorder": "Move",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "create": "Create block",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "requestError": "The block could not be saved right now.",
+      "fields": {
+        "type": "Type",
+        "label": "Label",
+        "url": "URL",
+        "platform": "Platform",
+        "contactType": "Contact type",
+        "contactValue": "Contact value",
+        "visibleFrom": "Visible from",
+        "visibleUntil": "Visible until",
+        "isActive": "Block active"
+      },
+      "types": {
+        "link": "Link",
+        "social": "Social",
+        "contact": "Contact"
+      },
+      "contactTypes": {
+        "whatsapp": "WhatsApp",
+        "email": "Email",
+        "phone": "Phone"
+      }
+    },
+    "themes": {
+      "saving": "Saving...",
+      "selected": "Selected",
+      "select": "Select",
+      "names": {
+        "default": "Classic",
+        "dark": "Dark",
+        "purple": "Purple",
+        "green": "Green"
+      }
+    }
   }
 }

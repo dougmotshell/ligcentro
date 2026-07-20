@@ -4,11 +4,7 @@ import { notFound } from 'next/navigation';
 import { BlockContact } from '@/components/blocks/BlockContact';
 import { BlockLink } from '@/components/blocks/BlockLink';
 import { BlockSocial } from '@/components/blocks/BlockSocial';
-import {
-  getFallbackProfileByHandle,
-  getProfileByHandle,
-  getPublishedHandles,
-} from '@/lib/db/profiles';
+import { getFallbackProfileByHandle, getProfileByHandle, getPublishedHandles } from '@/lib/db/profiles';
 import { getSafeImageUrl } from '@/lib/safe-url';
 
 interface Props {
@@ -31,13 +27,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, handle } = await params;
   setRequestLocale(locale);
-  const notFoundTranslations = await getTranslations({ locale, namespace: 'NotFound' });
+  const tNotFound = await getTranslations({ locale, namespace: 'NotFound' });
 
   try {
     const profile = await getProfileByHandle(handle);
 
     if (!profile) {
-      return { title: notFoundTranslations('profileNotFound') };
+      return { title: tNotFound('profileNotFound') };
     }
 
     const avatarUrl = getSafeImageUrl(profile.avatar_url);
@@ -100,12 +96,12 @@ export default async function ProfilePage({ params }: Props) {
   const avatarUrl = getSafeImageUrl(profile.avatar_url);
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-12 dark:bg-gray-900">
-      <div className="mx-auto max-w-md">
+    <main className="min-h-screen px-4 py-12" style={{ backgroundColor: profile.theme.bg }}>
+      <div className="mx-auto max-w-md rounded-[2rem] bg-white/80 p-8 shadow-xl ring-1 ring-black/5 backdrop-blur dark:bg-gray-900/80">
         <div className="mb-8 text-center">
           {avatarUrl ? (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element -- Avatar remoto vem do perfil publicado e não deve acionar fetch server-side. */}
+              {/* eslint-disable-next-line @next/next/no-img-element -- Avatar remoto do perfil público não deve acionar fetch server-side. */}
               <img
                 src={avatarUrl}
                 alt={profile.display_name}
@@ -116,41 +112,38 @@ export default async function ProfilePage({ params }: Props) {
             </>
           ) : (
             <div
-              className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-purple-500"
+              className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full"
+              style={{ backgroundColor: profile.theme.btnBg, color: profile.theme.btnText }}
               aria-hidden="true"
             >
-              <span className="text-3xl font-bold text-white">
-                {profile.display_name.charAt(0).toUpperCase()}
-              </span>
+              <span className="text-3xl font-bold">{profile.display_name.charAt(0).toUpperCase()}</span>
             </div>
           )}
 
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.display_name}</h1>
 
-          {profile.bio ? (
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{profile.bio}</p>
-          ) : null}
+          {profile.bio ? <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{profile.bio}</p> : null}
         </div>
 
         <div className="space-y-3">
           {profile.blocks.map((block) => {
             if (block.type === 'link') {
-              return <BlockLink key={block.id} block={block} />;
+              return <BlockLink key={block.id} block={block} theme={profile.theme} />;
             }
 
             if (block.type === 'social') {
-              return <BlockSocial key={block.id} block={block} />;
+              return <BlockSocial key={block.id} block={block} theme={profile.theme} />;
             }
 
             if (block.type === 'contact') {
-              return <BlockContact key={block.id} block={block} />;
+              return <BlockContact key={block.id} block={block} theme={profile.theme} />;
             }
 
             return null;
           })}
         </div>
 
-        <p className="mt-10 text-center text-xs text-gray-400">{t('poweredBy')}</p>
+        <p className="mt-10 text-center text-xs text-gray-500 dark:text-gray-400">{t('poweredBy')}</p>
       </div>
     </main>
   );

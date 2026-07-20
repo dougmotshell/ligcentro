@@ -21,3 +21,10 @@
 - Causa raiz: o `tsconfig.json` inclui `.next/types/**/*.ts`, então um build do Next precisa existir antes do typecheck em checkout limpo.
 - Como evitar: em validações locais do ligcentro, rode `npm run build` antes de `npm run typecheck` (ou mantenha `.next` válido) sempre que o workspace estiver limpo.
 - Refs: `tsconfig.json`, `tickets/TCK-0003-auth-rls/log.md`.
+
+## [L-002] 2026-07-19 — backend — Postgres local não aceita SSL forçado no runtime
+- Contexto: validação docker do TCK-0004 com o app Next em `NODE_ENV=production` apontando para o Postgres do compose.
+- Erro: rotas autenticadas retornaram 500 com `ECONNRESET` ao abrir conexão com o banco.
+- Causa raiz: `lib/db/client.ts` habilitava `ssl: "require"` só por estar em produção, mas o Postgres local do compose não expõe TLS.
+- Como evitar: habilitar SSL apenas quando o `DATABASE_URL` ou uma env explícita indicar um banco gerenciado (ex.: Supabase), mantendo `ssl: false` no compose local.
+- Refs: `lib/db/client.ts`, `tickets/TCK-0004-editor/log.md`.

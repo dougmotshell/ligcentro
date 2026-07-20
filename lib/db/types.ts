@@ -1,3 +1,12 @@
+export interface ThemeConfig {
+  name: string;
+  bg: string;
+  btnBg: string;
+  btnText: string;
+}
+
+export type BlockType = 'link' | 'social' | 'contact' | 'video' | 'header';
+
 export interface Profile {
   id: string;
   user_id: string | null;
@@ -5,7 +14,7 @@ export interface Profile {
   display_name: string;
   bio: string | null;
   avatar_url: string | null;
-  theme: Record<string, unknown>;
+  theme: ThemeConfig;
   status: 'draft' | 'published';
   created_at: string;
   updated_at: string;
@@ -14,7 +23,7 @@ export interface Profile {
 export interface Block {
   id: string;
   profile_id: string;
-  type: 'link' | 'social' | 'contact' | 'video' | 'header';
+  type: BlockType;
   label: string | null;
   url: string | null;
   config: Record<string, unknown>;

@@ -1,23 +1,33 @@
-import type { Block } from '@/lib/db/types';
+import type { CSSProperties } from 'react';
+import type { Block, ThemeConfig } from '@/lib/db/types';
 import { getSafeExternalUrl } from '@/lib/safe-url';
 
 interface Props {
   block: Block;
+  theme?: ThemeConfig;
 }
 
-export function BlockLink({ block }: Props) {
+export function BlockLink({ block, theme }: Props) {
   const url = getSafeExternalUrl(block.url);
 
   if (!url) {
     return null;
   }
 
+  const style: CSSProperties | undefined = theme
+    ? {
+        backgroundColor: theme.btnBg,
+        color: theme.btnText,
+      }
+    : undefined;
+
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full rounded-xl border border-gray-200 bg-white px-6 py-3 text-center font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+      style={style}
+      className="block w-full rounded-xl border border-gray-200 px-6 py-3 text-center font-medium shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-gray-700"
     >
       {block.label ?? url}
     </a>

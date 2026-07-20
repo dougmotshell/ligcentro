@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { CSSProperties, ComponentType } from 'react';
 import {
   FaFacebook,
   FaGithub,
@@ -11,7 +11,7 @@ import {
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { getSafeExternalUrl } from '@/lib/safe-url';
-import type { Block } from '@/lib/db/types';
+import type { Block, ThemeConfig } from '@/lib/db/types';
 
 const SOCIAL_ICONS: Record<string, ComponentType<{ className?: string }>> = {
   instagram: FaInstagram,
@@ -24,22 +24,12 @@ const SOCIAL_ICONS: Record<string, ComponentType<{ className?: string }>> = {
   facebook: FaFacebook,
 };
 
-const SOCIAL_COLORS: Record<string, string> = {
-  instagram: 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400',
-  twitter: 'bg-sky-500',
-  x: 'bg-black',
-  youtube: 'bg-red-600',
-  github: 'bg-gray-900',
-  tiktok: 'bg-black',
-  linkedin: 'bg-blue-700',
-  facebook: 'bg-blue-600',
-};
-
 interface Props {
   block: Block;
+  theme?: ThemeConfig;
 }
 
-export function BlockSocial({ block }: Props) {
+export function BlockSocial({ block, theme }: Props) {
   const url = getSafeExternalUrl(block.url);
 
   if (!url) {
@@ -48,14 +38,20 @@ export function BlockSocial({ block }: Props) {
 
   const brand = typeof block.config.brand === 'string' ? block.config.brand : 'link';
   const Icon = SOCIAL_ICONS[brand] ?? FaLink;
-  const colorClass = SOCIAL_COLORS[brand] ?? 'bg-gray-600';
+  const style: CSSProperties | undefined = theme
+    ? {
+        backgroundColor: theme.btnBg,
+        color: theme.btnText,
+      }
+    : undefined;
 
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={`flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 font-medium text-white shadow-sm transition-opacity hover:opacity-90 ${colorClass}`}
+      style={style}
+      className="flex w-full items-center justify-center gap-3 rounded-xl border border-transparent px-6 py-3 font-medium shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={block.label ?? brand}
     >
       <Icon className="h-5 w-5" aria-hidden="true" />

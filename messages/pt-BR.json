@@ -54,5 +54,84 @@
       "publicProfile": "Perfil público",
       "signOut": "Sair"
     }
+  },
+  "Dashboard": {
+    "eyebrow": "Editor do perfil",
+    "title": "Monte seu ligcentro",
+    "description": "Edite avatar, bio, links e tema. As mudanças publicadas aparecem no perfil público.",
+    "viewPublicProfile": "Ver perfil público",
+    "analyticsCta": "Ver analytics",
+    "tabsAriaLabel": "Abas do dashboard",
+    "tabs": {
+      "profile": "Perfil",
+      "blocks": "Blocos",
+      "themes": "Temas"
+    },
+    "themesTitle": "Temas prontos",
+    "themesDescription": "Escolha uma base visual e atualize instantaneamente o perfil público.",
+    "profile": {
+      "displayName": "Nome exibido",
+      "displayNameError": "Use entre 2 e 80 caracteres.",
+      "bio": "Bio",
+      "bioError": "A bio pode ter até 280 caracteres.",
+      "save": "Salvar perfil",
+      "saving": "Salvando...",
+      "requestError": "Não foi possível salvar o perfil agora.",
+      "avatarTitle": "Avatar",
+      "avatarDescription": "Envie uma imagem para personalizar seu perfil público.",
+      "chooseFile": "Escolher arquivo",
+      "upload": "Enviar avatar",
+      "uploading": "Enviando...",
+      "avatarError": "Não foi possível enviar o arquivo."
+    },
+    "blocks": {
+      "title": "Blocos do perfil",
+      "description": "Crie links, redes sociais e contatos. Arraste para reordenar.",
+      "createCta": "Novo bloco",
+      "createTitle": "Criar bloco",
+      "editTitle": "Editar bloco",
+      "modalDescription": "Configure o conteúdo e o agendamento do bloco.",
+      "close": "Fechar modal",
+      "reorder": "Mover",
+      "edit": "Editar",
+      "delete": "Remover",
+      "cancel": "Cancelar",
+      "create": "Criar bloco",
+      "saveChanges": "Salvar mudanças",
+      "saving": "Salvando...",
+      "requestError": "Não foi possível salvar o bloco agora.",
+      "fields": {
+        "type": "Tipo",
+        "label": "Rótulo",
+        "url": "URL",
+        "platform": "Plataforma",
+        "contactType": "Tipo de contato",
+        "contactValue": "Valor do contato",
+        "visibleFrom": "Visível a partir de",
+        "visibleUntil": "Visível até",
+        "isActive": "Bloco ativo"
+      },
+      "types": {
+        "link": "Link",
+        "social": "Rede social",
+        "contact": "Contato"
+      },
+      "contactTypes": {
+        "whatsapp": "WhatsApp",
+        "email": "E-mail",
+        "phone": "Telefone"
+      }
+    },
+    "themes": {
+      "saving": "Salvando...",
+      "selected": "Selecionado",
+      "select": "Selecionar",
+      "names": {
+        "default": "Clássico",
+        "dark": "Escuro",
+        "purple": "Roxo",
+        "green": "Verde"
+      }
+    }
   }
 }

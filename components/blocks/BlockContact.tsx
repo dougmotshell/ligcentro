@@ -1,11 +1,7 @@
-import {
-  FaEnvelope,
-  FaPhone,
-  FaWhatsapp,
-} from 'react-icons/fa';
-import type { ComponentType } from 'react';
+import type { CSSProperties, ComponentType } from 'react';
+import { FaEnvelope, FaPhone, FaWhatsapp } from 'react-icons/fa';
 import { getSafeExternalUrl } from '@/lib/safe-url';
-import type { Block } from '@/lib/db/types';
+import type { Block, ThemeConfig } from '@/lib/db/types';
 
 const CONTACT_ICONS: Record<string, ComponentType<{ className?: string }>> = {
   whatsapp: FaWhatsapp,
@@ -13,17 +9,12 @@ const CONTACT_ICONS: Record<string, ComponentType<{ className?: string }>> = {
   phone: FaPhone,
 };
 
-const CONTACT_COLORS: Record<string, string> = {
-  whatsapp: 'bg-green-500',
-  email: 'bg-blue-500',
-  phone: 'bg-gray-600',
-};
-
 interface Props {
   block: Block;
+  theme?: ThemeConfig;
 }
 
-export function BlockContact({ block }: Props) {
+export function BlockContact({ block, theme }: Props) {
   const url = getSafeExternalUrl(block.url);
 
   if (!url) {
@@ -32,14 +23,20 @@ export function BlockContact({ block }: Props) {
 
   const contactType = typeof block.config.type === 'string' ? block.config.type : 'email';
   const Icon = CONTACT_ICONS[contactType] ?? FaEnvelope;
-  const colorClass = CONTACT_COLORS[contactType] ?? 'bg-gray-600';
+  const style: CSSProperties | undefined = theme
+    ? {
+        backgroundColor: theme.btnBg,
+        color: theme.btnText,
+      }
+    : undefined;
 
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={`flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 font-medium text-white shadow-sm transition-opacity hover:opacity-90 ${colorClass}`}
+      style={style}
+      className="flex w-full items-center justify-center gap-3 rounded-xl border border-transparent px-6 py-3 font-medium shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={block.label ?? contactType}
     >
       <Icon className="h-5 w-5" aria-hidden="true" />

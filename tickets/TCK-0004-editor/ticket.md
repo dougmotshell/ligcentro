@@ -1,6 +1,6 @@
 # TCK-0004: Fase 2b — Editor de perfil e blocos
 
-- **status:** pending
+- **status:** done
 - **owner:** frontend-developer + backend-developer
 - **depends-on:** TCK-0003
 - **created:** 2026-07-19 · **by:** Douglas
@@ -36,6 +36,6 @@
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: ·
-- Evidência final: ·
-- Docs atualizados: ·
+- Commits: pendente (preencher após commit)
+- Evidência final: `rm -rf .next && npm run build && npm run lint && npm run typecheck`; fluxo docker com login mock + `POST /api/blocks` + `PUT /api/blocks/reorder` + `PUT /api/profile` (tema) validado em `http://localhost:3002`; perfil público `/pt-BR/demo` exibindo `QA Link 2b` e `#f5f3ff`.
+- Docs atualizados: `messages/pt-BR.json`, `messages/en-US.json`, `tickets/TCK-0004-editor/log.md`.
