@@ -1,11 +1,44 @@
 {
   "HomePage": {
-    "hello": "Hello, ligcentro",
-    "tagline": "Your link-in-bio. Simple, fast and yours.",
     "toggleTheme": "Toggle theme",
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
-    "phase": "Phase 0 — Foundation ✅"
+    "hero": {
+      "headline": "Your beautiful, fast link-in-bio with honest analytics.",
+      "subtitle": "Create a lightweight public page for links, contact points and social profiles — with no forced branding and no visitor privacy trade-offs.",
+      "cta": "Create my free profile"
+    },
+    "features": {
+      "title": "Built for creators, freelancers and small businesses",
+      "items": {
+        "speed": {
+          "title": "Fast public profile",
+          "desc": "SSR/SSG with a mobile-first focus so pages load almost instantly and convert better."
+        },
+        "editor": {
+          "title": "Simple, flexible editor",
+          "desc": "Avatar, bio, links, social blocks, contact actions and ready-made themes in a focused dashboard."
+        },
+        "analytics": {
+          "title": "No-PII analytics",
+          "desc": "Track views, clicks and CTR per link with daily aggregation and no visitor tracking."
+        }
+      }
+    },
+    "demo": {
+      "title": "See the ligcentro demo profile",
+      "subtitle": "Preview the public profile your visitors will see before creating an account.",
+      "cta": "Open demo",
+      "previewLinks": {
+        "one": "My portfolio",
+        "two": "Instagram",
+        "three": "Contact me"
+      }
+    },
+    "footer": {
+      "copyright": "© {year} ligcentro. A Brazilian link-in-bio product focused on performance, privacy and clarity."
+    },
+    "brand": "@demo"
   },
   "ProfilePage": {
     "poweredBy": "Powered by ligcentro"
@@ -156,7 +189,49 @@
       "block": "Block",
       "type": "Type",
       "clicks": "Clicks",
-      "untitled": "Untitled"
+      "untitled": "Untitled",
+      "types": {
+        "link": "Link",
+        "social": "Social",
+        "contact": "Contact"
+      }
+    }
+  },
+  "Onboarding": {
+    "eyebrow": "Guided onboarding",
+    "steps": {
+      "1": {
+        "title": "Confirm your handle",
+        "description": "Choose the public URL you want to share."
+      },
+      "2": {
+        "title": "Add bio and avatar",
+        "description": "Give visitors enough context to recognize your brand."
+      },
+      "3": {
+        "title": "Create your first link",
+        "description": "Launch with one primary link and finish the setup."
+      }
+    },
+    "fields": {
+      "handle": "Handle",
+      "displayName": "Display name",
+      "bio": "Bio",
+      "avatar": "Avatar",
+      "firstLinkLabel": "First link label",
+      "firstLinkUrl": "First link URL"
+    },
+    "actions": {
+      "continue": "Continue",
+      "saving": "Saving...",
+      "finish": "Publish and go to dashboard",
+      "finishing": "Finishing...",
+      "skip": "Skip for now"
+    },
+    "errors": {
+      "handleTaken": "This handle is already taken.",
+      "handleInvalid": "Use a valid and available handle.",
+      "requestFailed": "This step could not be completed right now."
     }
   }
 }

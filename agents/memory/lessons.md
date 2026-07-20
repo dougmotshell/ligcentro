@@ -28,3 +28,10 @@
 - Causa raiz: `lib/db/client.ts` habilitava `ssl: "require"` só por estar em produção, mas o Postgres local do compose não expõe TLS.
 - Como evitar: habilitar SSL apenas quando o `DATABASE_URL` ou uma env explícita indicar um banco gerenciado (ex.: Supabase), mantendo `ssl: false` no compose local.
 - Refs: `lib/db/client.ts`, `tickets/TCK-0004-editor/log.md`.
+
+## [L-003] 2026-07-20 — qa — Limpar `.next` evita falha intermitente do standalone
+- Contexto: validação do TCK-0006 após vários builds sequenciais com `output: standalone`.
+- Erro: o build falhou com `ENOENT` ao copiar `prerender-manifest.json` para a pasta standalone.
+- Causa raiz: artefatos antigos em `.next` deixaram o estado do diretório inconsistente para um novo build standalone.
+- Como evitar: antes do build final do ligcentro, rode `rm -rf .next` quando houver qualquer falha estranha relacionada a manifestos/standalone.
+- Refs: `next.config.ts`, `tickets/TCK-0006-polish-launch/log.md`.

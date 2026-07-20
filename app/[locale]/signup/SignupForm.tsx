@@ -121,7 +121,7 @@ export function SignupForm({ locale }: Props) {
       return;
     }
 
-    router.push(`/${locale}/dashboard`);
+    router.push(`/${locale}/onboarding?step=1`);
     router.refresh();
   });
 

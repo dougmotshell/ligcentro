@@ -94,7 +94,7 @@ export default async function DashboardAnalyticsPage({
                 {analytics.topBlocks.map((block) => (
                   <tr key={block.id}>
                     <td className="py-3 pr-4">{block.label ?? t('table.untitled')}</td>
-                    <td className="py-3 pr-4">{block.type}</td>
+                    <td className="py-3 pr-4">{t(`table.types.${block.type}`)}</td>
                     <td className="py-3">{block.clicks}</td>
                   </tr>
                 ))}

@@ -1,6 +1,6 @@
 # TCK-0006: Fase 4 — Polimento e lançamento do grátis
 
-- **status:** pending
+- **status:** done
 - **owner:** frontend-developer + devops-engineer + security-auditor
 - **depends-on:** TCK-0005
 - **created:** 2026-07-19 · **by:** Douglas
@@ -36,6 +36,6 @@
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: ·
-- Evidência final: ·
-- Docs atualizados: ·
+- Commits: pendente (preencher após commit)
+- Evidência final: landing real em `/pt-BR`; signup mock levando a onboarding em 3 passos; `rm -rf .next && npm run build && npm run lint && npm run typecheck`; `npm audit --audit-level=high` sem high/critical; fluxo local validado até `/pt-BR/dashboard` com status 200.
+- Docs atualizados: `messages/pt-BR.json`, `messages/en-US.json`, `tickets/TCK-0006-polish-launch/log.md`.

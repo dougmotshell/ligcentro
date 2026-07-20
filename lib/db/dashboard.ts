@@ -35,6 +35,20 @@ function mapBlock(block: Block): Block {
   };
 }
 
+export async function isHandleAvailable(handle: string, excludeProfileId?: string): Promise<boolean> {
+  const db = getDb();
+  const rows = (await db`
+    SELECT EXISTS(
+      SELECT 1
+      FROM profiles
+      WHERE handle = ${handle}
+        AND (${excludeProfileId ?? null}::uuid IS NULL OR id <> ${excludeProfileId ?? null}::uuid)
+    ) AS exists
+  `) as unknown as Array<{ exists: boolean }>;
+
+  return !rows[0]?.exists;
+}
+
 export async function getDashboardProfile(session: AuthSession): Promise<ProfileWithBlocks | null> {
   const db = getDb();
   const { profileId, userId, handle } = resolveProfileFilters(session);
@@ -70,7 +84,14 @@ export async function getDashboardProfile(session: AuthSession): Promise<Profile
 
 export async function updateDashboardProfile(
   profileId: string,
-  input: { displayName?: string; bio?: string | null; theme?: ThemeConfig; avatarUrl?: string | null }
+  input: {
+    displayName?: string;
+    bio?: string | null;
+    theme?: ThemeConfig;
+    avatarUrl?: string | null;
+    handle?: string;
+    status?: 'draft' | 'published';
+  }
 ): Promise<Profile> {
   const db = getDb();
   const current = (await db`
@@ -86,11 +107,15 @@ export async function updateDashboardProfile(
   const hasBio = Object.prototype.hasOwnProperty.call(input, 'bio');
   const hasAvatarUrl = Object.prototype.hasOwnProperty.call(input, 'avatarUrl');
   const hasTheme = Object.prototype.hasOwnProperty.call(input, 'theme');
+  const hasHandle = Object.prototype.hasOwnProperty.call(input, 'handle');
+  const hasStatus = Object.prototype.hasOwnProperty.call(input, 'status');
 
   const displayName = hasDisplayName ? input.displayName ?? currentProfile.display_name : currentProfile.display_name;
   const bio = hasBio ? input.bio ?? null : currentProfile.bio;
   const avatarUrl = hasAvatarUrl ? input.avatarUrl ?? null : currentProfile.avatar_url;
   const theme = JSON.stringify(hasTheme ? normalizeTheme(input.theme) : normalizeTheme(currentProfile.theme));
+  const handle = hasHandle ? input.handle ?? currentProfile.handle : currentProfile.handle;
+  const status = hasStatus ? input.status ?? currentProfile.status : currentProfile.status;
 
   const rows = (await db`
     UPDATE profiles
@@ -99,6 +124,8 @@ export async function updateDashboardProfile(
       bio = ${bio},
       avatar_url = ${avatarUrl},
       theme = ${theme}::jsonb,
+      handle = ${handle},
+      status = ${status},
       updated_at = NOW()
     WHERE id = ${profileId}::uuid
     RETURNING *
