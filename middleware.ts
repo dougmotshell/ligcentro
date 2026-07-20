@@ -11,6 +11,13 @@ const intlMiddleware = createMiddleware(routing);
 export default function middleware(request: NextRequest) {
   const segments = request.nextUrl.pathname.split('/').filter(Boolean);
   const maybeLocale = segments[0];
+
+  if (segments.length === 1 && !routing.locales.includes(maybeLocale as (typeof routing.locales)[number])) {
+    const localizedUrl = request.nextUrl.clone();
+    localizedUrl.pathname = `/${routing.defaultLocale}/${maybeLocale}`;
+    return NextResponse.rewrite(localizedUrl);
+  }
+
   const isLocalizedDashboard =
     routing.locales.includes(maybeLocale as (typeof routing.locales)[number]) && segments[1] === 'dashboard';
 
