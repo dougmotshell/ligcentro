@@ -1,0 +1,10 @@
+{
+  "HomePage": {
+    "hello": "Olá, ligcentro",
+    "tagline": "Seu link-in-bio. Simples, rápido e seu.",
+    "toggleTheme": "Alternar tema",
+    "lightMode": "Tema claro",
+    "darkMode": "Tema escuro",
+    "phase": "Fase 0 — Fundação ✅"
+  }
+}

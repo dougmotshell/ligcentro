@@ -1,0 +1,31 @@
+# Dependências do Node
+node_modules
+npm-debug.log
+
+# Builds do Next.js
+.next
+out
+
+# Arquivos de ambiente (segredos)
+.env
+.env.*
+!.env.example
+
+# Controle de versão
+.git
+.gitignore
+
+# Dev tools / OS
+.DS_Store
+*.log
+.eslintcache
+
+# Testes / cobertura
+coverage
+playwright-report
+test-results
+
+# Config de agentes / docs (não precisam ir para a imagem)
+agents
+docs
+tickets

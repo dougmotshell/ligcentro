@@ -1,0 +1,67 @@
+/**
+ * Globals CSS — design tokens do ligcentro via CSS custom properties.
+ * Tema claro: padrão (:root). Tema escuro: classe `.dark` no <html>.
+ * Tailwind usa esses tokens via tailwind.config.ts.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design tokens: tema claro (padrão) ─────────────────────────────── */
+:root {
+  /* Cores base */
+  --color-background: #ffffff;
+  --color-foreground: #0a0a0a;
+
+  /* Cor primária (brand) */
+  --color-primary: #6366f1;
+  --color-primary-foreground: #ffffff;
+
+  /* Cor secundária */
+  --color-secondary: #f4f4f5;
+  --color-secondary-foreground: #18181b;
+
+  /* Mutada / desabilitada */
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #71717a;
+
+  /* Borda e foco */
+  --color-border: #e4e4e7;
+  --color-ring: #6366f1;
+
+  /* Tipografia */
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+
+  /* Borda padrão */
+  --radius: 0.5rem;
+}
+
+/* ─── Design tokens: tema escuro ─────────────────────────────────────── */
+.dark {
+  --color-background: #09090b;
+  --color-foreground: #fafafa;
+
+  --color-primary: #818cf8;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #27272a;
+  --color-secondary-foreground: #fafafa;
+
+  --color-muted: #27272a;
+  --color-muted-foreground: #a1a1aa;
+
+  --color-border: #27272a;
+  --color-ring: #818cf8;
+}
+
+/* ─── Base styles ─────────────────────────────────────────────────────── */
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}

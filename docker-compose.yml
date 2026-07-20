@@ -1,0 +1,41 @@
+# Docker Compose para desenvolvimento local e QA.
+# Sobe: Postgres 16 + app Next.js.
+# Uso: docker compose up --build
+# Acesso: http://localhost:3000
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ligcentro
+      POSTGRES_PASSWORD: ligcentro
+      POSTGRES_DB: ligcentro
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Aplica as migrações na inicialização do container
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ligcentro -d ligcentro"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      # APP_PORT padrão 3000 — pode ser substituído por APP_PORT=XXXX docker compose up
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://ligcentro:ligcentro@db:5432/ligcentro
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

@@ -1,0 +1,6 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    // Comentários em pt-BR são permitidos; nomes de vars/funções em en-US
+  }
+}
