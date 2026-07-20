@@ -11,13 +11,20 @@
     "test:unit": "vitest run --passWithNoTests",
     "test:e2e": "playwright test --pass-with-no-tests",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:seed": "psql $DATABASE_URL -f db/seeds/001_demo_profile.sql",
+    "db:migrate": "psql $DATABASE_URL -f db/migrations/0001_profiles_blocks.sql"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "next": "15.5.20",
     "next-intl": "^3.26.5",
+    "postgres": "^3.4.9",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "react-hook-form": "^7.82.0",
+    "react-icons": "^5.7.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",

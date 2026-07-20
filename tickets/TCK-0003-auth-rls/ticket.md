@@ -1,6 +1,6 @@
 # TCK-0003: Fase 2a — Auth, contas e RLS
 
-- **status:** pending
+- **status:** done
 - **owner:** backend-developer
 - **depends-on:** TCK-0002
 - **created:** 2026-07-19 · **by:** Douglas
@@ -36,6 +36,6 @@
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: ·
-- Evidência final: ·
-- Docs atualizados: ·
+- Commits: 3ae136d
+- Evidência final: `npm run build && npm run lint && npm run typecheck`; `curl http://localhost:3002/pt-BR/login` → 200; `curl http://localhost:3002/pt-BR/dashboard` → 307 login; `curl http://localhost:3002/api/auth/check-handle?handle=demo` → {"available":false}; migração `0003_add_user_id.sql` aplicada via `docker compose exec -T db psql`.
+- Docs atualizados: `messages/pt-BR.json`, `messages/en-US.json`, `tickets/TCK-0003-auth-rls/log.md`.

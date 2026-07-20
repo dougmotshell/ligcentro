@@ -6,5 +6,53 @@
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
     "phase": "Phase 0 — Foundation ✅"
+  },
+  "ProfilePage": {
+    "poweredBy": "Powered by ligcentro"
+  },
+  "NotFound": {
+    "profileNotFound": "Profile not found",
+    "backHome": "Back to home"
+  },
+  "Auth": {
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "handle": "Handle"
+    },
+    "errors": {
+      "invalidEmail": "Enter a valid email address.",
+      "passwordMin": "Password must be at least 6 characters long.",
+      "request_failed": "The request could not be completed right now.",
+      "handleTaken": "This handle is already taken.",
+      "handleReserved": "This handle is reserved.",
+      "handleFormat": "Use 3 to 30 lowercase letters, numbers, hyphens or underscores."
+    },
+    "login": {
+      "title": "Log in",
+      "subtitle": "Access your local dashboard with the mock auth flow.",
+      "submit": "Log in",
+      "submitting": "Logging in...",
+      "noAccount": "Don't have an account yet?",
+      "signupLink": "Create one"
+    },
+    "signup": {
+      "title": "Create account",
+      "subtitle": "Pick a unique handle to start your ligcentro profile.",
+      "submit": "Create account",
+      "submitting": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "handleChecking": "Checking availability...",
+      "handleAvailable": "Handle available."
+    },
+    "dashboard": {
+      "eyebrow": "Protected dashboard",
+      "welcome": "Welcome, {handle}!",
+      "description": "Your mock session is active. The full editor arrives in the next phase.",
+      "accountEmail": "Account email",
+      "publicProfile": "Public profile",
+      "signOut": "Sign out"
+    }
   }
 }

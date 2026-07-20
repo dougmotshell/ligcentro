@@ -6,5 +6,53 @@
     "lightMode": "Tema claro",
     "darkMode": "Tema escuro",
     "phase": "Fase 0 — Fundação ✅"
+  },
+  "ProfilePage": {
+    "poweredBy": "Criado com ligcentro"
+  },
+  "NotFound": {
+    "profileNotFound": "Perfil não encontrado",
+    "backHome": "Voltar ao início"
+  },
+  "Auth": {
+    "fields": {
+      "email": "E-mail",
+      "password": "Senha",
+      "handle": "Handle"
+    },
+    "errors": {
+      "invalidEmail": "Digite um e-mail válido.",
+      "passwordMin": "A senha precisa ter pelo menos 6 caracteres.",
+      "request_failed": "Não foi possível concluir a solicitação agora.",
+      "handleTaken": "Este handle já está em uso.",
+      "handleReserved": "Este handle é reservado.",
+      "handleFormat": "Use 3 a 30 caracteres com letras minúsculas, números, hífen ou underscore."
+    },
+    "login": {
+      "title": "Entrar",
+      "subtitle": "Acesse seu dashboard no ambiente local com auth mock.",
+      "submit": "Entrar",
+      "submitting": "Entrando...",
+      "noAccount": "Ainda não tem conta?",
+      "signupLink": "Criar conta"
+    },
+    "signup": {
+      "title": "Criar conta",
+      "subtitle": "Escolha um handle único para começar seu perfil no ligcentro.",
+      "submit": "Criar conta",
+      "submitting": "Criando conta...",
+      "hasAccount": "Já tem conta?",
+      "loginLink": "Entrar",
+      "handleChecking": "Verificando disponibilidade...",
+      "handleAvailable": "Handle disponível."
+    },
+    "dashboard": {
+      "eyebrow": "Dashboard protegido",
+      "welcome": "Bem-vindo, {handle}!",
+      "description": "Sua sessão mock está ativa. O editor completo chega na próxima fase.",
+      "accountEmail": "E-mail da conta",
+      "publicProfile": "Perfil público",
+      "signOut": "Sair"
+    }
   }
 }

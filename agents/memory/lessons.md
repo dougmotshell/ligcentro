@@ -14,3 +14,10 @@
 - Como evitar: <regra prática e verificável para o próximo agente>
 - Refs: <arquivos, commits, entradas de log>
 -->
+
+## [L-001] 2026-07-19 — qa — Typecheck depende de .next/types gerado
+- Contexto: validação do TCK-0003 com `npm run typecheck` antes do build.
+- Erro: o TypeScript falhou com `TS6053` porque `.next/types/cache-life.d.ts` ainda não existia.
+- Causa raiz: o `tsconfig.json` inclui `.next/types/**/*.ts`, então um build do Next precisa existir antes do typecheck em checkout limpo.
+- Como evitar: em validações locais do ligcentro, rode `npm run build` antes de `npm run typecheck` (ou mantenha `.next` válido) sempre que o workspace estiver limpo.
+- Refs: `tsconfig.json`, `tickets/TCK-0003-auth-rls/log.md`.

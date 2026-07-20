@@ -1,14 +1,28 @@
+import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 
+const intlMiddleware = createMiddleware(routing);
+
 /**
- * Middleware de internacionalização.
- * Detecta o locale do visitante e redireciona para a URL com prefixo de locale.
- * Exemplo: / → /pt-BR | /en → /en-US
+ * Middleware de internacionalização + proteção básica do dashboard.
+ * Em desenvolvimento local, a sessão mock é indicada pelo cookie `mock-auth`.
  */
-export default createMiddleware(routing);
+export default function middleware(request: NextRequest) {
+  const segments = request.nextUrl.pathname.split('/').filter(Boolean);
+  const maybeLocale = segments[0];
+  const isLocalizedDashboard =
+    routing.locales.includes(maybeLocale as (typeof routing.locales)[number]) && segments[1] === 'dashboard';
+
+  if (isLocalizedDashboard && !request.cookies.get('mock-auth')?.value) {
+    const loginUrl = new URL(`/${maybeLocale}/login`, request.url);
+    loginUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return intlMiddleware(request);
+}
 
 export const config = {
-  // Intercepta todas as rotas exceto: API, arquivos estáticos (_next, assets)
   matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 };
