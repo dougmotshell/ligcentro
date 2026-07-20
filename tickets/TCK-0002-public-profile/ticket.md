@@ -34,6 +34,6 @@
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: 8b931f7
+- Commits: db0376c
 - Evidência final: `npm run typecheck` ✓; `npm run lint` ✓; `npm run build` ✓; `APP_PORT=3002 docker compose up --build -d` ✓; `curl http://localhost:3002/demo` → 200; `curl http://localhost:3002/pt-BR/demo` → 200; `curl http://localhost:3002/pt-BR/inexistente` → 404; `docker compose exec -T db psql ...` confirmou `demo` + 3 blocos.
 - Docs atualizados: `agents/memory/lessons.md`, `agents/memory/context/frontend.md`, `tickets/TCK-0002-public-profile/log.md`
