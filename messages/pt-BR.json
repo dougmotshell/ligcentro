@@ -133,5 +133,30 @@
         "green": "Verde"
       }
     }
+  },
+  "AnalyticsPage": {
+    "eyebrow": "Analytics honesto",
+    "title": "Visitas e cliques dos últimos 30 dias",
+    "description": "Dados agregados e sem PII para o perfil @{handle}.",
+    "cards": {
+      "views": "Visitas",
+      "clicks": "Cliques",
+      "ctr": "CTR"
+    },
+    "chart": {
+      "title": "Série temporal",
+      "description": "Visualização diária de visitas agregadas.",
+      "barAriaLabel": "Dia {day} com {count} visitas"
+    },
+    "topBlocks": {
+      "title": "Top 5 blocos",
+      "description": "Blocos com mais cliques no período."
+    },
+    "table": {
+      "block": "Bloco",
+      "type": "Tipo",
+      "clicks": "Cliques",
+      "untitled": "Sem título"
+    }
   }
 }

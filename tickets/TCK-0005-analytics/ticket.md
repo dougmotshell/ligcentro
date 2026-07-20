@@ -1,6 +1,6 @@
 # TCK-0005: Fase 3 — Analytics honesto
 
-- **status:** pending
+- **status:** done
 - **owner:** backend-developer + frontend-developer
 - **depends-on:** TCK-0004
 - **created:** 2026-07-19 · **by:** Douglas
@@ -36,6 +36,6 @@
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: ·
-- Evidência final: ·
-- Docs atualizados: ·
+- Commits: pendente (preencher após commit)
+- Evidência final: `docker compose exec -T db psql -f /docker-entrypoint-initdb.d/0004_analytics.sql`; `rm -rf .next && npm run build && npm run lint && npm run typecheck`; `POST /api/analytics/view` → 200; `POST /api/analytics/click` → 200; `GET /api/profile/export` retornando totais; `/pt-BR/dashboard/analytics` exibindo o painel.
+- Docs atualizados: `messages/pt-BR.json`, `messages/en-US.json`, `tickets/TCK-0005-analytics/log.md`.

@@ -133,5 +133,30 @@
         "green": "Green"
       }
     }
+  },
+  "AnalyticsPage": {
+    "eyebrow": "Honest analytics",
+    "title": "Views and clicks in the last 30 days",
+    "description": "Aggregated, no-PII data for @{handle}.",
+    "cards": {
+      "views": "Views",
+      "clicks": "Clicks",
+      "ctr": "CTR"
+    },
+    "chart": {
+      "title": "Timeline",
+      "description": "Daily aggregated view counts.",
+      "barAriaLabel": "Day {day} with {count} views"
+    },
+    "topBlocks": {
+      "title": "Top 5 blocks",
+      "description": "Blocks with the highest click count in the period."
+    },
+    "table": {
+      "block": "Block",
+      "type": "Type",
+      "clicks": "Clicks",
+      "untitled": "Untitled"
+    }
   }
 }

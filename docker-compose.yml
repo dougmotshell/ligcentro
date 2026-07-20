@@ -25,13 +25,17 @@ services:
       start_period: 10s
 
   app:
-    build: .
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_APP_URL: "http://localhost:${APP_PORT:-3000}"
     restart: unless-stopped
     ports:
       # APP_PORT padrão 3000 — pode ser substituído por APP_PORT=XXXX docker compose up
       - "${APP_PORT:-3000}:3000"
     environment:
       DATABASE_URL: postgresql://ligcentro:ligcentro@db:5432/ligcentro
+      NEXT_PUBLIC_APP_URL: "http://localhost:${APP_PORT:-3000}"
       NODE_ENV: production
     depends_on:
       db:

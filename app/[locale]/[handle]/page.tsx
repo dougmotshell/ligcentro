@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
+import { BlockClickTracker } from '@/components/blocks/BlockClickTracker';
 import { BlockContact } from '@/components/blocks/BlockContact';
 import { BlockLink } from '@/components/blocks/BlockLink';
 import { BlockSocial } from '@/components/blocks/BlockSocial';
@@ -128,15 +130,27 @@ export default async function ProfilePage({ params }: Props) {
         <div className="space-y-3">
           {profile.blocks.map((block) => {
             if (block.type === 'link') {
-              return <BlockLink key={block.id} block={block} theme={profile.theme} />;
+              return (
+                <BlockClickTracker key={block.id} blockId={block.id} profileId={profile.id}>
+                  <BlockLink block={block} theme={profile.theme} />
+                </BlockClickTracker>
+              );
             }
 
             if (block.type === 'social') {
-              return <BlockSocial key={block.id} block={block} theme={profile.theme} />;
+              return (
+                <BlockClickTracker key={block.id} blockId={block.id} profileId={profile.id}>
+                  <BlockSocial block={block} theme={profile.theme} />
+                </BlockClickTracker>
+              );
             }
 
             if (block.type === 'contact') {
-              return <BlockContact key={block.id} block={block} theme={profile.theme} />;
+              return (
+                <BlockClickTracker key={block.id} blockId={block.id} profileId={profile.id}>
+                  <BlockContact block={block} theme={profile.theme} />
+                </BlockClickTracker>
+              );
             }
 
             return null;
@@ -144,6 +158,7 @@ export default async function ProfilePage({ params }: Props) {
         </div>
 
         <p className="mt-10 text-center text-xs text-gray-500 dark:text-gray-400">{t('poweredBy')}</p>
+        <AnalyticsTracker profileId={profile.id} />
       </div>
     </main>
   );

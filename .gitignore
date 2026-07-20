@@ -32,3 +32,5 @@ tsconfig.tsbuildinfo
 *.log
 npm-debug.log*
 .eslintcache
+
+.next-app/
