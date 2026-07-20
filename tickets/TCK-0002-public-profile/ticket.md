@@ -18,13 +18,13 @@
 
 ## Critérios de aceite
 
-- [ ] 1. Migração SQL cria tabelas `profiles` e `blocks` com RLS ligada (política: leitura pública só de `published`; escrita só do dono).
-- [ ] 2. Seed popula um perfil de exemplo (`/demo`) com ≥3 blocos (link, social, contact).
-- [ ] 3. Página `/[locale]/[handle]` renderiza SSG + revalidação; `curl /<handle>` retorna 200.
-- [ ] 4. Blocos renderizados: `link` (botão com URL), `social` (ícone de marca + link), `contact` (WhatsApp/e-mail).
-- [ ] 5. Open Graph correto: `<title>`, `og:title`, `og:description`, `og:image` (avatar).
-- [ ] 6. Página 404 customizada para handle inexistente.
-- [ ] 7. `npm run build` e `npm run lint` passam; `docker compose up` + `curl /demo` retorna 200 com conteúdo do perfil seed.
+- [x] 1. Migração SQL cria tabelas `profiles` e `blocks` com RLS ligada (política: leitura pública só de `published`; escrita só do dono).
+- [x] 2. Seed popula um perfil de exemplo (`/demo`) com ≥3 blocos (link, social, contact).
+- [x] 3. Página `/[locale]/[handle]` renderiza SSG + revalidação; `curl /<handle>` retorna 200.
+- [x] 4. Blocos renderizados: `link` (botão com URL), `social` (ícone de marca + link), `contact` (WhatsApp/e-mail).
+- [x] 5. Open Graph correto: `<title>`, `og:title`, `og:description`, `og:image` (avatar).
+- [x] 6. Página 404 customizada para handle inexistente.
+- [x] 7. `npm run build` e `npm run lint` passam; `docker compose up` + `curl /demo` retorna 200 com conteúdo do perfil seed.
 
 ## Referências
 
@@ -34,6 +34,6 @@
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: 5ea6511, 0a9b8a6, 7f329fa (fundação Fase 0 + Fase 1)
-- Evidência final: `curl http://localhost:3002/pt-BR/demo` → 200, título "Usuário Demo"; `curl /pt-BR/inexistente` → 404; `npm run build` ✓; `npm run lint` ✓; `npm run typecheck` ✓; `docker compose up` ✓
-- Docs atualizados: —
+- Commits: 8b931f7
+- Evidência final: `npm run typecheck` ✓; `npm run lint` ✓; `npm run build` ✓; `APP_PORT=3002 docker compose up --build -d` ✓; `curl http://localhost:3002/demo` → 200; `curl http://localhost:3002/pt-BR/demo` → 200; `curl http://localhost:3002/pt-BR/inexistente` → 404; `docker compose exec -T db psql ...` confirmou `demo` + 3 blocos.
+- Docs atualizados: `agents/memory/lessons.md`, `agents/memory/context/frontend.md`, `tickets/TCK-0002-public-profile/log.md`

@@ -35,3 +35,10 @@
 - Causa raiz: artefatos antigos em `.next` deixaram o estado do diretório inconsistente para um novo build standalone.
 - Como evitar: antes do build final do ligcentro, rode `rm -rf .next` quando houver qualquer falha estranha relacionada a manifestos/standalone.
 - Refs: `next.config.ts`, `tickets/TCK-0006-polish-launch/log.md`.
+
+## [L-004] 2026-07-19 — frontend — isolar artefatos do Next em ambiente compartilhado
+- Contexto: build standalone do Next para o TCK-0002 em ambiente local compartilhado.
+- Erro: `npm run build` falhava de forma intermitente com `ENOENT` ao copiar `routes-manifest.json` para o diretório standalone.
+- Causa raiz: múltiplos processos locais disputavam o diretório padrão `.next`, causando corrida entre geração e cópia dos artefatos.
+- Como evitar: usar `distDir` dedicado quando o repositório rodar em ambiente compartilhado e alinhar Docker/TypeScript ao novo caminho de build.
+- Refs: `next.config.ts`, `Dockerfile`, `tsconfig.json`, `tickets/TCK-0002-public-profile/log.md`
