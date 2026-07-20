@@ -27,6 +27,19 @@
 | [security-auditor](security-auditor.md) | RLS, LGPD, segredos, dependências (revisão por ticket) | tech-lead | tech-lead |
 | [docs-writer](docs-writer.md) | Docs do repo, manual do usuário (Playwright screenshots), changelog | qa-validator (pós-done), tech-lead | tech-lead |
 
+### Squad de marketing (`agents/marketing/`) — crescimento, conteúdo e conversão
+
+| Agente | Área exclusiva | Skills |
+|---|---|---|
+| [seo-specialist](marketing/seo-specialist.md) | SEO técnico, keywords LATAM, Core Web Vitals, schema.org, sitemap | [`/seo-audit`](../.claude/skills/seo-audit/SKILL.md) |
+| [digital-marketer](marketing/digital-marketer.md) | Growth (AARRR), funis, e-mail marketing, CRO, campanhas | [`/campaign`](../.claude/skills/campaign/SKILL.md) |
+| [copywriter](marketing/copywriter.md) | Todos os textos: UI microcopy, landing page, e-mails, ads, CTAs | [`/copy`](../.claude/skills/copy/SKILL.md) · [`/content-review`](../.claude/skills/content-review/SKILL.md) |
+| [sales-specialist](marketing/sales-specialist.md) | Funil de upgrade free→Pro, pricing, checkout, retenção de pagantes | — |
+| [content-marketer](marketing/content-marketer.md) | Blog, tutoriais, cases, newsletter — conteúdo médio/longo | — |
+| [social-media-manager](marketing/social-media-manager.md) | Instagram, TikTok, LinkedIn, Twitter/X — estratégia, posts, comunidade | — |
+
+Referências: [README da squad](marketing/README.md) · [Voz da marca](../docs/marketing/brand-voice.md) · [Personas](../docs/marketing/personas.md) · [Mensagens-chave](../docs/marketing/key-messages.md) · [Pilares de conteúdo](../docs/marketing/content-pillars.md) · [Contexto de memória](memory/context/marketing.md)
+
 ### Squad de segurança (`agents/security/`) — auditorias periódicas
 
 | Agente | Área exclusiva | Papel no ciclo |
