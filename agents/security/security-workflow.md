@@ -8,7 +8,7 @@
    - Título: `[sec] <resumo>` · Labels: `security`, `sev:<critical|high|medium|low>`
    - Corpo: vetor, reprodução, impacto, CVSS, recomendação, link do relatório. **Sem PoC explorável em issue pública** (referência ao relatório privado).
 2. **Triagem (devsecops)**: prioriza por CVSS + exposição; converte em ticket `TCK-NNNN` (tipo `security`) se exigir mudança de produto.
-3. **Correção (dev via [dev-loop](../../.claude/skills/dev-loop/SKILL.md))**: branch `security/TCK-NNNN-<slug>`; **PR referencia a issue** (`Fixes #N`).
+3. **Correção (dev via [dev-loop](../../.agents/skills/dev-loop/SKILL.md))**: branch `security/TCK-NNNN-<slug>`; **PR referencia a issue** (`Fixes #N`).
 4. **Revisão**: code-reviewer + devsecops obrigatórios em PR de segurança.
 5. **Reteste (red-team ou researcher)**: reproduz o vetor original; só fecha se não reproduzir mais.
 6. **Blue-team**: confirma que o vetor agora é detectável/logado (se aplicável).

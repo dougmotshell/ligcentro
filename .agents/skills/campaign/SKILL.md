@@ -1,3 +1,8 @@
+---
+name: campaign
+description: Planeja uma campanha de marketing do ligcentro de ponta a ponta — do objetivo ao calendário de execução — com briefings para cada agente envolvido. Use quando o Douglas pedir "/campaign".
+---
+
 # Skill: /campaign
 
 Planeja uma campanha de marketing do ligcentro de ponta a ponta — do objetivo ao calendário de execução — com briefings para cada agente envolvido.

@@ -1,0 +1,9 @@
+# Arquivo gerado por scripts/sync-agent-tools.mjs — não edite à mão. Fonte: .agents/skills/campaign/SKILL.md
+description = "Planeja uma campanha de marketing do ligcentro de ponta a ponta — do objetivo ao calendário de execução — com briefings para cada agente envolvido. Use quando o Douglas pedir \"/campaign\"."
+prompt = """
+Leia o arquivo `.agents/skills/campaign/SKILL.md` deste repositório e siga rigorosamente as instruções dele, resolvendo os links relativos a partir daquele arquivo.
+
+Argumentos do usuário para a skill: {{args}}
+
+Antes de começar, leia também o `AGENTS.md` na raiz do repositório (regras globais do projeto).
+"""

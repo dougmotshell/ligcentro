@@ -2,7 +2,7 @@
 
 > Ordem de construção do ligcentro, em fases. Cada fase entrega algo **utilizável**
 > e verificável. As entregas viram tickets (`/ticket`) e correm pelo
-> [/dev-loop](../../.claude/skills/dev-loop/SKILL.md). Sem datas fixas — o
+> [/dev-loop](../../.agents/skills/dev-loop/SKILL.md). Sem datas fixas — o
 > encadeamento importa mais que o calendário.
 
 ## Fase 0 — Fundação
@@ -52,7 +52,7 @@
 - [ ] Onboarding guiado (primeiro perfil em poucos passos).
 - [ ] Acessibilidade AA nos dois temas; navegação por teclado.
 - [ ] Página de marketing / landing.
-- [ ] Manual do usuário gerado por Playwright ([`/user-manual`](../../.claude/skills/user-manual/SKILL.md)).
+- [ ] Manual do usuário gerado por Playwright ([`/user-manual`](../../.agents/skills/user-manual/SKILL.md)).
 - [ ] Auditoria de segurança (squad `agents/security/`) + revisão de performance.
 - **Pronto quando:** o grátis é um produto completo e defensável (sem branding forçado, com analytics por link).
 

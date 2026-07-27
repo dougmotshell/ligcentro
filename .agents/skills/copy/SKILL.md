@@ -1,3 +1,8 @@
+---
+name: copy
+description: Gera copy para qualquer contexto do ligcentro a partir de um briefing estruturado — da headline da landing page ao microcopy de UI, passando por e-mails, posts e CTAs. Use quando o Douglas pedir "/copy".
+---
+
 # Skill: /copy
 
 Gera copy para qualquer contexto do ligcentro a partir de um briefing estruturado — da headline da landing page ao microcopy de UI, passando por e-mails, posts e CTAs.

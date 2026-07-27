@@ -1,0 +1,9 @@
+# Arquivo gerado por scripts/sync-agent-tools.mjs — não edite à mão. Fonte: .agents/skills/copy/SKILL.md
+description = "Gera copy para qualquer contexto do ligcentro a partir de um briefing estruturado — da headline da landing page ao microcopy de UI, passando por e-mails, posts e CTAs. Use quando o Douglas pedir \"/copy\"."
+prompt = """
+Leia o arquivo `.agents/skills/copy/SKILL.md` deste repositório e siga rigorosamente as instruções dele, resolvendo os links relativos a partir daquele arquivo.
+
+Argumentos do usuário para a skill: {{args}}
+
+Antes de começar, leia também o `AGENTS.md` na raiz do repositório (regras globais do projeto).
+"""

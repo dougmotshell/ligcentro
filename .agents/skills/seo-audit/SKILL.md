@@ -1,3 +1,8 @@
+---
+name: seo-audit
+description: Executa uma auditoria de SEO completa sobre uma URL ou conjunto de páginas do ligcentro, gerando relatório priorizado com issues e recomendações. Use quando o Douglas pedir "/seo-audit".
+---
+
 # Skill: /seo-audit
 
 Executa uma auditoria de SEO completa sobre uma URL ou conjunto de páginas do ligcentro, gerando relatório priorizado com issues e recomendações.

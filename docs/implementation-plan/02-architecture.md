@@ -99,7 +99,7 @@ plataforma fica isolado atrás de adaptadores**.
 - **Testes**: unidade (lógica/UI) + e2e Playwright dos fluxos críticos (cadastro,
   editar perfil, ver perfil público, registrar clique).
 - **Documentação viva**: manual do usuário gerado por Playwright (skill
-  [`/user-manual`](../../.claude/skills/user-manual/SKILL.md)).
+  [`/user-manual`](../../.agents/skills/user-manual/SKILL.md)).
 
 ## Riscos técnicos e mitigação
 

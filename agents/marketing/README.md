@@ -17,10 +17,10 @@
 
 | Skill | O que faz | Quem usa |
 |---|---|---|
-| [`/seo-audit`](../../.claude/skills/seo-audit/SKILL.md) | Auditoria técnica e de conteúdo de SEO | seo-specialist |
-| [`/content-review`](../../.claude/skills/content-review/SKILL.md) | Revisão de copy contra a voz da marca | copywriter, tech-lead |
-| [`/copy`](../../.claude/skills/copy/SKILL.md) | Geração de copy a partir de briefing | copywriter |
-| [`/campaign`](../../.claude/skills/campaign/SKILL.md) | Planejamento de campanha ponta a ponta | digital-marketer |
+| [`/seo-audit`](../../.agents/skills/seo-audit/SKILL.md) | Auditoria técnica e de conteúdo de SEO | seo-specialist |
+| [`/content-review`](../../.agents/skills/content-review/SKILL.md) | Revisão de copy contra a voz da marca | copywriter, tech-lead |
+| [`/copy`](../../.agents/skills/copy/SKILL.md) | Geração de copy a partir de briefing | copywriter |
+| [`/campaign`](../../.agents/skills/campaign/SKILL.md) | Planejamento de campanha ponta a ponta | digital-marketer |
 
 ## Documentos de referência (obrigatório ler antes de trabalhar)
 

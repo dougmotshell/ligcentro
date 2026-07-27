@@ -30,7 +30,8 @@ ligcentro. Mantenedor: **Douglas Matos da Silva**.
 | `docs/implementation-plan/` | Visão, escopo de MVP, arquitetura, roadmap, modelo de dados, analytics, monetização | **Antes de qualquer decisão de produto ou técnica** |
 | `agents/` | Definições canônicas dos agentes de desenvolvimento | Para saber quem faz o quê e como o fluxo funciona |
 | `tickets/` | Unidade de trabalho (fluxo de agentes) | Ao iniciar/retomar uma tarefa de desenvolvimento |
-| `.claude/skills/` | Skills `/ticket`, `/handoff`, `/dev-loop`, `/user-manual` | Para operar o fluxo de desenvolvimento |
+| `.agents/skills/` | Skills canônicas (`/ticket`, `/handoff`, `/dev-loop`, `/campaign`…) no padrão aberto Agent Skills | Para operar o fluxo de desenvolvimento |
+| `scripts/sync-agent-tools.mjs` | Gerador dos wrappers de slash commands/agentes por ferramenta | Após criar/renomear skill ou agente |
 
 > **Ainda não há código** neste repositório — só pesquisa e planos. A primeira fase
 > de construção (Fase 0 do [roadmap](docs/implementation-plan/03-mvp-roadmap.md))
@@ -49,9 +50,25 @@ ligcentro. Mantenedor: **Douglas Matos da Silva**.
 
 ## Sistema de agentes de desenvolvimento (`agents/` + `tickets/` + skills)
 
-- **`agents/`** contém as definições canônicas de cada agente especializado (tech-lead, product-analyst, frontend/backend-developer, code-reviewer, qa-validator, devops-engineer, ui-ux-designer, security-auditor, docs-writer) — markdown com frontmatter, utilizável por qualquer ferramenta de IA. Claude Code: `.claude/agents` → symlink. Outras ferramentas: carregar o arquivo como instructions da sessão.
+- **`agents/`** contém as definições canônicas de cada agente especializado (tech-lead, product-analyst, frontend/backend-developer, code-reviewer, qa-validator, devops-engineer, ui-ux-designer, security-auditor, docs-writer) — markdown com frontmatter, utilizável por qualquer ferramenta de IA. Claude Code: `.claude/agents` → symlink. GitHub Copilot: `@<agente>` via wrappers gerados em `.github/agents/`. Outras ferramentas: carregar o arquivo como instructions da sessão.
 - **Fluxo de trabalho**: todo desenvolvimento passa por tickets (`tickets/TCK-NNNN-*/`), com handoffs e loops de validação definidos em [`agents/handoff-protocol.md`](agents/handoff-protocol.md). **Auditoria é obrigatória**: toda ação de agente vira entrada append-only no `log.md` do ticket; commits usam prefixo `TCK-NNNN:`. Nenhum agente marca o próprio trabalho como validado — só o qa-validator fecha tickets, contra os critérios de aceite.
-- **Skills disponíveis** (`.claude/skills/`): `/ticket` (criar ticket + triagem), `/handoff` (transição formal com log), `/dev-loop` (ciclo completo implementação→review→QA até done), `/user-manual` (regenerar manual via Playwright).
+- **Skills disponíveis** (`.agents/skills/` — fonte canônica): `/ticket` (criar ticket + triagem), `/handoff` (transição formal com log), `/dev-loop` (ciclo completo implementação→review→QA até done), `/user-manual` (regenerar manual via Playwright), `/campaign`, `/copy`, `/content-review`, `/seo-audit` (marketing).
+
+### Portabilidade das skills e slash commands (multi-ferramenta)
+
+As skills seguem o **padrão aberto Agent Skills** (`SKILL.md` com frontmatter `name`/`description`) e vivem em `.agents/skills/<name>/SKILL.md` — **única fonte editável**. Cada ferramenta as consome assim:
+
+| Ferramenta | Como consome | Invocação |
+|---|---|---|
+| Claude Code | `.claude/skills` → symlink para `.agents/skills` | `/<skill>` |
+| OpenAI Codex | Lê `.agents/skills/` nativamente | `$<skill>` ou menu `/skills` |
+| GitHub Copilot (VS Code/CLI) | Lê `.agents/skills/` nativamente + prompt files gerados em `.github/prompts/` | `/<skill>` no chat; agentes via `@<agente>` (`.github/agents/`) |
+| Gemini CLI | Commands gerados em `.gemini/commands/*.toml` | `/<skill>` |
+| Google Antigravity | Workflows gerados em `.agent/workflows/` (e lê `AGENTS.md`) | `/<skill>` |
+| Windsurf | Workflows gerados em `.windsurf/workflows/` | `/<skill>` |
+| Cursor | Commands gerados em `.cursor/commands/` (e lê `AGENTS.md`) | `/<skill>` |
+
+Os diretórios `.github/prompts/`, `.github/agents/`, `.gemini/commands/`, `.agent/workflows/`, `.windsurf/workflows/` e `.cursor/commands/` são **gerados** — nunca editar à mão. Após criar/renomear/remover uma skill ou agente, rode `npm run sync-agent-tools` para regenerá-los.
 - Agentes respeitam **escopo exclusivo** (não mexer na área de outro; handoff) e as regras globais de [`agents/README.md`](agents/README.md). Agente ocupado com um ticket **não enfileira** os novos da sua área: spawna **subagentes** (`<agente>#N`) para assumi-los ou para paralelizar subtarefas — regras e formato de log `SPAWN` na seção "Subagentes" de [`agents/handoff-protocol.md`](agents/handoff-protocol.md).
 - **Memória persistente** (`agents/memory/`): sessões são efêmeras, o repositório lembra — [lessons.md](agents/memory/lessons.md) (lições `L-NNN`, append-only: erro → causa raiz → como evitar) e [context/](agents/memory/context/) (contexto operacional vivo por área). Todo agente **lê antes de trabalhar** e registra lição ao resolver erro generalizável; repetir erro com lição registrada é defeito bloqueante — seção "Memória persistente" do [`agents/handoff-protocol.md`](agents/handoff-protocol.md).
 - **Squad de segurança** (`agents/security/`): auditorias periódicas (devsecops, red-team, blue-team, security-researcher) sobre RLS, LGPD, segredos e dependências.

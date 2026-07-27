@@ -1,3 +1,8 @@
+---
+name: content-review
+description: Revisa qualquer peça de conteúdo (copy de UI, post, artigo, e-mail, ad) contra a voz da marca do ligcentro, devolvendo feedback numerado ou aprovação. Use quando o Douglas pedir "/content-review".
+---
+
 # Skill: /content-review
 
 Revisa qualquer peça de conteúdo (copy de UI, post, artigo, e-mail, ad) contra a voz da marca do ligcentro, devolvendo feedback numerado ou aprovação.

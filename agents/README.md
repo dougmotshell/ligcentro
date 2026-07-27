@@ -31,9 +31,9 @@
 
 | Agente | Área exclusiva | Skills |
 |---|---|---|
-| [seo-specialist](marketing/seo-specialist.md) | SEO técnico, keywords LATAM, Core Web Vitals, schema.org, sitemap | [`/seo-audit`](../.claude/skills/seo-audit/SKILL.md) |
-| [digital-marketer](marketing/digital-marketer.md) | Growth (AARRR), funis, e-mail marketing, CRO, campanhas | [`/campaign`](../.claude/skills/campaign/SKILL.md) |
-| [copywriter](marketing/copywriter.md) | Todos os textos: UI microcopy, landing page, e-mails, ads, CTAs | [`/copy`](../.claude/skills/copy/SKILL.md) · [`/content-review`](../.claude/skills/content-review/SKILL.md) |
+| [seo-specialist](marketing/seo-specialist.md) | SEO técnico, keywords LATAM, Core Web Vitals, schema.org, sitemap | [`/seo-audit`](../.agents/skills/seo-audit/SKILL.md) |
+| [digital-marketer](marketing/digital-marketer.md) | Growth (AARRR), funis, e-mail marketing, CRO, campanhas | [`/campaign`](../.agents/skills/campaign/SKILL.md) |
+| [copywriter](marketing/copywriter.md) | Todos os textos: UI microcopy, landing page, e-mails, ads, CTAs | [`/copy`](../.agents/skills/copy/SKILL.md) · [`/content-review`](../.agents/skills/content-review/SKILL.md) |
 | [sales-specialist](marketing/sales-specialist.md) | Funil de upgrade free→Pro, pricing, checkout, retenção de pagantes | — |
 | [content-marketer](marketing/content-marketer.md) | Blog, tutoriais, cases, newsletter — conteúdo médio/longo | — |
 | [social-media-manager](marketing/social-media-manager.md) | Instagram, TikTok, LinkedIn, Twitter/X — estratégia, posts, comunidade | — |
