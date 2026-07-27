@@ -20,13 +20,13 @@ export async function GET(request: Request, context: { params: Promise<{ provide
   const verifier = base64url(randomBytes(32));
   const state = base64url(randomBytes(24));
   const challenge = base64url(createHash('sha256').update(verifier).digest());
-  const callback = new URL('/api/auth/oauth/callback', url.origin).toString();
+  const callbackUrl = new URL('/api/auth/oauth/callback', url.origin);
+  callbackUrl.searchParams.set('oauth_state', state);
   const authorize = new URL(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/authorize`);
   authorize.searchParams.set('provider', provider);
-  authorize.searchParams.set('redirect_to', callback);
+  authorize.searchParams.set('redirect_to', callbackUrl.toString());
   authorize.searchParams.set('code_challenge', challenge);
   authorize.searchParams.set('code_challenge_method', 'S256');
-  authorize.searchParams.set('state', state);
 
   const response = NextResponse.redirect(authorize);
   const secure = process.env.NODE_ENV === 'production';

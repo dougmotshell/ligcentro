@@ -26,3 +26,8 @@
 - Como validar: build, lint e typecheck; abrir `/pt-BR/login` e `/en-US/login` e confirmar os dois botões e URLs `/api/auth/oauth/google|github`.
 - Critérios: [x] 1, [x] 2, [x] 3, [x] 4 em implementação; [ ] validação real com cada provider.
 - Briefing: não simular sucesso OAuth sem credenciais; registrar que o callback real depende do Supabase/Vercel.
+
+## [6] ACTION — 2026-07-27 — backend-developer
+- Ação: Corrigido o transporte do state OAuth: o state da aplicação agora é anexado à URL de callback (`oauth_state`), sem sobrescrever o state interno do Supabase.
+- Motivo: Em produção, o Supabase gera seu próprio state para o provider; comparar esse valor com o cookie local invalidava o retorno.
+- Resultado: build/lint/typecheck já haviam passado antes da alteração; novo teste de produção depende do próximo deploy.

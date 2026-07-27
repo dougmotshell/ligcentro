@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const state = cookieStore.get('oauth-state')?.value;
   const verifier = cookieStore.get('oauth-code-verifier')?.value;
   const code = url.searchParams.get('code');
-  const returnedState = url.searchParams.get('state');
+  const returnedState = url.searchParams.get('oauth_state');
   if (!code || !state || !verifier || state !== returnedState) {
     return NextResponse.redirect(new URL(`/${locale}/login?error=oauth_state`, url.origin));
   }
