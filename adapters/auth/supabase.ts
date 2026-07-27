@@ -39,6 +39,14 @@ async function toSession(user: SupabaseUser, accessToken: string): Promise<AuthS
   };
 }
 
+export async function exchangeCodeForSession(code: string, verifier: string): Promise<AuthSession> {
+  const body = await request('/token?grant_type=pkce', {
+    method: 'POST',
+    body: JSON.stringify({ auth_code: code, code_verifier: verifier }),
+  });
+  return toSession(body.user as SupabaseUser, String(body.access_token));
+}
+
 export async function getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession | null> {
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   if (!accessToken) return null;

@@ -33,7 +33,7 @@
 ## Fase 2 — Contas e editor (escrita)
 *Objetivo: qualquer um cria a própria página.*
 
-- [ ] Auth: cadastro/login e-mail + OAuth (Google/GitHub); claim de handle.
+- [ ] Auth: cadastro/login e-mail + OAuth (Google/GitHub); claim de handle (UI e callback OAuth implementados; validação real pendente).
 - [ ] RLS em todas as tabelas + teste de acesso cruzado (políticas existem; teste automatizado pendente).
 - [ ] Editor: avatar, título, bio; CRUD de blocos com **reordenação drag-and-drop**.
 - [ ] Revalidação do perfil público ao salvar.

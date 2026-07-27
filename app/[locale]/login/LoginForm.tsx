@@ -91,6 +91,24 @@ export function LoginForm({ locale }: Props) {
         </button>
       </form>
 
+      <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground" aria-hidden="true">
+        <span className="h-px flex-1 bg-border" />
+        <span>{t('login.orContinueWith')}</span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(['google', 'github'] as const).map((provider) => (
+          <a
+            key={provider}
+            href={`/api/auth/oauth/${provider}?locale=${encodeURIComponent(locale)}`}
+            className="rounded-xl border border-border px-4 py-3 text-center text-sm font-medium transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {t(`login.continueWith.${provider}`)}
+          </a>
+        ))}
+      </div>
+
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {t('login.noAccount')}{' '}
         <Link

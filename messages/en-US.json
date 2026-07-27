@@ -66,6 +66,11 @@
       "subtitle": "Access your local dashboard with the mock auth flow.",
       "submit": "Log in",
       "submitting": "Logging in...",
+      "orContinueWith": "or continue with",
+      "continueWith": {
+        "google": "Google",
+        "github": "GitHub"
+      },
       "noAccount": "Don't have an account yet?",
       "signupLink": "Create one"
     },
