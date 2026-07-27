@@ -44,3 +44,8 @@
 - Ação: Atualizadas Next.js, next-intl, eslint-config-next e dependências transitivas; migrado lint para flat config do ESLint; CI passou a auditar apenas dependências de runtime.
 - Motivo: O job seguinte revelou vulnerabilidades de ferramentas de desenvolvimento, enquanto o `npm audit --omit=dev` do runtime ficou limpo.
 - Resultado: build e auditoria de runtime preparados para novo run; corrigido também o erro de lint da página inicial introduzido pelo React Compiler.
+
+## [9] ACTION — 2026-07-27 — devops-engineer
+- Ação: Corrigido o lockfile após o run `30261353978` falhar no `npm ci` por `@swc/helpers@0.5.23` ausente; dependência adicionada explicitamente e lock regenerado.
+- Motivo: O ambiente local aceitava a instalação existente, mas o runner limpo rejeitou o lock inconsistente.
+- Resultado: `npm ci --dry-run`, lint, typecheck e `npm audit --omit=dev --audit-level=high` passaram localmente.
