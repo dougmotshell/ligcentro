@@ -3,17 +3,15 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export default function HomePage() {
   const t = useTranslations('HomePage');
   const router = useRouter();
   const pathname = usePathname();
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'));
-  }, []);
+  const [isDark, setIsDark] = useState(() =>
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  );
 
   const toggleTheme = useCallback(() => {
     const next = !isDark;

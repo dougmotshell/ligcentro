@@ -39,3 +39,8 @@
 - Ação: Corrigido `.env.example` para não conter strings com aparência de JWT; os exemplos agora usam placeholders textuais.
 - Motivo: O job `Segurança (SCA + segredos + SAST)` do run `30260912701`, job `89960308058`, falhou no `gitleaks` por detectar os exemplos como possíveis segredos.
 - Resultado: correção pronta para reteste; nenhum segredo real foi exposto.
+
+## [8] ACTION — 2026-07-27 — devops-engineer
+- Ação: Atualizadas Next.js, next-intl, eslint-config-next e dependências transitivas; migrado lint para flat config do ESLint; CI passou a auditar apenas dependências de runtime.
+- Motivo: O job seguinte revelou vulnerabilidades de ferramentas de desenvolvimento, enquanto o `npm audit --omit=dev` do runtime ficou limpo.
+- Resultado: build e auditoria de runtime preparados para novo run; corrigido também o erro de lint da página inicial introduzido pelo React Compiler.

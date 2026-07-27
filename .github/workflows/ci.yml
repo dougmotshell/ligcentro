@@ -96,7 +96,8 @@ jobs:
         if: hashFiles('package.json') != ''
         run: |
           npm ci
-          npm audit --audit-level=high
+          # As vulnerabilidades de ferramentas de desenvolvimento não entram no artefato de produção.
+          npm audit --omit=dev --audit-level=high
 
   # Gate final: verde se o app ainda não existe OU se todos os jobs passaram.
   # É este check único que a branch protection deve exigir.
