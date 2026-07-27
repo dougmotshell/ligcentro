@@ -66,28 +66,58 @@ Todo agente pode **invocar subagentes** para não virar gargalo. O caso principa
 
 O `SPAWN` não muda status — se o subagente assume um ticket, a transição de dono continua sendo uma entrada `HANDOFF` normal (com `Para: <agente>#N`).
 
+## Modos de execução (qualquer ferramenta de IA)
+
+O fluxo funciona em **qualquer** ferramenta; o que muda é como os papéis são exercidos:
+
+| Modo | Ferramentas | Como funciona |
+|---|---|---|
+| **Subagentes** | Claude Code e outras com suporte a subagentes | Cada papel roda em instância própria; spawns conforme a seção acima |
+| **Solo** | Copilot, Codex, Gemini CLI, Cursor, Antigravity, Windsurf… | A **mesma sessão** exerce os papéis em sequência, um por vez |
+
+**Regras do modo solo:**
+
+1. A identidade logada é sempre o **papel exercido** (`frontend-developer`, `code-reviewer`…), nunca a ferramenta — o log fica idêntico nos dois modos.
+2. Toda troca de papel passa pelo `HANDOFF` normal (com briefing) — o briefing é o que garante o "reset" de contexto entre papéis.
+3. Independência de validação: ao assumir reviewer/QA, o agente relê o diff e os critérios **do zero, como terceiro** — critica sem defender a implementação; a autocrítica honesta substitui a separação de instâncias.
+4. Sem paralelismo: subtarefas e tickets rodam em sequência; nada de `SPAWN` (a entrada só existe no modo subagentes).
+
 ## Memória persistente (lições e contexto)
 
 Sessões de agente são efêmeras; **o repositório é a memória**. Para o mesmo erro nunca ser cometido duas vezes e para todo agente começar com contexto, [`agents/memory/`](memory/README.md) mantém dois artefatos:
 
-- **[`memory/lessons.md`](memory/lessons.md)** — lições aprendidas (`L-NNN`), **append-only**: erro cometido → causa raiz → como evitar. Leitura obrigatória antes de trabalhar; escrita obrigatória ao resolver erro generalizável.
+- **[`memory/lessons.md`](memory/lessons.md)** — lições aprendidas (`L-NNN`), **append-only**, de dois tipos: **erro** (erro cometido → causa raiz → como evitar) e **acerto** (o que funcionou → por que funcionou → como reaproveitar). Leitura obrigatória antes de trabalhar; escrita obrigatória ao resolver erro generalizável ou identificar acerto que vale repetir.
 - **[`memory/context/<área>.md`](memory/context/)** — documento **vivo** por área (process, frontend, backend, devops, qa, security): pegadinhas do ambiente, estado atual, decisões operacionais em vigor. Atualizado (com data) ao final de qualquer ticket que mude esse conhecimento.
 
-**Gatilhos de escrita de lição** (quem errou registra; reviewer/QA cobram):
+**Gatilhos de escrita de lição** (quem viveu registra; reviewer/QA cobram):
 
 1. REJECT resolvido cuja causa raiz pode se repetir — a `ACTION` que resolve o defeito **termina com a linha** `Lição: L-NNN` (ou `Lição: n/a — erro pontual`, justificado).
 2. Escalada por 3 loops — o tech-lead registra a lição do impasse.
 3. CI/build/deploy quebrado por comportamento não óbvio de ferramenta, ambiente ou convenção.
 4. Retrabalho causado por falta de contexto que um doc teria evitado.
+5. **Acerto generalizável** — abordagem, sequência ou ferramenta que economizou tempo real, evitou uma classe de erro ou fez a entrega passar de primeira em review/QA, e que outro agente não descobriria sozinho. Registrar como lição de tipo `acerto` (não registrar rotina que já está nos docs).
 
 **Formato da lição (append em `agents/memory/lessons.md`):**
 
+Lição de **erro**:
+
 ```markdown
-## [L-NNN] AAAA-MM-DD — <área> — <título curto>
+## [L-NNN] AAAA-MM-DD — <área> — <título curto> — erro
 - Contexto: <o que se tentava fazer; ticket TCK-NNNN>
 - Erro: <o que deu errado, sintoma observável>
 - Causa raiz: <o porquê de verdade, não o sintoma>
 - Como evitar: <regra prática e verificável para o próximo agente>
+- Refs: <arquivos, commits, entradas de log>
+```
+
+Lição de **acerto**:
+
+```markdown
+## [L-NNN] AAAA-MM-DD — <área> — <título curto> — acerto
+- Contexto: <o que se tentava fazer; ticket TCK-NNNN>
+- O que funcionou: <a abordagem/decisão, observável no resultado>
+- Por que funcionou: <o mecanismo, não a sorte>
+- Como reaproveitar: <quando e como o próximo agente aplica isso>
 - Refs: <arquivos, commits, entradas de log>
 ```
 
@@ -101,6 +131,11 @@ Sessões de agente são efêmeras; **o repositório é a memória**. Para o mesm
 
 ## Formato do handoff (append em `tickets/TCK-NNNN/log.md`)
 
+Todo handoff carrega um **briefing para o próximo agente** — o pacote mínimo de contexto
+que permite ao novo dono começar produtivo sem reconstruir o raciocínio do anterior.
+**Handoff sem briefing é inválido** (mesma regra do handoff sem evidência): quem recebe
+devolve pedindo o briefing antes de assumir.
+
 ```markdown
 ## [SEQ] HANDOFF — AAAA-MM-DD HH:MM
 - De: <agente> → Para: <agente>
@@ -110,7 +145,16 @@ Sessões de agente são efêmeras; **o repositório é a memória**. Para o mesm
 - Como validar: <comandos/passos para reproduzir e conferir>
 - Pendências e riscos: <o que NÃO foi feito, dívidas assumidas>
 - Critérios de aceite: [x] atendidos / [ ] restantes (copiar checklist do ticket)
+- Briefing para o próximo agente:
+  - Objetivo imediato: <a primeira coisa que o próximo agente deve fazer, em 1 linha>
+  - Contexto essencial: <decisões tomadas e porquês que NÃO estão óbvios nos artefatos>
+  - Onde olhar: <arquivos/docs/entradas de log, na ordem de leitura recomendada>
+  - Memória aplicável: <lições L-NNN relevantes + contexto de área a ler (ou "nenhuma")>
+  - Armadilhas: <o que parece certo mas não é; o que já está bom e não deve ser refeito>
 ```
+
+O briefing é **objetivo, não exaustivo** (3–8 linhas no total): aponta para os artefatos
+em vez de reproduzi-los — detalhe fica no log e nos arquivos citados.
 
 ## Formato de ação (trabalho sem troca de dono)
 

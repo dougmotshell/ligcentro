@@ -1,12 +1,12 @@
 # Memória persistente dos agentes
 
-> Sessões de agente são efêmeras; **o repositório é a memória**. Esta pasta guarda o que sobrevive entre sessões: erros já cometidos (para nunca repeti-los) e o conhecimento operacional que torna qualquer agente efetivo desde o primeiro minuto. Regras completas na seção ["Memória persistente"](../handoff-protocol.md#memória-persistente-lições-e-contexto) do protocolo.
+> Sessões de agente são efêmeras; **o repositório é a memória**. Esta pasta guarda o que sobrevive entre sessões: erros já cometidos (para nunca repeti-los), acertos que valem repetir e o conhecimento operacional que torna qualquer agente efetivo desde o primeiro minuto. Regras completas na seção ["Memória persistente"](../handoff-protocol.md#memória-persistente-lições-e-contexto) do protocolo.
 
 ## O que tem aqui
 
 | Arquivo | O que é | Disciplina |
 |---|---|---|
-| [`lessons.md`](lessons.md) | Lições aprendidas (`L-NNN`): erro → causa raiz → como evitar | **Append-only** (como o log de ticket); lição superada = nova lição referenciando a antiga |
+| [`lessons.md`](lessons.md) | Lições aprendidas (`L-NNN`), de dois tipos — **erro**: erro → causa raiz → como evitar; **acerto**: o que funcionou → por quê → como reaproveitar | **Append-only** (como o log de ticket); lição superada = nova lição referenciando a antiga |
 | [`context/<área>.md`](context/) | Contexto operacional **vivo** por área: pegadinhas, estado atual, decisões em vigor | Editável, mas toda entrada leva data; sem PII de visitante (LGPD) |
 
 ## Quem lê o quê (mapa agente → contexto)
@@ -23,9 +23,10 @@
 ## Ciclo de uso (resumo)
 
 1. **Antes de trabalhar**: ler o contexto da sua área + varrer `lessons.md` pela área/palavras-chave do ticket. Lição que mudou sua abordagem → citar no log (`aplicada L-NNN`).
-2. **Errou algo generalizável** (REJECT resolvido, CI quebrado por pegadinha, retrabalho por falta de contexto): registrar lição `L-NNN` — a ACTION que resolve o defeito termina com `Lição: L-NNN` ou `Lição: n/a — erro pontual` (justificado).
-3. **Terminou um ticket que mudou o conhecimento da área** (nova ferramenta, novo comportamento, decisão operacional): atualizar o `context/<área>.md`, com data.
-4. **Review/QA cobram**: repetir um erro que já tem lição registrada é defeito **bloqueante**; resolver REJECT sem a linha `Lição:` também.
+2. **Errou algo generalizável** (REJECT resolvido, CI quebrado por pegadinha, retrabalho por falta de contexto): registrar lição `L-NNN` de tipo **erro** — a ACTION que resolve o defeito termina com `Lição: L-NNN` ou `Lição: n/a — erro pontual` (justificado).
+3. **Acertou algo generalizável** (abordagem que economizou tempo real, evitou uma classe de erro ou passou de primeira em review/QA — e que outro agente não descobriria sozinho): registrar lição `L-NNN` de tipo **acerto** no fechamento do ticket. Rotina que já está nos docs não é lição.
+4. **Terminou um ticket que mudou o conhecimento da área** (nova ferramenta, novo comportamento, decisão operacional): atualizar o `context/<área>.md`, com data.
+5. **Review/QA cobram**: repetir um erro que já tem lição registrada é defeito **bloqueante**; resolver REJECT sem a linha `Lição:` também.
 
 ## O que NÃO entra aqui
 

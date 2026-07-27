@@ -1,18 +1,24 @@
 # Lições aprendidas (append-only)
 
-> Registro permanente de erros cometidos e como evitá-los — a memória que impede o mesmo erro duas vezes. Formato e gatilhos na seção ["Memória persistente"](../handoff-protocol.md#memória-persistente-lições-e-contexto) do protocolo. **Append-only**: lição superada = nova lição referenciando a antiga, nunca edição.
+> Registro permanente do que os agentes aprenderam — **erros** (para o mesmo erro nunca acontecer duas vezes) e **acertos** (para o que funcionou ser reaproveitado, não redescoberto). Formato e gatilhos na seção ["Memória persistente"](../handoff-protocol.md#memória-persistente-lições-e-contexto) do protocolo. **Append-only**: lição superada = nova lição referenciando a antiga, nunca edição.
 
-> **Ainda não há lições registradas.** O ligcentro está no início (pré-Fase 0). A
-> primeira lição nasce do primeiro REJECT com causa raiz generalizável, ou de um
-> CI/build/deploy quebrado por comportamento não óbvio. Formato:
-
-<!--
-## [L-001] AAAA-MM-DD — <área> — <título curto>
+<!-- Formato — lição de ERRO:
+## [L-NNN] AAAA-MM-DD — <área> — <título curto> — erro
 - Contexto: <o que se tentava fazer; ticket TCK-NNNN>
 - Erro: <o que deu errado, sintoma observável>
 - Causa raiz: <o porquê de verdade, não o sintoma>
 - Como evitar: <regra prática e verificável para o próximo agente>
 - Refs: <arquivos, commits, entradas de log>
+
+Formato — lição de ACERTO:
+## [L-NNN] AAAA-MM-DD — <área> — <título curto> — acerto
+- Contexto: <o que se tentava fazer; ticket TCK-NNNN>
+- O que funcionou: <a abordagem/decisão, observável no resultado>
+- Por que funcionou: <o mecanismo, não a sorte>
+- Como reaproveitar: <quando e como o próximo agente aplica isso>
+- Refs: <arquivos, commits, entradas de log>
+
+Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 -->
 
 ## [L-001] 2026-07-19 — qa — Typecheck depende de .next/types gerado

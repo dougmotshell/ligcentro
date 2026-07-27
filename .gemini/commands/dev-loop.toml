@@ -1,5 +1,5 @@
 # Arquivo gerado por scripts/sync-agent-tools.mjs — não edite à mão. Fonte: .agents/skills/dev-loop/SKILL.md
-description = "Executa o ciclo completo de desenvolvimento de um ticket — triagem → implementação → code review → validação de QA — com handoffs e logs a cada etapa, em loop até todos os critérios de aceite passarem (ou escalar ao Douglas). Use com \"/dev-loop TCK-NNNN\"."
+description = "Executa o ciclo completo de desenvolvimento de um ticket — triagem → implementação → code review → validação de QA — com handoffs, briefings e logs a cada etapa, em loop até todos os critérios de aceite passarem (ou escalar ao Douglas). Funciona em qualquer ferramenta de IA (com ou sem subagentes) e segue regras de economia de recursos. Use com \"/dev-loop TCK-NNNN\"."
 prompt = """
 Leia o arquivo `.agents/skills/dev-loop/SKILL.md` deste repositório e siga rigorosamente as instruções dele, resolvendo os links relativos a partir daquele arquivo.
 
