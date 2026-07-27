@@ -34,3 +34,8 @@
 - Ação: Executados `npm run build`, `npm run lint`, `npm run typecheck`, `npm run test:unit` e `npm run test:e2e`.
 - Resultado: build/lint/typecheck passaram; testes unitários e e2e encerraram com sucesso usando `--passWithNoTests`, sem arquivos de teste encontrados.
 - Veredito: implementação local aprovada; integração Supabase real permanece pendente de validação com credenciais do ambiente.
+
+## [7] ACTION — 2026-07-27 — devops-engineer
+- Ação: Corrigido `.env.example` para não conter strings com aparência de JWT; os exemplos agora usam placeholders textuais.
+- Motivo: O job `Segurança (SCA + segredos + SAST)` do run `30260912701`, job `89960308058`, falhou no `gitleaks` por detectar os exemplos como possíveis segredos.
+- Resultado: correção pronta para reteste; nenhum segredo real foi exposto.
