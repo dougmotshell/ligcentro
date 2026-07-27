@@ -50,6 +50,11 @@
 - Motivo: O ambiente local aceitava a instalação existente, mas o runner limpo rejeitou o lock inconsistente.
 - Resultado: `npm ci --dry-run`, lint, typecheck e `npm audit --omit=dev --audit-level=high` passaram localmente.
 
+## [11] ACTION — 2026-07-27 — devops-engineer
+- Ação: Adicionado `vercel.json` com framework Next.js, comando de build explícito e `outputDirectory: .next-app`.
+- Motivo: O deploy `4zSEmSHpGLp4v2FPzgtAZE4LMQBb` compilou corretamente, mas falhou após o build procurando a pasta inexistente `dist`.
+- Resultado: correção publicada para novo deploy; a configuração da Vercel deve deixar de procurar `dist`.
+
 ## [10] ACTION — 2026-07-27 — devops-engineer
 - Ação: Suspenso provisoriamente o job E2E no CI e ajustado o gate `CI aprovado` para aceitar `skipped` nesse job.
 - Motivo: O conjunto E2E ainda não possui testes reais; o pipeline não deve bloquear as validações existentes por uma suíte vazia.

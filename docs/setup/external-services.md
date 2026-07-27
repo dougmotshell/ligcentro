@@ -158,6 +158,10 @@ Dashboard da Vercel → projeto → **Settings → Environment Variables**
 
 Adicionar todas as variáveis da seção 5 abaixo com os valores reais.
 
+O projeto usa `vercel.json` para informar que o Output Directory do Next é
+`.next-app`. Se o campo **Output Directory** estiver preenchido manualmente nas
+configurações da Vercel, mantenha-o como `.next-app` (não use `dist`).
+
 - `DATABASE_URL`: string de conexão do Supabase Postgres
   - Disponível em: **Supabase → Settings → Database → Connection string → URI**
   - Usar a connection string com **pooler** (Transaction mode) para serverless: `postgresql://postgres.[ref]:[password]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres`
