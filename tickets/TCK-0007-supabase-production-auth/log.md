@@ -49,3 +49,8 @@
 - Ação: Corrigido o lockfile após o run `30261353978` falhar no `npm ci` por `@swc/helpers@0.5.23` ausente; dependência adicionada explicitamente e lock regenerado.
 - Motivo: O ambiente local aceitava a instalação existente, mas o runner limpo rejeitou o lock inconsistente.
 - Resultado: `npm ci --dry-run`, lint, typecheck e `npm audit --omit=dev --audit-level=high` passaram localmente.
+
+## [10] ACTION — 2026-07-27 — devops-engineer
+- Ação: Suspenso provisoriamente o job E2E no CI e ajustado o gate `CI aprovado` para aceitar `skipped` nesse job.
+- Motivo: O conjunto E2E ainda não possui testes reais; o pipeline não deve bloquear as validações existentes por uma suíte vazia.
+- Resultado: lint YAML por inspeção; demais jobs permanecem obrigatórios. Reativar removendo `if: ${{ false }}` quando os testes E2E forem implementados.
