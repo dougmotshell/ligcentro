@@ -12,6 +12,7 @@ export async function POST() {
     path: '/',
     maxAge: 0,
   });
+  response.cookies.set({ name: 'sb-access-token', value: '', httpOnly: true, path: '/', maxAge: 0 });
 
   return response;
 }

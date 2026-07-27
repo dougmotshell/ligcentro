@@ -21,7 +21,8 @@ export default function middleware(request: NextRequest) {
   const isLocalizedDashboard =
     routing.locales.includes(maybeLocale as (typeof routing.locales)[number]) && segments[1] === 'dashboard';
 
-  if (isLocalizedDashboard && !request.cookies.get('mock-auth')?.value) {
+  const hasSession = request.cookies.get('mock-auth')?.value || request.cookies.get('sb-access-token')?.value;
+  if (isLocalizedDashboard && !hasSession) {
     const loginUrl = new URL(`/${maybeLocale}/login`, request.url);
     loginUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);

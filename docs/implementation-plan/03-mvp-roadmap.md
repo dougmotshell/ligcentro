@@ -1,5 +1,9 @@
 # 03 — Roadmap do MVP
 
+> **Estado em 2026-07-27:** Fases 0–4 têm implementação local disponível.
+> TCK-0007 está concluindo a integração do Supabase Auth real; os itens ainda
+> pendentes exigem evidência de produção, auditoria ou configuração externa.
+
 > Ordem de construção do ligcentro, em fases. Cada fase entrega algo **utilizável**
 > e verificável. As entregas viram tickets (`/ticket`) e correm pelo
 > [/dev-loop](../../.agents/skills/dev-loop/SKILL.md). Sem datas fixas — o
@@ -8,29 +12,29 @@
 ## Fase 0 — Fundação
 *Objetivo: o esqueleto sobe, o time de agentes consegue trabalhar.*
 
-- [ ] Bootstrap Next.js + TypeScript + Tailwind; convenções de lint/format.
-- [ ] Projeto Supabase (dev) + conexão; primeira migração vazia versionada.
-- [ ] CI (lint + typecheck + testes) e deploy de preview na Vercel.
-- [ ] `docker compose` local (Postgres + app) para desenvolvimento e QA.
-- [ ] Design tokens + temas claro/escuro; i18n pt-BR/en-US ligado.
+- [x] Bootstrap Next.js + TypeScript + Tailwind; convenções de lint/format.
+- [x] Projeto Supabase (dev) + conexão; primeira migração vazia versionada.
+- [x] CI (lint + typecheck + testes) e deploy de preview na Vercel.
+- [x] `docker compose` local (Postgres + app) para desenvolvimento e QA.
+- [x] Design tokens + temas claro/escuro; i18n pt-BR/en-US ligado.
 - **Pronto quando:** app "hello world" builda, sobe local e na Vercel, CI verde.
 
 ## Fase 1 — Perfil público (leitura)
 *Objetivo: uma página link-in-bio existe e é rápida — mesmo sem editor ainda.*
 
-- [ ] Modelo de dados: `profiles` + `blocks` (ver [doc 04](./04-data-model.md)).
-- [ ] Página pública `/[handle]` com SSG + revalidação, mobile-first.
-- [ ] Renderização de blocos: link simples, ícone social, botão de contato.
-- [ ] Catálogo de botões de marca (ícone/cor oficiais, inspirado no LittleLink).
-- [ ] Open Graph + `<title>`/meta + QR code da página.
-- [ ] Perfil de exemplo via seed (para QA/manual antes do editor existir).
+- [x] Modelo de dados: `profiles` + `blocks` (ver [doc 04](./04-data-model.md)).
+- [x] Página pública `/[handle]` com SSG + revalidação, mobile-first.
+- [x] Renderização de blocos: link simples, ícone social, botão de contato.
+- [x] Catálogo de botões de marca (ícone/cor oficiais, inspirado no LittleLink).
+- [x] Open Graph + `<title>`/meta + QR code da página.
+- [x] Perfil de exemplo via seed (para QA/manual antes do editor existir).
 - **Pronto quando:** um perfil semeado abre em < 1,2 s (LCP mobile p75) e compartilha bem.
 
 ## Fase 2 — Contas e editor (escrita)
 *Objetivo: qualquer um cria a própria página.*
 
 - [ ] Auth: cadastro/login e-mail + OAuth (Google/GitHub); claim de handle.
-- [ ] RLS em todas as tabelas + teste de acesso cruzado.
+- [ ] RLS em todas as tabelas + teste de acesso cruzado (políticas existem; teste automatizado pendente).
 - [ ] Editor: avatar, título, bio; CRUD de blocos com **reordenação drag-and-drop**.
 - [ ] Revalidação do perfil público ao salvar.
 - [ ] Temas prontos + customização básica (cor de fundo, fonte, formato de botão).

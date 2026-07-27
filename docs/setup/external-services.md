@@ -32,9 +32,13 @@ No dashboard do projeto: **Settings → API**
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Project URL | URL pública do projeto |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` `public` key | Chave pública (usada no cliente) |
-| `SUPABASE_SERVICE_ROLE_KEY` | `service_role` key | Chave secreta (somente server-side) |
+| `SUPABASE_SERVICE_ROLE_KEY` | `service_role` key | Chave secreta (somente server-side; necessária para operações administrativas server-side) |
 
 > ⚠️ **A `service_role` key nunca vai para o cliente nem para o commit.** Ela bypassa o RLS — use só em Route Handlers server-side.
+
+O valor esperado é a chave longa exibida em **Project Settings → API → Secret
+keys/service_role**. Não é a senha do banco, a URL do projeto nem a chave
+`anon`. Em Vercel, cadastre-a como variável sem o prefixo `NEXT_PUBLIC_`.
 
 ### 1.3 Rodar as migrações
 

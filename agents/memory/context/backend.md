@@ -10,6 +10,7 @@
 ## Estado atual e decisões em vigor
 
 - 2026-07-19 — Stack alvo (ainda não instalada): **Supabase — Postgres + Auth + Storage**, com **RLS em 100% das tabelas** (toda migração acompanha teste de acesso cruzado com dois usuários fake). API via Route Handlers tipados do Next. Analytics **agregado por dia, sem PII de visitante** (LGPD). Banco único (Postgres) no MVP — sem persistência poliglota. Ver [`02-architecture.md`](../../../docs/implementation-plan/02-architecture.md) e [`04-data-model.md`](../../../docs/implementation-plan/04-data-model.md).
+- 2026-07-27 — TCK-0007 implementou o adaptador Supabase Auth via REST e o cookie httpOnly `sb-access-token`; o mock continua selecionado quando `NEXT_PUBLIC_SUPABASE_URL` não existe. A validação contra Supabase real ainda depende das variáveis do ambiente de deploy.
 
 ## Lições da área
 

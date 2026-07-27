@@ -13,6 +13,7 @@ export interface AuthSession {
   email: string;
   handle: string;
   profileId?: string;
+  accessToken?: string;
 }
 
 export interface AuthCredentials {

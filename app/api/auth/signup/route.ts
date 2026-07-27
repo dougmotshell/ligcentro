@@ -28,7 +28,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'handle_taken' }, { status: 409 });
   }
 
-  const userId = randomUUID();
+  const useSupabase = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const userId = useSupabase ? null : randomUUID();
   const profileId = randomUUID();
   const displayName = handle
     .split(/[-_]/g)
@@ -36,11 +37,19 @@ export async function POST(request: Request) {
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(' ');
 
+  let session;
+  try {
+    session = await signUp({ email, password, handle, userId: userId ?? undefined, profileId });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'request_failed' }, { status: 400 });
+  }
+
+  const resolvedUserId = session.id;
   await db`
     INSERT INTO profiles (id, user_id, handle, display_name, bio, avatar_url, theme, status)
     VALUES (
       ${profileId}::uuid,
-      ${userId}::uuid,
+      ${resolvedUserId}::uuid,
       ${handle},
       ${displayName || handle},
       ${null},
@@ -50,18 +59,10 @@ export async function POST(request: Request) {
     )
   `;
 
-  const session = await signUp({
-    email,
-    password,
-    handle,
-    userId,
-    profileId,
-  });
-
   const response = NextResponse.json({ user: session }, { status: 201 });
   response.cookies.set({
-    name: 'mock-auth',
-    value: getMockSessionCookieValue(session),
+    name: useSupabase ? 'sb-access-token' : 'mock-auth',
+    value: useSupabase ? session.accessToken ?? '' : getMockSessionCookieValue(session),
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
