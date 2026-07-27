@@ -165,6 +165,7 @@ configurações da Vercel, mantenha-o como `.next-app` (não use `dist`).
 - `DATABASE_URL`: string de conexão do Supabase Postgres
   - Disponível em: **Supabase → Settings → Database → Connection string → URI**
   - Usar a connection string com **pooler** (Transaction mode) para serverless: `postgresql://postgres.[ref]:[password]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres`
+  - Defina `DATABASE_SSL=true` na Vercel para garantir TLS na conexão server-side.
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`: ver seção 1.2
 
 ### 4.2 Deploy de produção

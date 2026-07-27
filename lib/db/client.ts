@@ -9,7 +9,7 @@ function shouldUseSsl(databaseUrl: string): boolean {
     return true;
   }
 
-  return /supabase\.(co|in)/.test(databaseUrl);
+  return /supabase\.(com|co|in)/.test(databaseUrl);
 }
 
 export function getDb(): Sql {

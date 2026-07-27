@@ -31,3 +31,8 @@
 - Ação: Corrigido o transporte do state OAuth: o state da aplicação agora é anexado à URL de callback (`oauth_state`), sem sobrescrever o state interno do Supabase.
 - Motivo: Em produção, o Supabase gera seu próprio state para o provider; comparar esse valor com o cookie local invalidava o retorno.
 - Resultado: build/lint/typecheck já haviam passado antes da alteração; novo teste de produção depende do próximo deploy.
+
+## [7] ACTION — 2026-07-27 — backend-developer
+- Ação: Corrigida a detecção automática de SSL para incluir hosts `supabase.com`, além de documentar `DATABASE_SSL=true` para produção.
+- Motivo: O callback OAuth consulta/cria o perfil no Postgres; poolers Supabase usam `supabase.com` e a regra anterior podia conectar sem TLS, resultando em `oauth_failed` na Vercel.
+- Resultado: correção pronta para novo deploy; build/lint/typecheck devem ser executados no CI.
