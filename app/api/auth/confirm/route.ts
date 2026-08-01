@@ -1,12 +1,18 @@
 import { NextResponse } from 'next/server';
 import { isSupabaseAuthConfigured } from '@/adapters/auth';
-import { EMAIL_VERIFY_TYPES, verifyEmailToken, type EmailVerifyType } from '@/adapters/auth/supabase';
+import {
+  EMAIL_VERIFY_TYPES,
+  verifyEmailToken,
+  type EmailVerifyType,
+} from '@/adapters/auth/supabase';
 import { applySessionCookies } from '@/lib/auth/session';
 import { ensureDraftProfile } from '@/lib/db/provisioning';
 import { routing } from '@/i18n/routing';
 
 function resolveLocale(value: string | null): string {
-  return routing.locales.includes(value as (typeof routing.locales)[number]) ? (value as string) : routing.defaultLocale;
+  return routing.locales.includes(value as (typeof routing.locales)[number])
+    ? (value as string)
+    : routing.defaultLocale;
 }
 
 function isVerifyType(value: string | null): value is EmailVerifyType {

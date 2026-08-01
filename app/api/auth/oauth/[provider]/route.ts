@@ -11,7 +11,8 @@ function base64url(value: Buffer): string {
 
 export async function GET(request: Request, context: { params: Promise<{ provider: string }> }) {
   const { provider } = await context.params;
-  if (!PROVIDERS.has(provider)) return NextResponse.json({ error: 'provider_not_supported' }, { status: 404 });
+  if (!PROVIDERS.has(provider))
+    return NextResponse.json({ error: 'provider_not_supported' }, { status: 404 });
 
   const url = new URL(request.url);
   const supabase = resolveSupabaseAuthConfig();
@@ -30,14 +31,30 @@ export async function GET(request: Request, context: { params: Promise<{ provide
 
   const response = NextResponse.redirect(authorize);
   const secure = process.env.NODE_ENV === 'production';
-  response.cookies.set('oauth-code-verifier', verifier, { httpOnly: true, sameSite: 'lax', secure, path: '/', maxAge: ONE_HOUR });
-  response.cookies.set('oauth-state', state, { httpOnly: true, sameSite: 'lax', secure, path: '/', maxAge: ONE_HOUR });
-  response.cookies.set('oauth-locale', url.searchParams.get('locale') === 'en-US' ? 'en-US' : 'pt-BR', {
+  response.cookies.set('oauth-code-verifier', verifier, {
     httpOnly: true,
     sameSite: 'lax',
     secure,
     path: '/',
     maxAge: ONE_HOUR,
   });
+  response.cookies.set('oauth-state', state, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure,
+    path: '/',
+    maxAge: ONE_HOUR,
+  });
+  response.cookies.set(
+    'oauth-locale',
+    url.searchParams.get('locale') === 'en-US' ? 'en-US' : 'pt-BR',
+    {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure,
+      path: '/',
+      maxAge: ONE_HOUR,
+    }
+  );
   return response;
 }

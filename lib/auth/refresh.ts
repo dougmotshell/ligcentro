@@ -31,7 +31,9 @@ function resolveExpiresAt(body: Record<string, unknown>): number | null {
  * Troca o refresh token por um par novo. Devolve `null` em qualquer falha —
  * quem chama decide entre seguir sem sessão ou mandar para o login.
  */
-export async function requestRefreshedTokens(refreshToken: string): Promise<RefreshedTokens | null> {
+export async function requestRefreshedTokens(
+  refreshToken: string
+): Promise<RefreshedTokens | null> {
   const config = resolveSupabaseAuthConfig();
 
   if (!config || !refreshToken) {

@@ -1,4 +1,4 @@
-import { getDb } from './client';
+import { withPublicSession } from './client';
 import type { Block, ProfileWithBlocks } from './types';
 import { normalizeTheme } from '@/lib/theme/presets';
 
@@ -80,8 +80,8 @@ const demoProfile: ProfileWithBlocks = {
 };
 
 export async function getProfileByHandle(handle: string): Promise<ProfileWithBlocks | null> {
-  const db = getDb();
-  const profiles = (await db`
+  return withPublicSession(async (tx) => {
+    const profiles = (await tx`
     SELECT
       p.*,
       COALESCE(
@@ -101,27 +101,29 @@ export async function getProfileByHandle(handle: string): Promise<ProfileWithBlo
     LIMIT 1
   `) as unknown as ProfileWithBlocks[];
 
-  if (!profiles[0]) {
-    return null;
-  }
+    if (!profiles[0]) {
+      return null;
+    }
 
-  return {
-    ...profiles[0],
-    theme: normalizeTheme(profiles[0].theme),
-    blocks: (profiles[0].blocks ?? []).map(mapBlock),
-  };
+    return {
+      ...profiles[0],
+      theme: normalizeTheme(profiles[0].theme),
+      blocks: (profiles[0].blocks ?? []).map(mapBlock),
+    };
+  });
 }
 
 export async function getPublishedHandles(): Promise<string[]> {
-  const db = getDb();
-  const rows = (await db`
-    SELECT handle
-    FROM profiles
-    WHERE status = 'published'
-    ORDER BY handle
-  `) as unknown as Array<{ handle: string }>;
+  return withPublicSession(async (tx) => {
+    const rows = (await tx`
+      SELECT handle
+      FROM profiles
+      WHERE status = 'published'
+      ORDER BY handle
+    `) as unknown as Array<{ handle: string }>;
 
-  return rows.map((row) => row.handle);
+    return rows.map((row) => row.handle);
+  });
 }
 
 export function getFallbackProfileByHandle(handle: string): ProfileWithBlocks | null {

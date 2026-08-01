@@ -21,3 +21,8 @@
   - Onde olhar: `ticket.md` (Referências → Arquivos-alvo), depois os arquivos citados.
   - Memória aplicável: L-001 (build antes do typecheck), L-002 (SSL só em banco gerenciado), L-003 (limpar `.next-app` em falha de manifesto), L-004 (`distDir` dedicado).
   - Armadilhas: não importar SDK `@supabase/*` fora de `adapters/`; string de UI hardcoded é defeito; nada de segredo em commit.
+
+## [3] ACTION — 2026-08-01 12:05 — qa-validator
+- Ação: Dois defeitos anexados ao escopo deste ticket, encontrados ao validar o TCK-0011: `/[locale]/dashboard/analytics` responde 500 por `item.day.slice is not a function` (coluna `date` chega como objeto `Date` do driver `postgres`, e o código a trata como string) e por `INVALID_MESSAGE: chart.barAriaLabel` no namespace `AnalyticsPage`.
+- Motivo: São da área de analytics (originados no TCK-0005, que está `done` e não reabre) e o painel é critério de pronto da Fase 3. Verificado no commit `34003ca`, anterior ao TCK-0011: já respondia 500 — não é regressão.
+- Resultado: critérios do ticket renumerados; passa a existir o critério 7 para o painel abrir.

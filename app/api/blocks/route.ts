@@ -22,7 +22,7 @@ export async function GET() {
     return NextResponse.json({ error: 'profile_not_found' }, { status: 404 });
   }
 
-  const blocks = await listDashboardBlocks(profile.id);
+  const blocks = await listDashboardBlocks(session.id, profile.id);
   return NextResponse.json({ blocks });
 }
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as BlockPayloadInput;
     const payload = normalizeBlockInput(body);
-    const block = await createDashboardBlock(profile.id, payload);
+    const block = await createDashboardBlock(session.id, profile.id, payload);
     revalidateProfilePaths(profile.handle);
     return NextResponse.json({ block }, { status: 201 });
   } catch (error) {

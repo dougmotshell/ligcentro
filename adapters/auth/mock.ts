@@ -1,5 +1,6 @@
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { MOCK_AUTH_COOKIE } from '@/lib/auth/cookies';
+import { isUuid } from '@/lib/uuid';
 
 export { MOCK_AUTH_COOKIE };
 
@@ -47,7 +48,10 @@ function decodeSession(value: string): AuthSession | null {
   try {
     const parsed = JSON.parse(Buffer.from(value, 'base64url').toString('utf8')) as AuthSession;
 
-    if (!parsed.id || !parsed.email || !parsed.handle) {
+    // O cookie mock não é assinado (é ferramenta de desenvolvimento): qualquer
+    // campo pode vir do usuário. Um id que não é uuid faria a política RLS
+    // estourar na conversão, então aqui isso já não é sessão.
+    if (!isUuid(parsed.id) || !parsed.email || !parsed.handle) {
       return null;
     }
 
@@ -70,7 +74,9 @@ export function getMockSessionCookieValue(session: AuthSession = MOCK_USER): str
   return encodeSession(session);
 }
 
-export async function getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession | null> {
+export async function getSession(
+  cookieStore: Pick<ReadonlyRequestCookies, 'get'>
+): Promise<AuthSession | null> {
   const cookie = cookieStore.get(MOCK_AUTH_COOKIE);
 
   if (!cookie?.value) {
@@ -84,7 +90,9 @@ export async function getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'
   return decodeSession(cookie.value);
 }
 
-export async function requireAuth(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession> {
+export async function requireAuth(
+  cookieStore: Pick<ReadonlyRequestCookies, 'get'>
+): Promise<AuthSession> {
   const session = await getSession(cookieStore);
 
   if (!session) {

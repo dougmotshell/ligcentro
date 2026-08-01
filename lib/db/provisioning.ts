@@ -11,7 +11,9 @@ import type { AuthSession } from '@/adapters/auth';
  * dashboard não têm o que editar, e o usuário fica preso numa tela que só sabe
  * criar conta nova.
  */
-export async function ensureDraftProfile(session: AuthSession): Promise<{ id: string; handle: string }> {
+export async function ensureDraftProfile(
+  session: AuthSession
+): Promise<{ id: string; handle: string }> {
   const db = getDb();
 
   const existing = (await db`

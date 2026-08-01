@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/db/client';
+import { getDb, withUserSession } from '@/lib/db/client';
 import type { Block, ProfileWithBlocks } from '@/lib/db/types';
 import { getDashboardProfile, listDashboardBlocks } from '@/lib/db/dashboard';
 import type { AuthSession } from '@/adapters/auth';
@@ -7,7 +7,15 @@ function parseJsonBody<T>(value: T): T {
   return value;
 }
 
-export async function recordProfileView(profileId: string, country: string | null, referrerHost: string | null) {
+// A ingestão (visita/clique) segue na role de serviço: é chamada por visitante
+// anônimo e o upsert precisa de UPDATE nas tabelas agregadas. O endurecimento
+// dessa borda — validação de vínculo, limite de taxa e função SECURITY DEFINER
+// para o incremento — é o TCK-0012.
+export async function recordProfileView(
+  profileId: string,
+  country: string | null,
+  referrerHost: string | null
+) {
   const db = getDb();
   await db`
     INSERT INTO page_views (profile_id, day, country, referrer_host, count)
@@ -27,9 +35,9 @@ export async function recordBlockClick(blockId: string, profileId: string) {
   `;
 }
 
-export async function getAnalyticsOverview(profileId: string) {
-  const db = getDb();
-  const totals = (await db`
+export async function getAnalyticsOverview(userId: string, profileId: string) {
+  return withUserSession(userId, async (tx) => {
+    const totals = (await tx`
     WITH views AS (
       SELECT COALESCE(SUM(count), 0) AS total_views
       FROM page_views
@@ -45,7 +53,7 @@ export async function getAnalyticsOverview(profileId: string) {
     FROM views, clicks
   `) as unknown as Array<{ total_views: number; total_clicks: number }>;
 
-  const series = (await db`
+    const series = (await tx`
     WITH days AS (
       SELECT generate_series(CURRENT_DATE - INTERVAL '29 days', CURRENT_DATE, INTERVAL '1 day')::date AS day
     ), view_series AS (
@@ -71,7 +79,7 @@ export async function getAnalyticsOverview(profileId: string) {
     ORDER BY days.day ASC
   `) as unknown as Array<{ day: string; views: number; clicks: number }>;
 
-  const topBlocks = (await db`
+    const topBlocks = (await tx`
     SELECT
       b.id,
       b.label,
@@ -86,16 +94,17 @@ export async function getAnalyticsOverview(profileId: string) {
     LIMIT 5
   `) as unknown as Array<{ id: string; label: string | null; type: string; clicks: number }>;
 
-  const totalViews = totals[0]?.total_views ?? 0;
-  const totalClicks = totals[0]?.total_clicks ?? 0;
+    const totalViews = totals[0]?.total_views ?? 0;
+    const totalClicks = totals[0]?.total_clicks ?? 0;
 
-  return {
-    totalViews,
-    totalClicks,
-    ctr: totalViews > 0 ? totalClicks / totalViews : 0,
-    series,
-    topBlocks,
-  };
+    return {
+      totalViews,
+      totalClicks,
+      ctr: totalViews > 0 ? totalClicks / totalViews : 0,
+      series,
+      topBlocks,
+    };
+  });
 }
 
 export async function exportProfileData(session: AuthSession): Promise<{
@@ -109,8 +118,8 @@ export async function exportProfileData(session: AuthSession): Promise<{
     throw new Error('profile_not_found');
   }
 
-  const blocks = await listDashboardBlocks(profile.id);
-  const analytics = await getAnalyticsOverview(profile.id);
+  const blocks = await listDashboardBlocks(session.id, profile.id);
+  const analytics = await getAnalyticsOverview(session.id, profile.id);
 
   return {
     profile,

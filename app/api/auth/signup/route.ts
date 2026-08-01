@@ -51,7 +51,10 @@ export async function POST(request: Request) {
       profileId,
     });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'request_failed' }, { status: 400 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'request_failed' },
+      { status: 400 }
+    );
   }
 
   // O perfil é criado mesmo quando a confirmação de e-mail está pendente: sem

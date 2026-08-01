@@ -60,13 +60,23 @@ export default async function middleware(request: NextRequest) {
   }
 
   const response =
-    isLocalizedDashboard && !hasSession ? redirectToLogin(request, maybeLocale) : intlMiddleware(request);
+    isLocalizedDashboard && !hasSession
+      ? redirectToLogin(request, maybeLocale)
+      : intlMiddleware(request);
 
   if (renewed) {
-    response.cookies.set({ name: ACCESS_TOKEN_COOKIE, value: renewed.accessToken, ...sessionCookieOptions() });
+    response.cookies.set({
+      name: ACCESS_TOKEN_COOKIE,
+      value: renewed.accessToken,
+      ...sessionCookieOptions(),
+    });
 
     if (renewed.refreshToken) {
-      response.cookies.set({ name: REFRESH_TOKEN_COOKIE, value: renewed.refreshToken, ...sessionCookieOptions() });
+      response.cookies.set({
+        name: REFRESH_TOKEN_COOKIE,
+        value: renewed.refreshToken,
+        ...sessionCookieOptions(),
+      });
     }
 
     if (renewed.expiresAt) {

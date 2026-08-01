@@ -107,7 +107,13 @@ interface SessionCookie {
  */
 export function sessionCookies(session: AuthSession): SessionCookie[] {
   if (isMockAuthActive()) {
-    return [{ name: MOCK_AUTH_COOKIE, value: getMockSessionCookieValue(session), ...sessionCookieOptions() }];
+    return [
+      {
+        name: MOCK_AUTH_COOKIE,
+        value: getMockSessionCookieValue(session),
+        ...sessionCookieOptions(),
+      },
+    ];
   }
 
   const cookiesToSet: SessionCookie[] = [
@@ -115,11 +121,19 @@ export function sessionCookies(session: AuthSession): SessionCookie[] {
   ];
 
   if (session.refreshToken) {
-    cookiesToSet.push({ name: REFRESH_TOKEN_COOKIE, value: session.refreshToken, ...sessionCookieOptions() });
+    cookiesToSet.push({
+      name: REFRESH_TOKEN_COOKIE,
+      value: session.refreshToken,
+      ...sessionCookieOptions(),
+    });
   }
 
   if (session.expiresAt) {
-    cookiesToSet.push({ name: EXPIRES_AT_COOKIE, value: String(session.expiresAt), ...sessionCookieOptions() });
+    cookiesToSet.push({
+      name: EXPIRES_AT_COOKIE,
+      value: String(session.expiresAt),
+      ...sessionCookieOptions(),
+    });
   }
 
   return cookiesToSet;

@@ -29,7 +29,8 @@ NULLs são distintos no Postgres — e a ingestão aceita qualquer `profileId`/
 - [ ] 4. Há limite de taxa na ingestão **sem** persistir qualquer identificador de visitante (LGPD: sem IP, sem fingerprint, sem cookie).
 - [ ] 5. `ANALYTICS_RETENTION_DAYS` é aplicado por uma rotina de expurgo, ou removido da documentação se não for implementado.
 - [ ] 6. Testes unitários cobrem upsert, validação de vínculo e limite de taxa.
-- [ ] 7. `npm run build`, `npm run lint`, `npm run typecheck` e `npm run test:unit` passam.
+- [ ] 7. O painel de analytics abre sem erro (dois defeitos herdados do TCK-0005, encontrados na validação do TCK-0011: `item.day.slice is not a function`, porque coluna `date` chega como `Date` do driver, e `INVALID_MESSAGE: chart.barAriaLabel`).
+- [ ] 8. `npm run build`, `npm run lint`, `npm run typecheck` e `npm run test:unit` passam.
 
 ## Referências
 

@@ -25,7 +25,7 @@ export default async function DashboardAnalyticsPage({
     redirect(`/${locale}/dashboard`);
   }
 
-  const analytics = await getAnalyticsOverview(profile.id);
+  const analytics = await getAnalyticsOverview(session.id, profile.id);
   const maxViews = Math.max(...analytics.series.map((item) => item.views), 1);
 
   return (

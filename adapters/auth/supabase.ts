@@ -8,7 +8,14 @@ import { resolveSupabaseAuthConfig } from '@/lib/supabase/config';
 type SupabaseUser = { id: string; email?: string };
 
 /** Tipos de verificação aceitos no link enviado por e-mail pelo Supabase. */
-export const EMAIL_VERIFY_TYPES = ['signup', 'email', 'magiclink', 'recovery', 'invite', 'email_change'] as const;
+export const EMAIL_VERIFY_TYPES = [
+  'signup',
+  'email',
+  'magiclink',
+  'recovery',
+  'invite',
+  'email_change',
+] as const;
 export type EmailVerifyType = (typeof EMAIL_VERIFY_TYPES)[number];
 
 function config() {
@@ -71,7 +78,10 @@ export async function exchangeCodeForSession(code: string, verifier: string): Pr
 }
 
 /** Conclui a confirmação de e-mail (link do Supabase) e devolve a sessão pronta. */
-export async function verifyEmailToken(tokenHash: string, type: EmailVerifyType): Promise<AuthSession> {
+export async function verifyEmailToken(
+  tokenHash: string,
+  type: EmailVerifyType
+): Promise<AuthSession> {
   const body = await request('/verify', {
     method: 'POST',
     body: JSON.stringify({ token_hash: tokenHash, type }),
@@ -86,11 +96,17 @@ export async function refreshSession(refreshToken: string): Promise<AuthSession 
   if (!tokens?.userId) return null;
   return toSession(
     { id: tokens.userId },
-    { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, expiresAt: tokens.expiresAt }
+    {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresAt: tokens.expiresAt,
+    }
   );
 }
 
-export async function getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession | null> {
+export async function getSession(
+  cookieStore: Pick<ReadonlyRequestCookies, 'get'>
+): Promise<AuthSession | null> {
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   if (!accessToken) return null;
   try {
@@ -104,7 +120,9 @@ export async function getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'
   }
 }
 
-export async function requireAuth(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession> {
+export async function requireAuth(
+  cookieStore: Pick<ReadonlyRequestCookies, 'get'>
+): Promise<AuthSession> {
   const session = await getSession(cookieStore);
   if (!session) throw new Error('UNAUTHORIZED');
   return session;
@@ -148,7 +166,10 @@ export async function signUp(credentials: AuthCredentials): Promise<SignUpResult
 export async function signOut(accessToken?: string): Promise<void> {
   if (!accessToken) return;
   try {
-    await request('/logout', { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } });
+    await request('/logout', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
   } catch {
     // Sessão já inválida no servidor — nada a fazer.
   }

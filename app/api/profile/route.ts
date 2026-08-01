@@ -62,7 +62,7 @@ export async function PUT(request: Request) {
     }
   }
 
-  const profile = await updateDashboardProfile(currentProfile.id, {
+  const profile = await updateDashboardProfile(session.id, currentProfile.id, {
     ...(body.displayName !== undefined ? { displayName: body.displayName.trim() || currentProfile.display_name } : {}),
     ...(body.bio !== undefined ? { bio: body.bio?.trim() || null } : {}),
     ...(body.theme ? { theme: normalizeTheme(body.theme) } : {}),

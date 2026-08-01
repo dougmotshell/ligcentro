@@ -32,7 +32,7 @@ export async function PUT(
     const { id } = await params;
     const body = (await request.json()) as BlockPayloadInput;
     const payload = normalizeBlockInput(body);
-    const block = await updateDashboardBlock(profile.id, id, payload);
+    const block = await updateDashboardBlock(session.id, profile.id, id, payload);
 
     if (!block) {
       return NextResponse.json({ error: 'block_not_found' }, { status: 404 });
@@ -65,7 +65,7 @@ export async function DELETE(
   }
 
   const { id } = await params;
-  const deleted = await deleteDashboardBlock(profile.id, id);
+  const deleted = await deleteDashboardBlock(session.id, profile.id, id);
 
   if (!deleted) {
     return NextResponse.json({ error: 'block_not_found' }, { status: 404 });

@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
   const storage = createStorageAdapter();
   const saved = await storage.saveFile(session.id, file);
-  const updatedProfile = await updateDashboardProfile(profile.id, {
+  const updatedProfile = await updateDashboardProfile(session.id, profile.id, {
     avatarUrl: saved.url,
   });
 

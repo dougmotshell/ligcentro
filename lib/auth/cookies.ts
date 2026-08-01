@@ -40,7 +40,9 @@ export function isSecureRuntime(): boolean {
   return process.env.NODE_ENV === 'production';
 }
 
-export function sessionCookieOptions(maxAge: number = SESSION_MAX_AGE_IN_SECONDS): SessionCookieOptions {
+export function sessionCookieOptions(
+  maxAge: number = SESSION_MAX_AGE_IN_SECONDS
+): SessionCookieOptions {
   return {
     httpOnly: true,
     sameSite: 'lax',

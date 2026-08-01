@@ -2,16 +2,30 @@
 -- Fase 1 — Perfil público (leitura)
 
 -- Compatibilidade local com políticas que dependem de auth.uid().
--- No ambiente local, a claim pode não existir e a função retorna NULL.
+-- ATENÇÃO: em banco gerenciado (Supabase) `auth.uid()` já existe e é a função
+-- oficial do provedor. Um `CREATE OR REPLACE` aqui a sobrescreveria por esta
+-- versão simplificada — que lê a claim legada `request.jwt.claim.sub` — e
+-- degradaria a RLS de todo o projeto. Por isso o stub só nasce quando a função
+-- ainda não existe.
 CREATE SCHEMA IF NOT EXISTS auth;
 
-CREATE OR REPLACE FUNCTION auth.uid()
-RETURNS UUID
-LANGUAGE SQL
-STABLE
-AS $$
-    SELECT NULLIF(current_setting('request.jwt.claim.sub', true), '')::uuid
-$$;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'auth' AND p.proname = 'uid'
+  ) THEN
+    EXECUTE $fn$
+      CREATE FUNCTION auth.uid()
+      RETURNS UUID
+      LANGUAGE SQL
+      STABLE
+      AS 'SELECT NULLIF(current_setting(''request.jwt.claim.sub'', true), '''')::uuid'
+    $fn$;
+  END IF;
+END $$;
 
 -- Tabela profiles
 CREATE TABLE IF NOT EXISTS profiles (

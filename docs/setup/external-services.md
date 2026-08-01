@@ -220,9 +220,30 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000      # URL base pública
 
 ---
 
+## Ordem obrigatória: migrar antes de subir o código
+
+O deploy da Vercel dispara no push para a `main`, e o código a partir da migração
+`0006` **depende** da role `ligcentro_app` existir no banco. Se o código subir
+antes da migração, toda requisição autenticada falha com `app_role_missing`.
+
+Sequência correta para qualquer release que inclua migração:
+
+1. Aplicar as migrações pendentes de `db/migrations/` **em ordem numérica** no
+   banco de produção (Supabase → SQL Editor, ou `psql` com a connection string).
+2. Só então fazer o push para a `main`.
+
+A migração `0001` traz um stub de `auth.uid()` para o Postgres local. Em bancos
+que aplicaram a versão anterior dessa migração, a função nativa do Supabase pode
+ter sido sobrescrita — conferir no SQL Editor se `auth.uid()` lê
+`request.jwt.claims` (nativa) e não `request.jwt.claim.sub` (stub); se for o
+stub, restaurar a definição oficial do provedor.
+
 ## Checklist de configuração para ir a produção
 
-- [ ] Projeto Supabase criado e migrações aplicadas
+- [ ] Projeto Supabase criado e migrações aplicadas **antes** do deploy do código
+- [ ] Role `ligcentro_app` existe (migração 0006) e não tem BYPASSRLS
+- [ ] `auth.uid()` no Supabase é a função nativa do provedor, não o stub da 0001
+- [ ] Redirect URL `/api/auth/confirm` cadastrada no Supabase Auth
 - [ ] Bucket `avatars` criado com políticas de Storage
 - [ ] OAuth Google configurado e ativo no Supabase
 - [ ] OAuth GitHub configurado e ativo no Supabase

@@ -62,3 +62,17 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Causa raiz: o Next substitui `NEXT_PUBLIC_*` por literal em tempo de compilação, inclusive no código de servidor — a variável não é lida em runtime.
 - Como evitar: decisão de servidor lê variável **sem** o prefixo `NEXT_PUBLIC_` (mantendo o nome público apenas como fallback de compatibilidade); `NEXT_PUBLIC_*` só para valor que o cliente realmente precisa e que pode ser público.
 - Refs: `lib/supabase/config.ts`, `tickets/TCK-0009-auth-session-fixes/log.md` entrada [4].
+
+## [L-007] 2026-08-01 — backend — `current_setting(...,true)::uuid` estoura com string vazia — erro
+- Contexto: TCK-0011, ao fazer a RLS valer de fato e rodar o primeiro teste de acesso cruzado.
+- Erro: no caminho anônimo (sem usuário), as consultas falhavam com `invalid input syntax for type uuid: ""`.
+- Causa raiz: uma vez que a GUC customizada existiu na conexão, `current_setting(nome, true)` devolve **string vazia** depois de um `SET LOCAL` revertido — não NULL. `''::uuid` é erro, não NULL.
+- Como evitar: em política RLS, sempre `NULLIF(current_setting('app.x', true), '')::uuid`, de preferência encapsulado numa função `STABLE` para não repetir o cuidado em cada política.
+- Refs: `db/migrations/0006_app_role_rls.sql`, `lib/db/rls.test.ts`, `tickets/TCK-0011-effective-rls/log.md` entrada [3].
+
+## [L-008] 2026-08-01 — backend — RLS só vale se a role efetiva não bypassar — acerto
+- Contexto: TCK-0011 — políticas existiam desde o TCK-0003 mas nunca eram exercidas.
+- O que funcionou: criar uma role `NOLOGIN NOSUPERUSER NOBYPASSRLS`, dar `GRANT` dela à role da conexão e fazer `SET LOCAL ROLE` dentro da transação, junto com `set_config('app.current_user_id', ..., true)`.
+- Por que funcionou: `SET ROLE` troca a role **efetiva**, e é ela que a RLS avalia — então até uma conexão superusuária passa a ser barrada, sem precisar de credencial nova, segundo pool ou segredo em commit.
+- Como reaproveitar: toda consulta em nome de um usuário entra por `withUserSession`; caminho público por `withPublicSession`; só operações deliberadamente cross-tenant (disponibilidade de handle, provisionamento) ficam na role da conexão, com o motivo escrito no código.
+- Refs: `lib/db/client.ts`, `db/migrations/0006_app_role_rls.sql`.

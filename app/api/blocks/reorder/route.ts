@@ -25,7 +25,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'missing_items' }, { status: 400 });
   }
 
-  const blocks = await reorderDashboardBlocks(profile.id, body.items);
+  const blocks = await reorderDashboardBlocks(session.id, profile.id, body.items);
   revalidateProfilePaths(profile.handle);
 
   return NextResponse.json({ blocks });

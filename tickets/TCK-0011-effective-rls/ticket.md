@@ -1,6 +1,6 @@
 # TCK-0011: RLS efetiva e isolamento multi-tenant
 
-- **status:** triaged
+- **status:** done
 - **owner:** backend-developer
 - **created:** 2026-08-01 · **by:** Douglas
 - **type:** security
@@ -24,12 +24,12 @@ Viola a regra 6 do `AGENTS.md`.)
 
 ## Critérios de aceite (máx. 7, verificáveis)
 
-- [ ] 1. Toda consulta autenticada roda em transação com `app.current_user_id` definido via `set_config`, por uma role de aplicação **sem** `BYPASSRLS` e que não é dona das tabelas.
-- [ ] 2. `getDashboardProfile` deixa de casar perfil por `handle` sem verificar o dono.
-- [ ] 3. Migração consolida as políticas (owner por `app.current_user_id`, leitura pública só de `published`) e deixa de sobrescrever `auth.uid()` em banco gerenciado.
-- [ ] 4. Teste automatizado de acesso cruzado com dois usuários fake prova isolamento de leitura e de escrita em `profiles`, `blocks`, `page_views` e `block_clicks`.
-- [ ] 5. O perfil público continua sendo lido sem sessão (leitura anônima de `published`).
-- [ ] 6. `npm run build`, `npm run lint`, `npm run typecheck` e `npm run test:unit` passam.
+- [x] 1. Toda consulta autenticada roda em transação com `app.current_user_id` definido via `set_config`, por uma role de aplicação **sem** `BYPASSRLS` e que não é dona das tabelas.
+- [x] 2. `getDashboardProfile` deixa de casar perfil por `handle` sem verificar o dono.
+- [x] 3. Migração consolida as políticas (owner por `app.current_user_id`, leitura pública só de `published`) e deixa de sobrescrever `auth.uid()` em banco gerenciado.
+- [x] 4. Teste automatizado de acesso cruzado com dois usuários fake prova isolamento de leitura e de escrita em `profiles`, `blocks`, `page_views` e `block_clicks`.
+- [x] 5. O perfil público continua sendo lido sem sessão (leitura anônima de `published`).
+- [x] 6. `npm run build`, `npm run lint`, `npm run typecheck` e `npm run test:unit` passam.
 
 ## Referências
 
@@ -37,4 +37,6 @@ Viola a regra 6 do `AGENTS.md`.)
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: · Evidência final: · Docs atualizados:
+- Commits: `TCK-0011: fazer a RLS valer de fato`
+- Evidência final: log entradas [3], [5] e [6]; `lib/db/rls.test.ts` 11/11
+- Docs atualizados: `docs/setup/external-services.md` (ordem de migração e checklist)
