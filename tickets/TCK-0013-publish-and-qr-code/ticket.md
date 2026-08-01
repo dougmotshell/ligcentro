@@ -1,6 +1,6 @@
 # TCK-0013: Controle de publicação e QR code do perfil
 
-- **status:** triaged
+- **status:** done
 - **owner:** frontend-developer
 - **created:** 2026-08-01 · **by:** Douglas
 - **type:** feature
@@ -24,13 +24,13 @@ existir no código.)
 
 ## Critérios de aceite (máx. 7, verificáveis)
 
-- [ ] 1. O dashboard mostra o estado de publicação e permite publicar/despublicar, com revalidação do perfil público.
-- [ ] 2. Despublicar faz `/[handle]` responder 404; publicar volta a servir a página.
-- [ ] 3. O dashboard exibe o QR code da URL pública e permite baixá-lo (PNG ou SVG).
-- [ ] 4. O QR code é gerado sem dependência paga e sem chamar serviço externo.
-- [ ] 5. Todos os textos novos passam por i18n (pt-BR + en-US); nada hardcoded.
-- [ ] 6. Controles acessíveis por teclado com rótulo, nos dois temas.
-- [ ] 7. `npm run build`, `npm run lint`, `npm run typecheck` e `npm run test:unit` passam.
+- [x] 1. O dashboard mostra o estado de publicação e permite publicar/despublicar, com revalidação do perfil público.
+- [x] 2. Despublicar faz `/[handle]` responder 404; publicar volta a servir a página.
+- [x] 3. O dashboard exibe o QR code da URL pública e permite baixá-lo (PNG ou SVG).
+- [x] 4. O QR code é gerado sem dependência paga e sem chamar serviço externo.
+- [x] 5. Todos os textos novos passam por i18n (pt-BR + en-US); nada hardcoded.
+- [x] 6. Controles acessíveis por teclado com rótulo, nos dois temas.
+- [x] 7. `npm run build`, `npm run lint`, `npm run typecheck` e `npm run test:unit` passam.
 
 ## Referências
 
@@ -38,4 +38,6 @@ existir no código.)
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: · Evidência final: · Docs atualizados:
+- Commits: `TCK-0013: adicionar controle de publicação e QR code`
+- Evidência final: log entradas [3], [5] e [6]
+- Docs atualizados: — (roadmap em TCK-0017)

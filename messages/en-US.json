@@ -185,6 +185,22 @@
         "purple": "Purple",
         "green": "Green"
       }
+    },
+    "share": {
+      "title": "Publish and share",
+      "description": "Your page is only visible to the public once published.",
+      "statusPublished": "Published",
+      "statusDraft": "Draft",
+      "publishedHint": "Anyone with the link can see your page.",
+      "draftHint": "Nobody can see your page yet — publish it when you are ready.",
+      "publish": "Publish page",
+      "unpublish": "Unpublish",
+      "saving": "Saving...",
+      "copyUrl": "Copy link",
+      "copied": "Link copied!",
+      "downloadQr": "Download QR code",
+      "qrAriaLabel": "QR code for @{handle} page",
+      "error": "Could not save right now. Please try again."
     }
   },
   "AnalyticsPage": {

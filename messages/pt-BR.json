@@ -185,6 +185,22 @@
         "purple": "Roxo",
         "green": "Verde"
       }
+    },
+    "share": {
+      "title": "Publicar e compartilhar",
+      "description": "Sua página só aparece para o público quando está publicada.",
+      "statusPublished": "Publicada",
+      "statusDraft": "Rascunho",
+      "publishedHint": "Qualquer pessoa com o link pode ver sua página.",
+      "draftHint": "Ninguém vê sua página ainda — publique quando estiver pronta.",
+      "publish": "Publicar página",
+      "unpublish": "Despublicar",
+      "saving": "Salvando...",
+      "copyUrl": "Copiar link",
+      "copied": "Link copiado!",
+      "downloadQr": "Baixar QR code",
+      "qrAriaLabel": "QR code da página de @{handle}",
+      "error": "Não foi possível salvar agora. Tente novamente."
     }
   },
   "AnalyticsPage": {
