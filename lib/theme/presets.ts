@@ -27,6 +27,9 @@ export const THEME_PRESETS: Record<string, ThemeConfig> = {
   },
 };
 
+/** Tema inicial serializado — evita repetir o JSON literal em cada rota que cria perfil. */
+export const DEFAULT_THEME_JSON = JSON.stringify(THEME_PRESETS.default);
+
 export function normalizeTheme(theme: unknown): ThemeConfig {
   if (typeof theme === 'string') {
     try {

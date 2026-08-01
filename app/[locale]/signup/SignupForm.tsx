@@ -32,6 +32,7 @@ export function SignupForm({ locale }: Props) {
   const router = useRouter();
   const [handleState, setHandleState] = useState<HandleState>('idle');
   const [handleErrorKey, setHandleErrorKey] = useState<string | null>(null);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const {
     register,
     watch,
@@ -121,6 +122,15 @@ export function SignupForm({ locale }: Props) {
       return;
     }
 
+    const result = (await response.json().catch(() => ({}))) as { pendingEmailConfirmation?: boolean };
+
+    // Com confirmação de e-mail ligada no Supabase, a conta existe e o handle já
+    // está reservado, mas a sessão só nasce quando o link do e-mail é aberto.
+    if (result.pendingEmailConfirmation) {
+      setPendingEmail(values.email);
+      return;
+    }
+
     router.push(`/${locale}/onboarding?step=1`);
     router.refresh();
   });
@@ -133,6 +143,24 @@ export function SignupForm({ locale }: Props) {
         : handleErrorKey
           ? t(`errors.${handleErrorKey}`)
           : null;
+
+  if (pendingEmail) {
+    return (
+      <div className="mx-auto w-full max-w-md rounded-3xl border border-border bg-white p-8 text-center shadow-sm dark:bg-gray-900">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('signup.confirmEmailTitle')}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {t('signup.confirmEmailDescription', { email: pendingEmail })}
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t('signup.confirmEmailHandleReserved')}</p>
+        <Link
+          href={`/${locale}/login`}
+          className="mt-6 inline-block font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {t('signup.loginLink')}
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-md rounded-3xl border border-border bg-white p-8 shadow-sm dark:bg-gray-900">

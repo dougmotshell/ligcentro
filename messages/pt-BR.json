@@ -59,7 +59,12 @@
       "request_failed": "Não foi possível concluir a solicitação agora.",
       "handleTaken": "Este handle já está em uso.",
       "handleReserved": "Este handle é reservado.",
-      "handleFormat": "Use 3 a 30 caracteres com letras minúsculas, números, hífen ou underscore."
+      "handleFormat": "Use 3 a 30 caracteres com letras minúsculas, números, hífen ou underscore.",
+      "oauth_state": "A validação do login social falhou. Tente novamente.",
+      "oauth_failed": "Não foi possível concluir o login social. Tente novamente.",
+      "confirm_invalid": "O link de confirmação é inválido ou está incompleto.",
+      "confirm_failed": "O link de confirmação expirou ou já foi usado. Peça um novo.",
+      "auth_not_configured": "A autenticação não está configurada neste ambiente."
     },
     "login": {
       "title": "Entrar",
@@ -82,7 +87,10 @@
       "hasAccount": "Já tem conta?",
       "loginLink": "Entrar",
       "handleChecking": "Verificando disponibilidade...",
-      "handleAvailable": "Handle disponível."
+      "handleAvailable": "Handle disponível.",
+      "confirmEmailTitle": "Confirme seu e-mail",
+      "confirmEmailDescription": "Enviamos um link de confirmação para {email}. Abra o link para ativar sua conta.",
+      "confirmEmailHandleReserved": "Seu handle já está reservado — ninguém pode tomá-lo enquanto você confirma."
     },
     "dashboard": {
       "eyebrow": "Dashboard protegido",

@@ -1,7 +1,6 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getSession } from '@/adapters/auth';
+import { resolveSession } from '@/lib/auth/session';
 import { getDashboardProfile, reorderDashboardBlocks } from '@/lib/db/dashboard';
 
 function revalidateProfilePaths(handle: string) {
@@ -10,8 +9,7 @@ function revalidateProfilePaths(handle: string) {
 }
 
 export async function PUT(request: Request) {
-  const cookieStore = await cookies();
-  const session = await getSession(cookieStore);
+  const session = await resolveSession();
 
   if (!session) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });

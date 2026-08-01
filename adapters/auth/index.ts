@@ -1,22 +1,47 @@
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
-import type { AuthCredentials, AuthSession } from './mock';
+import type { AuthCredentials, AuthSession, SignUpResult } from './mock';
+import { isSupabaseAuthConfigured } from '@/lib/supabase/config';
+import { mockAuthAdapter } from './mock';
+import { supabaseAuthAdapter } from './supabase';
 
 interface AuthAdapter {
   getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession | null>;
   requireAuth(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession>;
   signIn(credentials: AuthCredentials): Promise<AuthSession>;
-  signUp(credentials: AuthCredentials): Promise<AuthSession>;
-  signOut(): Promise<void>;
+  signUp(credentials: AuthCredentials): Promise<SignUpResult>;
+  signOut(accessToken?: string): Promise<void>;
+  refreshSession(refreshToken: string): Promise<AuthSession | null>;
+}
+
+export { isSupabaseAuthConfigured };
+
+/**
+ * O mock só é aceitável fora de produção. Em produção ele precisa de opt-in
+ * explícito (`ALLOW_MOCK_AUTH=true`, usado pelo `docker compose` de QA, que roda
+ * com `NODE_ENV=production` sem Supabase) — nunca por fallback silencioso, que
+ * transformaria a falta de uma variável de ambiente em autenticação forjável.
+ */
+export function isMockAuthAllowed(): boolean {
+  return process.env.NODE_ENV !== 'production' || process.env.ALLOW_MOCK_AUTH === 'true';
 }
 
 export function createAuthAdapter(): AuthAdapter {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('./mock').mockAuthAdapter as AuthAdapter;
+  if (isSupabaseAuthConfigured()) {
+    return supabaseAuthAdapter;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('./supabase').supabaseAuthAdapter as AuthAdapter;
+  if (!isMockAuthAllowed()) {
+    throw new Error(
+      'auth_not_configured: defina SUPABASE_URL e SUPABASE_ANON_KEY, ou ALLOW_MOCK_AUTH=true para aceitar a sessão mock.'
+    );
+  }
+
+  return mockAuthAdapter;
+}
+
+/** Verdadeiro quando a sessão em uso é a mock (define qual cookie gravar). */
+export function isMockAuthActive(): boolean {
+  return !isSupabaseAuthConfigured();
 }
 
 export async function getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'>) {
@@ -35,9 +60,13 @@ export async function signUp(credentials: AuthCredentials) {
   return createAuthAdapter().signUp(credentials);
 }
 
-export async function signOut() {
-  return createAuthAdapter().signOut();
+export async function signOut(accessToken?: string) {
+  return createAuthAdapter().signOut(accessToken);
 }
 
-export type { AuthCredentials, AuthSession } from './mock';
+export async function refreshSession(refreshToken: string) {
+  return createAuthAdapter().refreshSession(refreshToken);
+}
+
+export type { AuthCredentials, AuthSession, SignUpResult } from './mock';
 export { MOCK_AUTH_COOKIE, MOCK_USER, getMockSessionCookieValue } from './mock';

@@ -1,6 +1,6 @@
 # TCK-0009: Correções bloqueantes de autenticação e sessão
 
-- **status:** triaged
+- **status:** in_review
 - **owner:** backend-developer
 - **created:** 2026-08-01 · **by:** Douglas
 - **type:** bug
