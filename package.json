@@ -14,7 +14,8 @@
     "format:check": "prettier --check .",
     "sync-agent-tools": "node scripts/sync-agent-tools.mjs",
     "db:seed": "psql $DATABASE_URL -f db/seeds/001_demo_profile.sql",
-    "db:migrate": "psql $DATABASE_URL -f db/migrations/0001_profiles_blocks.sql"
+    "db:migrate": "psql $DATABASE_URL -f db/migrations/0001_profiles_blocks.sql",
+    "analytics:purge": "node scripts/purge-analytics.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

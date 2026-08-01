@@ -26,3 +26,28 @@
 - Ação: Dois defeitos anexados ao escopo deste ticket, encontrados ao validar o TCK-0011: `/[locale]/dashboard/analytics` responde 500 por `item.day.slice is not a function` (coluna `date` chega como objeto `Date` do driver `postgres`, e o código a trata como string) e por `INVALID_MESSAGE: chart.barAriaLabel` no namespace `AnalyticsPage`.
 - Motivo: São da área de analytics (originados no TCK-0005, que está `done` e não reabre) e o painel é critério de pronto da Fase 3. Verificado no commit `34003ca`, anterior ao TCK-0011: já respondia 500 — não é regressão.
 - Resultado: critérios do ticket renumerados; passa a existir o critério 7 para o painel abrir.
+
+## [4] ACTION — 2026-08-01 14:30 — backend-developer
+- Ação: Migração 0007 (consolidação das duplicatas, `UNIQUE NULLS NOT DISTINCT`, funções `record_page_view`/`record_block_click`/`purge_old_analytics` como `SECURITY DEFINER`, REVOKE de escrita direta na role da aplicação); rotas de ingestão validando uuid e aplicando limite de taxa; `to_char` no `day` da série; script `npm run analytics:purge`.
+- Motivo: Critérios 1 a 7.
+- Resultado: ok. C1: 3 linhas duplicadas (total 3) viraram 1 linha com count 3, sem perda; dois `record_page_view` seguidos com país/referrer nulos → 1 linha, total 5. C2: bloco com perfil errado → `f`/404; correto → `t`/200. C3: perfil inexistente e perfil em rascunho → `f`/404. C4: 305 chamadas → 299 aceitas e 6 `429`. C5: linha de 800 dias atrás removida pelo expurgo. C7: painel passou de 500 para 200.
+- Nota de projeto: `MIN(uuid)` não existe no Postgres; a consolidação usa `ROW_NUMBER() OVER (PARTITION BY ...)`, que também é o que trata NULLs como iguais.
+- Lição: L-009 (registrada).
+
+## [5] REJECT — 2026-08-01 14:40
+- De: code-reviewer → Para: backend-developer · Loop nº: 1/3
+- Defeitos (numerados, cada um com evidência e critério violado):
+  1. `db/migrations/0007_analytics_integrity.sql:47` — o `DROP CONSTRAINT IF EXISTS page_views_profile_id_day_country_referrer_host_key` depende do nome que o Postgres gerou. Num banco onde o nome seja outro, o DROP é silenciosamente no-op e a tabela fica com **duas** constraints únicas sobre as mesmas colunas, uma delas `NULLS DISTINCT`; o `ON CONFLICT` pode inferir a antiga e o defeito volta sem aviso. No banco local o nome bateu (`page_views_daily_key` é a única remanescente), mas a migração precisa descobrir o nome, não adivinhar. Viola o critério 1.
+  2. `lib/db/analytics.ts` — a ingestão agora devolve booleano, mas nenhum teste unitário cobre a tradução `false → 404` das rotas; a evidência do critério 2/3 é SQL manual. O critério 6 pede teste unitário da validação de vínculo.
+- O que já está bom (não refazer): `SECURITY DEFINER` + REVOKE (escrita direta na role da aplicação dá `permission denied`, verificado); consolidação por função de janela sem perda de contagem; limite de taxa sem identificador de visitante; `to_char` resolvendo os dois defeitos do painel de uma vez.
+
+## [6] ACTION — 2026-08-01 15:00 — backend-developer
+- Ação: Corrigidos os dois defeitos do REJECT [5]: a migração passou a **descobrir** as constraints únicas de `page_views` via `pg_constraint` e removê-las por nome real antes de criar a `page_views_daily_key` (bloco idempotente); criado `lib/db/analytics.test.ts` com 10 casos de integração cobrindo upsert com nulos, separação por país/referrer, recusa de perfil inexistente/rascunho, vínculo bloco↔perfil nas duas direções, `permission denied` na escrita direta e o expurgo.
+- Motivo: Defeitos 1 e 2 do loop 1.
+- Resultado: ok — reaplicação da 0007 com 0 erros (idempotente); 10/10 nos testes de ingestão.
+- Lição: n/a — coberto por L-009/L-010.
+
+## [7] ACTION — 2026-08-01 15:05 — qa-validator
+- Ação: Validação dos critérios com o Postgres do compose e o app rodando.
+- Resultado: C1 upsert com nulos → 1 linha (era 3), e 3 duplicatas preexistentes consolidadas sem perder contagem. C2 `POST /api/analytics/click` com bloco de outro perfil → 404 `block_not_eligible`; correto → 200. C3 perfil inexistente e em rascunho → 404 `profile_not_eligible`. C4 305 chamadas → 299 aceitas, 6 `429`; o limitador só recebe chave e instante, nenhum dado de visitante. C5 `npm run analytics:purge` removeu a linha de 800 dias atrás e manteve as do período. C6 55 testes no total. C7 painel de analytics 200 (era 500). C8 build, lint (0 erros), typecheck.
+- Veredito: **aprovado**. Critérios 1 a 8 com evidência executável.

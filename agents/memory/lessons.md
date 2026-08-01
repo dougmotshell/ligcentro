@@ -76,3 +76,24 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Por que funcionou: `SET ROLE` troca a role **efetiva**, e é ela que a RLS avalia — então até uma conexão superusuária passa a ser barrada, sem precisar de credencial nova, segundo pool ou segredo em commit.
 - Como reaproveitar: toda consulta em nome de um usuário entra por `withUserSession`; caminho público por `withPublicSession`; só operações deliberadamente cross-tenant (disponibilidade de handle, provisionamento) ficam na role da conexão, com o motivo escrito no código.
 - Refs: `lib/db/client.ts`, `db/migrations/0006_app_role_rls.sql`.
+
+## [L-009] 2026-08-01 — backend — NULL em UNIQUE quebra ON CONFLICT silenciosamente — erro
+- Contexto: TCK-0012 — o upsert diário de `page_views` deveria incrementar um contador.
+- Erro: cada visita sem país/referrer inseria uma linha nova em vez de incrementar; os totais por `SUM` continuavam certos, então o defeito ficou invisível — só a tabela crescia.
+- Causa raiz: em `UNIQUE(a, b, c)` o Postgres trata NULLs como **distintos** por padrão, então o `ON CONFLICT` nunca casa quando alguma coluna da chave é nula.
+- Como evitar: chave de upsert com coluna nulável exige `UNIQUE NULLS NOT DISTINCT` (PG 15+) ou sentinela via `COALESCE`; e todo upsert de contador precisa de teste que rode a ingestão **duas vezes** e confira que sobrou uma linha só.
+- Refs: `db/migrations/0007_analytics_integrity.sql`, `lib/db/analytics.ts`.
+
+## [L-010] 2026-08-01 — backend — validar ingestão pública dentro do banco — acerto
+- Contexto: TCK-0012 — endpoints de analytics aceitavam qualquer `profileId`/`blockId`, e o `profileId` está no HTML público.
+- O que funcionou: mover a validação e o incremento para funções `SECURITY DEFINER` e **revogar** INSERT/UPDATE direto da role da aplicação, deixando só `GRANT EXECUTE`.
+- Por que funcionou: a regra de negócio (perfil publicado, bloco pertence ao perfil) passa a ser inviolável mesmo se uma rota futura esquecer de checar — e a RLS não precisa de políticas amplas de escrita para tabela agregada.
+- Como reaproveitar: sempre que uma borda anônima precisa escrever, dar EXECUTE de função validada em vez de permissão de tabela. Verificação: `SET LOCAL ROLE` + `INSERT` direto deve dar `permission denied`.
+- Refs: `db/migrations/0007_analytics_integrity.sql`, `tickets/TCK-0012-analytics-integrity/log.md` entrada [4].
+
+## [L-011] 2026-08-01 — frontend — coluna `date` do Postgres chega como `Date` — erro
+- Contexto: painel `/dashboard/analytics` respondia 500 desde o TCK-0005 (descoberto ao validar o TCK-0011).
+- Erro: `item.day.slice is not a function` e `INVALID_MESSAGE: chart.barAriaLabel didn't resolve to a string`.
+- Causa raiz: o driver `postgres` devolve coluna `date` como objeto `Date`, mas o tipo declarado no código era `string`. O next-intl, ao receber objeto numa interpolação, entende como rich text e recusa.
+- Como evitar: quando a data é usada como texto, converter na consulta (`to_char(day, 'YYYY-MM-DD')`) em vez de confiar no tipo declarado — anotação de tipo não converte nada em tempo de execução.
+- Refs: `lib/db/analytics.ts`, `app/[locale]/dashboard/analytics/page.tsx`.

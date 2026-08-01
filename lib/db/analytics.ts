@@ -1,4 +1,4 @@
-import { getDb, withUserSession } from '@/lib/db/client';
+import { withPublicSession, withUserSession } from '@/lib/db/client';
 import type { Block, ProfileWithBlocks } from '@/lib/db/types';
 import { getDashboardProfile, listDashboardBlocks } from '@/lib/db/dashboard';
 import type { AuthSession } from '@/adapters/auth';
@@ -7,32 +7,38 @@ function parseJsonBody<T>(value: T): T {
   return value;
 }
 
-// A ingestão (visita/clique) segue na role de serviço: é chamada por visitante
-// anônimo e o upsert precisa de UPDATE nas tabelas agregadas. O endurecimento
-// dessa borda — validação de vínculo, limite de taxa e função SECURITY DEFINER
-// para o incremento — é o TCK-0012.
+/**
+ * Ingestão de visita. Roda sob a role da aplicação e escreve **só** pela função
+ * `record_page_view`, que valida no banco se o perfil existe e está publicado.
+ * Devolve `false` quando a validação recusa — sem lançar, para a ingestão nunca
+ * atrapalhar a renderização do perfil público.
+ */
 export async function recordProfileView(
   profileId: string,
   country: string | null,
   referrerHost: string | null
-) {
-  const db = getDb();
-  await db`
-    INSERT INTO page_views (profile_id, day, country, referrer_host, count)
-    VALUES (${profileId}::uuid, CURRENT_DATE, ${country}, ${referrerHost}, 1)
-    ON CONFLICT (profile_id, day, country, referrer_host)
-    DO UPDATE SET count = page_views.count + 1
-  `;
+): Promise<boolean> {
+  return withPublicSession(async (tx) => {
+    const rows = (await tx`
+      SELECT public.record_page_view(${profileId}::uuid, ${country}, ${referrerHost}) AS recorded
+    `) as unknown as Array<{ recorded: boolean }>;
+
+    return rows[0]?.recorded === true;
+  });
 }
 
-export async function recordBlockClick(blockId: string, profileId: string) {
-  const db = getDb();
-  await db`
-    INSERT INTO block_clicks (block_id, profile_id, day, count)
-    VALUES (${blockId}::uuid, ${profileId}::uuid, CURRENT_DATE, 1)
-    ON CONFLICT (block_id, day)
-    DO UPDATE SET count = block_clicks.count + 1
-  `;
+/**
+ * Ingestão de clique. A função no banco exige que o bloco pertença ao perfil e
+ * que o perfil esteja publicado — é o que impede inflar a métrica de terceiro.
+ */
+export async function recordBlockClick(blockId: string, profileId: string): Promise<boolean> {
+  return withPublicSession(async (tx) => {
+    const rows = (await tx`
+      SELECT public.record_block_click(${blockId}::uuid, ${profileId}::uuid) AS recorded
+    `) as unknown as Array<{ recorded: boolean }>;
+
+    return rows[0]?.recorded === true;
+  });
 }
 
 export async function getAnalyticsOverview(userId: string, profileId: string) {
@@ -70,7 +76,7 @@ export async function getAnalyticsOverview(userId: string, profileId: string) {
       GROUP BY day
     )
     SELECT
-      days.day,
+      to_char(days.day, 'YYYY-MM-DD') AS day,
       COALESCE(view_series.views, 0)::int AS views,
       COALESCE(click_series.clicks, 0)::int AS clicks
     FROM days
