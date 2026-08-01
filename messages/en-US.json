@@ -129,7 +129,13 @@
       "chooseFile": "Choose file",
       "upload": "Upload avatar",
       "uploading": "Uploading...",
-      "avatarError": "The file could not be uploaded."
+      "avatarError": "The file could not be uploaded.",
+      "invalid_file_type": "Unsupported format. Upload PNG, JPG, WebP, GIF or AVIF.",
+      "file_too_large": "The image is over 2 MB. Please upload a smaller one.",
+      "empty_file": "The file is empty.",
+      "storage_not_configured": "Image storage is not configured in this environment.",
+      "storage_service_key_missing": "The storage service key is missing in this environment.",
+      "storage_upload_failed": "Storage rejected the upload. Please try again shortly."
     },
     "blocks": {
       "title": "Profile blocks",

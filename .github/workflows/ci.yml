@@ -93,6 +93,9 @@ jobs:
         with: { fetch-depth: 0 }
       - name: Secret scanning (gitleaks)
         uses: gitleaks/gitleaks-action@v2
+        env:
+          # Allowlist de falsos positivos comprovados; ver .gitleaks.toml.
+          GITLEAKS_CONFIG: .gitleaks.toml
       - name: Auditoria de dependências
         if: hashFiles('package.json') != ''
         run: |

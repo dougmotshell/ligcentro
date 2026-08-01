@@ -129,7 +129,13 @@
       "chooseFile": "Escolher arquivo",
       "upload": "Enviar avatar",
       "uploading": "Enviando...",
-      "avatarError": "Não foi possível enviar o arquivo."
+      "avatarError": "Não foi possível enviar o arquivo.",
+      "invalid_file_type": "Formato não aceito. Envie PNG, JPG, WebP, GIF ou AVIF.",
+      "file_too_large": "A imagem passa de 2 MB. Envie uma menor.",
+      "empty_file": "O arquivo está vazio.",
+      "storage_not_configured": "O armazenamento de imagens não está configurado neste ambiente.",
+      "storage_service_key_missing": "Falta a chave de serviço do armazenamento neste ambiente.",
+      "storage_upload_failed": "O armazenamento recusou o envio. Tente novamente em instantes."
     },
     "blocks": {
       "title": "Blocos do perfil",

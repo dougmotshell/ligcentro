@@ -1,0 +1,24 @@
+# Configuração do gitleaks — usada pelo CI (`ci.yml`) e pela auditoria agendada
+# (`security-audit.yml`), que varrem o histórico completo do repositório.
+#
+# Regra de uso: aqui só entra **falso positivo comprovado**. Segredo real que
+# vaze não se resolve com allowlist — se resolve rotacionando a credencial e
+# reescrevendo o histórico. Toda entrada leva a justificativa e a data.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Falsos positivos comprovados"
+
+
+regexes = [
+  # 2026-08-01 — TCK-0009/CI: o gitleaks acusava `generic-api-key` nas linhas 9 e
+  # 10 do `.env.example` do commit 2a5fe01 (run 30690942623). São JWTs de exemplo
+  # cujo payload em base64 decodifica para `{"_exemple_anon_key_ficticia` e
+  # `{"_exemple_service_role_key_ficticia` — verificado em 2026-08-01. O commit é
+  # histórico e imutável, então o achado se repetiria em toda execução.
+  # O prefixo `eyJfZXhlbXBsZ` é exatamente `{"_exemple` em base64: qualquer chave
+  # real (payload `{"alg"...` → `eyJhbGciOi`) continua sendo detectada.
+  '''eyJfZXhlbXBsZ[A-Za-z0-9_\-\.]*''',
+]
