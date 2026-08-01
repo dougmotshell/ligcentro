@@ -33,3 +33,14 @@
   1. `public/uploads/` não está no `.gitignore` — o storage local grava avatar de quem usa o app dentro da árvore versionada, e um `git add -A` mandaria imagem de pessoa real para o repositório. Viola a regra 7 do AGENTS.md (jamais commitar dado pessoal).
   2. `adapters/storage/supabase.ts:36` — o caminho do objeto inclui um UUID novo a cada envio, então `x-upsert` nunca substitui nada: cada troca de avatar deixa o arquivo anterior órfão no bucket, para sempre. Viola a regra 4 (custo de operação baixo, free tier) e cresce sem limite.
 - O que já está bom (não refazer): validação única compartilhada pelos dois adaptadores; extensão derivada do tipo declarado em vez do nome enviado; service role key confinada ao adaptador; erros nomeados chegando traduzidos na UI.
+
+## [5] ACTION — 2026-08-01 12:50 — backend-developer
+- Ação: Corrigidos os dois defeitos do REJECT [4]: `/public/uploads/` entrou no `.gitignore`; a interface do storage ganhou `deleteFileByUrl`, implementado nos dois adaptadores, e a rota remove o avatar anterior **depois** de gravar o novo (best-effort, com log em caso de falha).
+- Motivo: Defeitos 1 e 2 do loop 1.
+- Resultado: ok — segundo envio deixa 1 arquivo em disco (antes deixaria 2); `git check-ignore` confirma o caminho ignorado. `extractObjectPath` recusa URL de outra origem e caminho fora do prefixo de avatar, coberto por teste.
+- Lição: n/a — defeitos pontuais deste ticket.
+
+## [6] ACTION — 2026-08-01 12:55 — qa-validator
+- Ação: Validação dos critérios com o app rodando.
+- Resultado: C1 adaptador Supabase por REST, sem `@supabase/*` (grep confirma) e coberto por 4 testes que exercitam URL pública, ausência da chave de serviço, falha do provedor e recusa antes da rede. C2 `text/plain` → 400 `invalid_file_type`; 3 MB → 400 `file_too_large`; ambos com o motivo traduzido na UI. C3 fallback local grava e devolve URL. C4 falha de storage → 502 com motivo nomeado, não 500 anônimo. C5 45 testes. C6 build, lint (0 erros), typecheck.
+- Veredito: **aprovado**. Ressalva: a gravação no bucket real depende de `SUPABASE_SERVICE_ROLE_KEY` e do bucket `avatars` existir — validação de produção listada no ticket.
