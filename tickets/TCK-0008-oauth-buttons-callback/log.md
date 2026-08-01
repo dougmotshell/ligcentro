@@ -36,3 +36,14 @@
 - Ação: Corrigida a detecção automática de SSL para incluir hosts `supabase.com`, além de documentar `DATABASE_SSL=true` para produção.
 - Motivo: O callback OAuth consulta/cria o perfil no Postgres; poolers Supabase usam `supabase.com` e a regra anterior podia conectar sem TLS, resultando em `oauth_failed` na Vercel.
 - Resultado: correção pronta para novo deploy; build/lint/typecheck devem ser executados no CI.
+
+## [8] ACTION — 2026-08-01 — docs-writer
+- Ação: Encerramento do ticket, no ciclo de sincronização de documentação (TCK-0017).
+- Estado real: os quatro primeiros critérios estavam implementados, mas o fluxo **falhava para todo usuário novo**: o callback usava `ON CONFLICT (user_id)` e não existia constraint única nessa coluna, então o Postgres abortava a inserção e o retorno caía em `oauth_failed`. A correção de SSL da entrada [7] não era a causa. Resolvido no TCK-0009 (migração 0005) e o provisionamento de perfil foi extraído para `ensureDraftProfile`, compartilhado com o callback de confirmação de e-mail.
+- Resultado: status alterado para `done`.
+
+## [9] HANDOFF — 2026-08-01 — docs-writer → (encerrado)
+- Status novo: done
+- O que foi feito: botões OAuth traduzidos, rotas de início/callback com PKCE e state, cookies httpOnly.
+- Pendências e riscos: validação real com cada provedor segue listada como pendência de produção no TCK-0009.
+- Briefing para o próximo agente: nada a retomar; ver `tickets/TCK-0009-auth-session-fixes/`.

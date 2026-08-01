@@ -59,3 +59,14 @@
 - Ação: Suspenso provisoriamente o job E2E no CI e ajustado o gate `CI aprovado` para aceitar `skipped` nesse job.
 - Motivo: O conjunto E2E ainda não possui testes reais; o pipeline não deve bloquear as validações existentes por uma suíte vazia.
 - Resultado: lint YAML por inspeção; demais jobs permanecem obrigatórios. Reativar removendo `if: ${{ false }}` quando os testes E2E forem implementados.
+
+## [12] ACTION — 2026-08-01 — docs-writer
+- Ação: Encerramento do ticket, no ciclo de sincronização de documentação (TCK-0017).
+- Estado real: os critérios 3, 4, 5 e 6 foram atendidos aqui. Os critérios 1 e 2 ficaram incompletos e foram concluídos depois, no **TCK-0009**: o adaptador funcionava, mas a sessão morria em ~1 h por falta de renovação, o cadastro por e-mail com confirmação pendente não criava perfil, e os cookies não levavam `secure`. O diagnóstico da entrada [7] deste log (SSL como causa do `oauth_failed`) estava incorreto — a causa era a ausência de constraint única em `profiles.user_id`, corrigida pela migração 0005 no TCK-0009.
+- Resultado: status alterado para `done`. O que restava virou escopo do TCK-0009, que está fechado com evidência.
+
+## [13] HANDOFF — 2026-08-01 — docs-writer → (encerrado)
+- Status novo: done
+- O que foi feito: integração inicial do Supabase Auth por REST, documentação de configuração e correções de CI/deploy.
+- Pendências e riscos: nenhuma — o restante foi entregue no TCK-0009.
+- Briefing para o próximo agente: nada a retomar. Para o estado atual de autenticação, ler `tickets/TCK-0009-auth-session-fixes/` e o ADR-0002.

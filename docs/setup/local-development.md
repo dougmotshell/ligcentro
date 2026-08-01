@@ -30,6 +30,7 @@ docker compose up --build -d
 ```
 
 Isso sobe:
+
 - **Postgres 16** na porta 5432 (dados em volume Docker)
 - **App Next.js** na porta definida em `APP_PORT` (padrão 3000)
 
@@ -37,12 +38,12 @@ As migrações e seeds rodam automaticamente no primeiro `up`.
 
 ## 4. Acessar
 
-| URL | O que é |
-|---|---|
-| `http://localhost:3000` | App (redireciona para `/pt-BR`) |
-| `http://localhost:3000/pt-BR/demo` | Perfil de demonstração (seed) |
-| `http://localhost:3000/pt-BR/login` | Login |
-| `http://localhost:3000/pt-BR/dashboard` | Dashboard (autenticado) |
+| URL                                     | O que é                         |
+| --------------------------------------- | ------------------------------- |
+| `http://localhost:3000`                 | App (redireciona para `/pt-BR`) |
+| `http://localhost:3000/pt-BR/demo`      | Perfil de demonstração (seed)   |
+| `http://localhost:3000/pt-BR/login`     | Login                           |
+| `http://localhost:3000/pt-BR/dashboard` | Dashboard (autenticado)         |
 
 ## 5. Comandos úteis
 
@@ -75,6 +76,7 @@ psql postgresql://ligcentro:ligcentro@localhost:5432/ligcentro
 ## 6. Auth em desenvolvimento local
 
 Por padrão, o dev local usa uma **simulação de auth** via middleware:
+
 - Qualquer e-mail/senha aceita no formulário de login (sem Supabase)
 - O usuário de sessão é o do perfil `demo` (seed)
 
@@ -82,9 +84,34 @@ Para testar com Supabase Auth real em dev, configure as variáveis `NEXT_PUBLIC_
 
 ## Resolução de problemas comuns
 
-| Problema | Solução |
-|---|---|
-| Porta 3000 ocupada | `APP_PORT=3001 docker compose up` |
+| Problema                 | Solução                                               |
+| ------------------------ | ----------------------------------------------------- |
+| Porta 3000 ocupada       | `APP_PORT=3001 docker compose up`                     |
 | Migrations não aplicadas | `docker compose down -v && docker compose up --build` |
-| Erro de tipos TypeScript | `npm run typecheck` para ver erros; verifique `.env` |
-| Build falha | `npm run build 2>&1 \| head -50` — ver primeiro erro |
+| Erro de tipos TypeScript | `npm run typecheck` para ver erros; verifique `.env`  |
+| Build falha              | `npm run build 2>&1 \| head -50` — ver primeiro erro  |
+
+## Comandos do dia a dia (atualizado em 2026-08-01)
+
+```bash
+docker compose up -d db     # Postgres local
+npm run db:migrate          # aplica as migrações pendentes, em ordem
+npm run db:migrate -- --status      # o que já foi aplicado
+npm run db:migrate -- --baseline 0008   # adota o runner num banco já migrado à mão
+npm run dev                 # app em desenvolvimento
+npm run test:unit           # 84 testes; os de banco exigem o Postgres acima
+npm run test:e2e            # Playwright — faz o build e sobe o app sozinho
+npm run analytics:purge     # aplica ANALYTICS_RETENTION_DAYS
+```
+
+**Migrar antes de subir código**: a partir da migração 0006 o app depende da role
+`ligcentro_app`. Sem ela, toda requisição autenticada responde `app_role_missing`
+(ver [ADR-0001](../adr/0001-rls-por-role-de-aplicacao.md)).
+
+Para exercitar o caminho de **sessão mock** tendo Supabase real no `.env`,
+sobrescreva as variáveis na linha de comando:
+
+```bash
+SUPABASE_URL= SUPABASE_ANON_KEY= NEXT_PUBLIC_SUPABASE_URL= NEXT_PUBLIC_SUPABASE_ANON_KEY= \
+  DATABASE_URL=postgresql://ligcentro:ligcentro@localhost:5432/ligcentro npm run dev
+```

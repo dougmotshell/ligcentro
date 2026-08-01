@@ -28,11 +28,11 @@
 
 No dashboard do projeto: **Settings → API**
 
-| Variável | Onde encontrar | Descrição |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Project URL | URL pública do projeto |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` `public` key | Chave pública (usada no cliente) |
-| `SUPABASE_SERVICE_ROLE_KEY` | `service_role` key | Chave secreta (somente server-side; necessária para operações administrativas server-side) |
+| Variável                        | Onde encontrar      | Descrição                                                                                  |
+| ------------------------------- | ------------------- | ------------------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Project URL         | URL pública do projeto                                                                     |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` `public` key | Chave pública (usada no cliente)                                                           |
+| `SUPABASE_SERVICE_ROLE_KEY`     | `service_role` key  | Chave secreta (somente server-side; necessária para operações administrativas server-side) |
 
 > ⚠️ **A `service_role` key nunca vai para o cliente nem para o commit.** Ela bypassa o RLS — use só em Route Handlers server-side.
 
@@ -81,6 +81,7 @@ No dashboard: **Storage → New bucket**
 - Max file size: `5 MB`
 
 Política de Storage (executar no SQL Editor):
+
 ```sql
 -- Qualquer um pode ler avatares
 CREATE POLICY "avatars_public_read"
@@ -209,14 +210,14 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000      # URL base pública
 
 ### Variáveis obrigatórias por ambiente
 
-| Variável | Dev local | Staging/Prod |
-|---|---|---|
-| `DATABASE_URL` | ✅ (docker postgres) | ✅ (Supabase pooler) |
-| `NEXT_PUBLIC_SUPABASE_URL` | ❌ (não necessário) | ✅ |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ❌ | ✅ |
-| `SUPABASE_SERVICE_ROLE_KEY` | ❌ | ✅ |
-| `NEXTAUTH_SECRET` | ✅ (qualquer valor) | ✅ (valor forte) |
-| `NEXT_PUBLIC_APP_URL` | ✅ | ✅ |
+| Variável                        | Dev local            | Staging/Prod         |
+| ------------------------------- | -------------------- | -------------------- |
+| `DATABASE_URL`                  | ✅ (docker postgres) | ✅ (Supabase pooler) |
+| `NEXT_PUBLIC_SUPABASE_URL`      | ❌ (não necessário)  | ✅                   |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ❌                   | ✅                   |
+| `SUPABASE_SERVICE_ROLE_KEY`     | ❌                   | ✅                   |
+| `NEXTAUTH_SECRET`               | ✅ (qualquer valor)  | ✅ (valor forte)     |
+| `NEXT_PUBLIC_APP_URL`           | ✅                   | ✅                   |
 
 ---
 

@@ -1,6 +1,6 @@
 # TCK-0017: Sincronizar documentação com o estado real do código
 
-- **status:** triaged
+- **status:** done
 - **owner:** docs-writer
 - **created:** 2026-08-01 · **by:** Douglas
 - **type:** docs
@@ -23,12 +23,12 @@ variáveis inexistentes no código.)
 
 ## Critérios de aceite (máx. 7, verificáveis)
 
-- [ ] 1. `AGENTS.md` (mapa do repositório + "Estado atual") descreve o código existente e as fases de fato concluídas.
-- [ ] 2. `03-mvp-roadmap.md` reflete o estado real item por item, com o que ficou pendente identificado por ticket.
-- [ ] 3. `.env.example` e `docs/setup/external-services.md` listam só variáveis lidas pelo código, mais as novas introduzidas nos tickets TCK-0009..TCK-0016.
-- [ ] 4. Os tickets TCK-0007 e TCK-0008 têm entrada de encerramento coerente com o que passou a funcionar.
-- [ ] 5. Decisões duras deste ciclo viram ADR em `docs/adr/`.
-- [ ] 6. `npm run format:check` passa nos arquivos alterados.
+- [x] 1. `AGENTS.md` (mapa do repositório + "Estado atual") descreve o código existente e as fases de fato concluídas.
+- [x] 2. `03-mvp-roadmap.md` reflete o estado real item por item, com o que ficou pendente identificado por ticket.
+- [x] 3. `.env.example` e `docs/setup/external-services.md` listam só variáveis lidas pelo código, mais as novas introduzidas nos tickets TCK-0009..TCK-0016.
+- [x] 4. Os tickets TCK-0007 e TCK-0008 têm entrada de encerramento coerente com o que passou a funcionar.
+- [x] 5. Decisões duras deste ciclo viram ADR em `docs/adr/`.
+- [x] 6. `npm run format:check` passa nos arquivos alterados.
 
 ## Referências
 
@@ -36,4 +36,6 @@ variáveis inexistentes no código.)
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: · Evidência final: · Docs atualizados:
+- Commits: `TCK-0017: sincronizar documentação com o estado real`
+- Evidência final: log entradas [3] a [5]
+- Docs atualizados: `AGENTS.md`, `03-mvp-roadmap.md`, `.env.example`, `docs/setup/*`, `docs/adr/*`, `agents/memory/context/*`

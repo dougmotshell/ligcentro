@@ -5,7 +5,7 @@
 
 ## O que é este repositório
 
-**ligcentro** (esperanto *ligo* = "vínculo/link" + *centro*) é um produto
+**ligcentro** (esperanto _ligo_ = "vínculo/link" + _centro_) é um produto
 **link-in-bio**: uma única URL (`ligcentro.vercel.app/usuario`) que reúne todos os links,
 redes, conteúdos e formas de contato de um criador em uma página pública rápida,
 bonita e mensurável — o mesmo espaço de produto do Linktree, Beacons e Bento.
@@ -24,23 +24,23 @@ ligcentro. Mantenedor: **Douglas Matos da Silva**.
 
 ## Mapa do repositório
 
-| Caminho | Conteúdo | Quando consultar |
-|---|---|---|
-| `docs/market-research/` | Análise de mercado: concorrentes, análise competitiva, open source, engenharia reversa do Linktree | Para entender o espaço de produto e o posicionamento |
-| `docs/implementation-plan/` | Visão, escopo de MVP, arquitetura, roadmap, modelo de dados, analytics, monetização | **Antes de qualquer decisão de produto ou técnica** |
-| `agents/` | Definições canônicas dos agentes de desenvolvimento | Para saber quem faz o quê e como o fluxo funciona |
-| `tickets/` | Unidade de trabalho (fluxo de agentes) | Ao iniciar/retomar uma tarefa de desenvolvimento |
-| `.agents/skills/` | Skills canônicas (`/ticket`, `/handoff`, `/dev-loop`, `/campaign`…) no padrão aberto Agent Skills | Para operar o fluxo de desenvolvimento |
-| `scripts/sync-agent-tools.mjs` | Gerador dos wrappers de slash commands/agentes por ferramenta | Após criar/renomear skill ou agente |
-
-> **Ainda não há código** neste repositório — só pesquisa e planos. A primeira fase
-> de construção (Fase 0 do [roadmap](docs/implementation-plan/03-mvp-roadmap.md))
-> monta a fundação técnica.
+| Caminho                                    | Conteúdo                                                                                           | Quando consultar                                         |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `docs/market-research/`                    | Análise de mercado: concorrentes, análise competitiva, open source, engenharia reversa do Linktree | Para entender o espaço de produto e o posicionamento     |
+| `docs/implementation-plan/`                | Visão, escopo de MVP, arquitetura, roadmap, modelo de dados, analytics, monetização                | **Antes de qualquer decisão de produto ou técnica**      |
+| `agents/`                                  | Definições canônicas dos agentes de desenvolvimento                                                | Para saber quem faz o quê e como o fluxo funciona        |
+| `tickets/`                                 | Unidade de trabalho (fluxo de agentes)                                                             | Ao iniciar/retomar uma tarefa de desenvolvimento         |
+| `.agents/skills/`                          | Skills canônicas (`/ticket`, `/handoff`, `/dev-loop`, `/campaign`…) no padrão aberto Agent Skills  | Para operar o fluxo de desenvolvimento                   |
+| `scripts/`                                 | Runner de migrações (`migrate.mjs`), expurgo de analytics, gerador dos wrappers de agentes         | Ao migrar banco, operar retenção ou criar/renomear skill |
+| `app/`, `components/`, `lib/`, `adapters/` | Código do produto: rotas do App Router, componentes, regras e o específico de plataforma isolado   | Ao implementar qualquer coisa                            |
+| `db/migrations/`                           | Migrações SQL numeradas e versionadas (`schema_migrations`)                                        | Antes de qualquer mudança de schema                      |
+| `e2e/`                                     | Fluxo crítico em Playwright                                                                        | Ao mexer em cadastro, editor, publicação ou analytics    |
+| `docs/adr/`                                | Decisões arquiteturais registradas                                                                 | Antes de rediscutir uma decisão já tomada                |
 
 ## Regras para agentes
 
 1. **Decisões seguem os planos**: pedido de produto/feature deve ser coerente com [`docs/implementation-plan/01-vision-and-scope.md`](docs/implementation-plan/01-vision-and-scope.md) e o [roadmap](docs/implementation-plan/03-mvp-roadmap.md). Pedido fora do plano volta ao Douglas com recomendação (aceitar/adaptar/recusar), **nunca** é implementado silenciosamente.
-2. **Escopo disciplinado (MVP)**: nada do backlog "além do MVP" entra antes de a Fase 4 estar `done`. O ligcentro faz *link-in-bio* excepcionalmente bem — não é marketplace, plataforma de cursos nem site-builder genérico.
+2. **Escopo disciplinado (MVP)**: nada do backlog "além do MVP" entra antes de a Fase 4 estar `done`. O ligcentro faz _link-in-bio_ excepcionalmente bem — não é marketplace, plataforma de cursos nem site-builder genérico.
 3. **Grátis honesto, sem dark patterns**: o plano grátis é um produto de verdade (sem branding forçado, com analytics por link). Nada de dark pattern no funil de upgrade — ver [`06-monetization.md`](docs/implementation-plan/06-monetization.md).
 4. **Custo de operação baixo**: o MVP roda em **free tier** (Vercel + Supabase). Nenhuma dependência paga é requisito de v1 — ver [`02-architecture.md`](docs/implementation-plan/02-architecture.md).
 5. **Performance é feature**: o perfil público carrega em sub-segundo (SSR/SSG + CDN, LCP mobile p75 < 1,2 s). Não é ajuste tardio.
@@ -58,23 +58,35 @@ ligcentro. Mantenedor: **Douglas Matos da Silva**.
 
 As skills seguem o **padrão aberto Agent Skills** (`SKILL.md` com frontmatter `name`/`description`) e vivem em `.agents/skills/<name>/SKILL.md` — **única fonte editável**. Cada ferramenta as consome assim:
 
-| Ferramenta | Como consome | Invocação |
-|---|---|---|
-| Claude Code | `.claude/skills` → symlink para `.agents/skills` | `/<skill>` |
-| OpenAI Codex | Lê `.agents/skills/` nativamente | `$<skill>` ou menu `/skills` |
+| Ferramenta                   | Como consome                                                                  | Invocação                                                       |
+| ---------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Claude Code                  | `.claude/skills` → symlink para `.agents/skills`                              | `/<skill>`                                                      |
+| OpenAI Codex                 | Lê `.agents/skills/` nativamente                                              | `$<skill>` ou menu `/skills`                                    |
 | GitHub Copilot (VS Code/CLI) | Lê `.agents/skills/` nativamente + prompt files gerados em `.github/prompts/` | `/<skill>` no chat; agentes via `@<agente>` (`.github/agents/`) |
-| Gemini CLI | Commands gerados em `.gemini/commands/*.toml` | `/<skill>` |
-| Google Antigravity | Workflows gerados em `.agent/workflows/` (e lê `AGENTS.md`) | `/<skill>` |
-| Windsurf | Workflows gerados em `.windsurf/workflows/` | `/<skill>` |
-| Cursor | Commands gerados em `.cursor/commands/` (e lê `AGENTS.md`) | `/<skill>` |
+| Gemini CLI                   | Commands gerados em `.gemini/commands/*.toml`                                 | `/<skill>`                                                      |
+| Google Antigravity           | Workflows gerados em `.agent/workflows/` (e lê `AGENTS.md`)                   | `/<skill>`                                                      |
+| Windsurf                     | Workflows gerados em `.windsurf/workflows/`                                   | `/<skill>`                                                      |
+| Cursor                       | Commands gerados em `.cursor/commands/` (e lê `AGENTS.md`)                    | `/<skill>`                                                      |
 
 Os diretórios `.github/prompts/`, `.github/agents/`, `.gemini/commands/`, `.agent/workflows/`, `.windsurf/workflows/` e `.cursor/commands/` são **gerados** — nunca editar à mão. Após criar/renomear/remover uma skill ou agente, rode `npm run sync-agent-tools` para regenerá-los.
+
 - Agentes respeitam **escopo exclusivo** (não mexer na área de outro; handoff) e as regras globais de [`agents/README.md`](agents/README.md). Agente ocupado com um ticket **não enfileira** os novos da sua área: spawna **subagentes** (`<agente>#N`) para assumi-los ou para paralelizar subtarefas — regras e formato de log `SPAWN` na seção "Subagentes" de [`agents/handoff-protocol.md`](agents/handoff-protocol.md).
 - **Memória persistente** (`agents/memory/`): sessões são efêmeras, o repositório lembra — [lessons.md](agents/memory/lessons.md) (lições `L-NNN`, append-only, de **erro**: erro → causa raiz → como evitar, e de **acerto**: o que funcionou → por quê → como reaproveitar) e [context/](agents/memory/context/) (contexto operacional vivo por área). Todo agente **lê antes de trabalhar**; registra lição ao resolver erro generalizável **ou identificar acerto que vale repetir**; repetir erro com lição registrada é defeito bloqueante — seção "Memória persistente" do [`agents/handoff-protocol.md`](agents/handoff-protocol.md).
 - **Squad de segurança** (`agents/security/`): auditorias periódicas (devsecops, red-team, blue-team, security-researcher) sobre RLS, LGPD, segredos e dependências.
 
 ## Estado atual
 
+**Atualizado em 2026-08-01.**
+
 - **Pesquisa de mercado concluída** em `docs/market-research/` (concorrentes + engenharia reversa do Linktree).
-- **Planos de implementação escritos** em `docs/implementation-plan/` (visão, arquitetura, roadmap, dados, analytics, monetização).
-- **Construção**: ainda não iniciada — a Fase 0 do roadmap é o próximo passo. Quando começar, cada decisão dura vira um **ADR** e cada comportamento vira uma **spec**, criados sob `docs/`.
+- **Planos de implementação escritos** em `docs/implementation-plan/`.
+- **Construção em andamento.** O que existe e está exercitado por teste:
+  - perfil público `/[handle]` com SSG + revalidação, blocos (link, social, contato), agendamento de link, Open Graph e QR code;
+  - contas por e-mail/senha e OAuth (Google, GitHub) sobre Supabase Auth, com renovação de sessão por refresh token e sessão mock apenas fora de produção;
+  - editor com avatar, título, bio, CRUD de blocos com reordenação, temas prontos + customização (cor, fonte, formato de botão, cores de marca) e controle de publicação;
+  - analytics agregado sem PII, com ingestão validada no banco, limite de taxa e expurgo de retenção;
+  - exportação e **exclusão** de dados (LGPD);
+  - **RLS efetiva**: toda consulta em nome de um usuário roda sob role sem bypass, com teste de acesso cruzado automatizado;
+  - CI com lint, typecheck, 84 testes unitários, 3 e2e e auditoria de segredos — o portão exige `success`, não aceita mais job pulado.
+- **Pendente para o grátis ficar completo** (Fase 4): manual do usuário gerado por Playwright, auditoria da squad de segurança e revisão de performance (LCP p75 < 1,2 s ainda não medido). Ver o [roadmap](docs/implementation-plan/03-mvp-roadmap.md), que aponta o ticket de cada item aberto.
+- **Decisões duras** deste ciclo estão em `docs/adr/`; comportamentos verificáveis estão nos testes, que são a spec executável.
