@@ -68,13 +68,16 @@ CREATE INDEX IF NOT EXISTS idx_blocks_profile_position ON blocks(profile_id, pos
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blocks ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "profiles_public_read" ON profiles;
 CREATE POLICY "profiles_public_read" ON profiles
     FOR SELECT USING (status = 'published');
 
+DROP POLICY IF EXISTS "profiles_owner_all" ON profiles;
 CREATE POLICY "profiles_owner_all" ON profiles
     FOR ALL USING (auth.uid() = user_id)
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "blocks_public_read" ON blocks;
 CREATE POLICY "blocks_public_read" ON blocks
     FOR SELECT USING (
         EXISTS (
@@ -87,6 +90,7 @@ CREATE POLICY "blocks_public_read" ON blocks
         AND (visible_until IS NULL OR visible_until >= NOW())
     );
 
+DROP POLICY IF EXISTS "blocks_owner_all" ON blocks;
 CREATE POLICY "blocks_owner_all" ON blocks
     FOR ALL USING (
         EXISTS (

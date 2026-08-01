@@ -13,8 +13,9 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    // Fase 0: sem testes ainda — não falha se a pasta estiver vazia
-    passWithNoTests: true,
+    // `e2e/` é do Playwright: o vitest não sabe rodar aquele runner e falharia
+    // só por encontrar os arquivos.
+    exclude: ['node_modules/**', 'e2e/**', '.next-app/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],

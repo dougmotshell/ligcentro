@@ -118,3 +118,17 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Causa raiz: `SECURITY DEFINER` transfere a autorização para dentro da função; quando o alvo vem por parâmetro, a autorização deixou de existir e passou a depender de todo chamador ser correto.
 - Como evitar: função `SECURITY DEFINER` deriva o sujeito de `current_app_user_id()` (ou equivalente da sessão), nunca de argumento. Se um argumento de identidade parecer necessário, a função precisa validar que ele bate com a sessão. Remover a assinatura antiga com `DROP FUNCTION` — `CREATE OR REPLACE` não substitui uma sobrecarga.
 - Refs: `db/migrations/0008_account_deletion.sql`, `lib/db/account.test.ts`, `tickets/TCK-0015-account-deletion-lgpd/log.md` entradas [4] e [5].
+
+## [L-015] 2026-08-01 — frontend — `watch()` do react-hook-form não é reativo — erro
+- Contexto: TCK-0019, verificação de disponibilidade de handle no cadastro, escrita no TCK-0003.
+- Erro: a consulta a `/api/auth/check-handle` **nunca** era disparada no navegador (0 requisições, medido no e2e) e nenhum indicador aparecia. Passou meses sem ser notado porque não havia teste de interação.
+- Causa raiz: `watch('nome')` lê o valor mas não garante nova renderização; usado como dependência de `useEffect`, a dependência nunca muda. A API reativa é `useWatch`. O aviso `react-hooks/incompatible-library` naquela linha era o sintoma, e estava sendo tolerado como ruído.
+- Como evitar: dependência de efeito que vem de formulário usa `useWatch`; e estado derivável do valor (formato, reserva) é calculado na renderização, não espelhado por `setState` dentro do efeito — o que também evita o erro `Calling setState synchronously within an effect`.
+- Refs: `app/[locale]/signup/SignupForm.tsx`, `e2e/critical-flow.spec.ts`.
+
+## [L-016] 2026-08-01 — qa — e2e do Next 16 precisa de build, não de `next dev` — erro
+- Contexto: TCK-0016, primeiro e2e Playwright do repositório.
+- Erro: nenhuma interação funcionava — o cliente não hidratava e nenhum efeito rodava, com o console mostrando só falhas de WebSocket do HMR.
+- Causa raiz: o servidor de desenvolvimento do Next 16 **bloqueia recursos `/_next/`** vindos de origem diferente da que o iniciou (`127.0.0.1` vs `localhost`), então o bundle do cliente não carrega. É silencioso: o HTML renderiza normalmente.
+- Como evitar: `webServer` do Playwright roda `npm run build && next start` — além de não ter esse bloqueio, é o ambiente que o usuário recebe. Se precisar mesmo de `next dev`, usar exatamente o mesmo host do `baseURL` ou declarar `allowedDevOrigins`.
+- Refs: `playwright.config.ts`, `tickets/TCK-0016-test-suite-ci/log.md`.
