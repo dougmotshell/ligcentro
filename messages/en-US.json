@@ -64,7 +64,8 @@
       "oauth_failed": "We could not complete the social login. Please try again.",
       "confirm_invalid": "The confirmation link is invalid or incomplete.",
       "confirm_failed": "The confirmation link expired or was already used. Request a new one.",
-      "auth_not_configured": "Authentication is not configured in this environment."
+      "auth_not_configured": "Authentication is not configured in this environment.",
+      "account_already_exists": "An account with this email already exists. Log in instead of creating another."
     },
     "login": {
       "title": "Log in",

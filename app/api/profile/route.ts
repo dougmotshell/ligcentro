@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { isMockAuthActive } from '@/adapters/auth';
 import { applySessionCookies, resolveSession } from '@/lib/auth/session';
 import { getDashboardProfile, isHandleAvailable, updateDashboardProfile } from '@/lib/db/dashboard';
 import { normalizeTheme } from '@/lib/theme/presets';
@@ -73,10 +74,10 @@ export async function PUT(request: Request) {
   revalidateProfilePaths(profile.handle);
 
   const response = NextResponse.json({ profile });
-  if (body.handle !== undefined) {
-    // O handle faz parte da sessão; reemitir mantém o cookie coerente com o
-    // perfil. `applySessionCookies` escolhe o cookie do adaptador em uso — antes
-    // isto gravava `mock-auth` inclusive com Supabase configurado.
+  // Só o cookie mock carrega o handle dentro de si e precisa ser reemitido. Com
+  // Supabase o handle vem do banco a cada leitura de sessão; reescrever o cookie
+  // de acesso aqui apenas esticaria sua validade sem atualizar `sb-expires-at`.
+  if (body.handle !== undefined && isMockAuthActive()) {
     applySessionCookies(response, { ...session, handle: profile.handle, profileId: profile.id });
   }
 

@@ -64,7 +64,8 @@
       "oauth_failed": "Não foi possível concluir o login social. Tente novamente.",
       "confirm_invalid": "O link de confirmação é inválido ou está incompleto.",
       "confirm_failed": "O link de confirmação expirou ou já foi usado. Peça um novo.",
-      "auth_not_configured": "A autenticação não está configurada neste ambiente."
+      "auth_not_configured": "A autenticação não está configurada neste ambiente.",
+      "account_already_exists": "Já existe uma conta com este e-mail. Entre em vez de criar outra."
     },
     "login": {
       "title": "Entrar",

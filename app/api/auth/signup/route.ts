@@ -57,7 +57,7 @@ export async function POST(request: Request) {
   // O perfil é criado mesmo quando a confirmação de e-mail está pendente: sem
   // isso o handle não fica reservado e o usuário perde o nome escolhido entre o
   // cadastro e o clique no link do e-mail.
-  await db`
+  const inserted = (await db`
     INSERT INTO profiles (id, user_id, handle, display_name, bio, avatar_url, theme, status)
     VALUES (
       ${profileId}::uuid,
@@ -70,7 +70,16 @@ export async function POST(request: Request) {
       'draft'
     )
     ON CONFLICT (user_id) DO NOTHING
-  `;
+    RETURNING id
+  `) as unknown as Array<{ id: string }>;
+
+  // Nada inserido = este usuário de auth já tem perfil. O Supabase responde com
+  // objeto de usuário também para e-mail já cadastrado, então sem esta checagem
+  // a rota afirmaria ter reservado um handle que continua livre para outra
+  // pessoa — e o titular acharia que o nome é dele.
+  if (!inserted[0]) {
+    return NextResponse.json({ error: 'account_already_exists' }, { status: 409 });
+  }
 
   if (!result.session) {
     return NextResponse.json({ pendingEmailConfirmation: true, handle }, { status: 202 });

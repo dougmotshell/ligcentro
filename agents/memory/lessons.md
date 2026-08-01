@@ -48,3 +48,17 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Causa raiz: múltiplos processos locais disputavam o diretório padrão `.next`, causando corrida entre geração e cópia dos artefatos.
 - Como evitar: usar `distDir` dedicado quando o repositório rodar em ambiente compartilhado e alinhar Docker/TypeScript ao novo caminho de build.
 - Refs: `next.config.ts`, `Dockerfile`, `tsconfig.json`, `tickets/TCK-0002-public-profile/log.md`
+
+## [L-005] 2026-08-01 — backend — `ON CONFLICT DO NOTHING` esconde conflito de negócio — erro
+- Contexto: rota de cadastro do TCK-0009, que insere o perfil junto com a criação do usuário de auth.
+- Erro: com `ON CONFLICT (user_id) DO NOTHING` sem `RETURNING`, a rota respondia 201/202 ("handle reservado") mesmo quando nada era inserido porque o usuário já tinha perfil — o handle continuava livre para outra pessoa.
+- Causa raiz: `DO NOTHING` é sucesso para o Postgres; sem `RETURNING` a aplicação não distingue "inseri" de "não fiz nada" e trata conflito como caminho felizardo.
+- Como evitar: todo `ON CONFLICT ... DO NOTHING` cujo conflito tem significado de negócio leva `RETURNING` e a aplicação checa se veio linha; se não veio, responde o erro específico do conflito.
+- Refs: `app/api/auth/signup/route.ts`, `tickets/TCK-0009-auth-session-fixes/log.md` entradas [6] e [7].
+
+## [L-006] 2026-08-01 — backend — `NEXT_PUBLIC_*` congela decisão de servidor no build — erro
+- Contexto: seleção do adaptador de auth (mock vs. Supabase) no TCK-0009.
+- Erro: a escolha dependia de `process.env.NEXT_PUBLIC_SUPABASE_URL`, então o valor do momento do build ficava embutido no bundle e o ambiente não podia ser reconfigurado sem recompilar.
+- Causa raiz: o Next substitui `NEXT_PUBLIC_*` por literal em tempo de compilação, inclusive no código de servidor — a variável não é lida em runtime.
+- Como evitar: decisão de servidor lê variável **sem** o prefixo `NEXT_PUBLIC_` (mantendo o nome público apenas como fallback de compatibilidade); `NEXT_PUBLIC_*` só para valor que o cliente realmente precisa e que pode ser público.
+- Refs: `lib/supabase/config.ts`, `tickets/TCK-0009-auth-session-fixes/log.md` entrada [4].

@@ -118,7 +118,13 @@ export function SignupForm({ locale }: Props) {
 
     if (!response.ok) {
       const result = (await response.json().catch(() => ({ error: 'request_failed' }))) as { error?: string };
-      setError('root', { message: result.error === 'handle_taken' ? 'handleTaken' : 'request_failed' });
+      const errorKey =
+        result.error === 'handle_taken'
+          ? 'handleTaken'
+          : result.error === 'account_already_exists'
+            ? 'account_already_exists'
+            : 'request_failed';
+      setError('root', { message: errorKey });
       return;
     }
 

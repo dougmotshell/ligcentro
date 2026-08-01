@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { isSupabaseAuthConfigured } from '@/adapters/auth';
 import { EMAIL_VERIFY_TYPES, verifyEmailToken, type EmailVerifyType } from '@/adapters/auth/supabase';
 import { applySessionCookies } from '@/lib/auth/session';
+import { ensureDraftProfile } from '@/lib/db/provisioning';
 import { routing } from '@/i18n/routing';
 
 function resolveLocale(value: string | null): string {
@@ -36,8 +37,14 @@ export async function GET(request: Request) {
 
   try {
     const session = await verifyEmailToken(tokenHash, type);
-    const destination = session.profileId ? `/${locale}/onboarding?step=1` : `/${locale}/signup`;
-    const response = NextResponse.redirect(new URL(destination, url.origin));
+    // Quem chega aqui sem perfil (conta criada fora do formulário de cadastro)
+    // recebe um perfil `draft` e escolhe o handle no onboarding — mandar para o
+    // cadastro seria beco sem saída, porque o usuário do provedor já existe.
+    const profile = await ensureDraftProfile(session);
+    session.profileId = profile.id;
+    session.handle = profile.handle;
+
+    const response = NextResponse.redirect(new URL(`/${locale}/onboarding?step=1`, url.origin));
     applySessionCookies(response, session);
 
     return response;
