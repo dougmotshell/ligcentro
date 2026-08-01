@@ -104,3 +104,10 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Causa raiz: encadear a validação e o commit no mesmo comando faz o registro deixar de depender do resultado — o log passa a afirmar o que se esperava, não o que aconteceu.
 - Como evitar: rodar a suíte como comando **próprio**, ler a saída, e só então escrever o veredito e commitar. Nunca colocar `git commit` na mesma linha de `npm run test:*`.
 - Refs: `tickets/TCK-0012-analytics-integrity/log.md` entradas [7] e [8].
+
+## [L-013] 2026-08-01 — frontend — cor oficial de marca não passa AA sozinha — erro
+- Contexto: TCK-0014, catálogo de botões de marca com a cor oficial de cada rede.
+- Erro: com texto branco, o azul do Twitter (`#1d9bf0`) dava 3,00:1 e o do Facebook (`#1877f2`) 4,23:1 — reprovando o AA de texto normal (4,5:1).
+- Causa raiz: usar a cor da marca como está assume que ela foi pensada para texto sobreposto; várias foram pensadas para logo, não para botão com rótulo.
+- Como evitar: ao adicionar cor de marca, calcular o contraste e escurecer o mínimo necessário, deixando o motivo comentado. Teste que percorre o catálogo inteiro impede a próxima adição de passar batido.
+- Refs: `components/blocks/brand-colors.ts`, `components/blocks/brand-colors.test.ts`.

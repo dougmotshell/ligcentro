@@ -184,7 +184,31 @@
         "dark": "Escuro",
         "purple": "Roxo",
         "green": "Verde"
-      }
+      },
+      "presetsLegend": "Temas prontos",
+      "customLegend": "Ajuste fino",
+      "customDescription": "Cores em hexadecimal, fonte e formato de botão. Cada mudança salva na hora.",
+      "fields": {
+        "bg": "Cor de fundo",
+        "btnBg": "Cor do botão",
+        "btnText": "Cor do texto do botão",
+        "font": "Fonte",
+        "buttonShape": "Formato do botão",
+        "useBrandColors": "Usar as cores oficiais das redes"
+      },
+      "fonts": {
+        "sans": "Sem serifa",
+        "serif": "Com serifa",
+        "mono": "Monoespaçada",
+        "rounded": "Arredondada"
+      },
+      "shapes": {
+        "square": "Reto",
+        "rounded": "Arredondado",
+        "pill": "Pílula"
+      },
+      "brandColorsHint": "Os blocos de rede social ficam na cor da própria marca em vez da cor do tema.",
+      "error": "Não foi possível salvar o tema agora. Tente novamente."
     },
     "share": {
       "title": "Publicar e compartilhar",

@@ -1,6 +1,6 @@
 # TCK-0014: Customização de tema e catálogo de botões de marca
 
-- **status:** triaged
+- **status:** done
 - **owner:** frontend-developer
 - **created:** 2026-08-01 · **by:** Douglas
 - **type:** feature
@@ -23,13 +23,13 @@ A Fase 1 pede catálogo de marca com cor oficial — hoje só há ícone.)
 
 ## Critérios de aceite (máx. 7, verificáveis)
 
-- [ ] 1. O editor permite escolher cor de fundo, cor de botão, fonte e formato de botão, com validação server-side dos valores.
-- [ ] 2. O perfil público aplica as quatro escolhas, com fonte carregada sem bloquear a pintura.
-- [ ] 3. Blocos sociais usam a cor oficial da marca quando o tema estiver em modo "marca", e o estilo do tema quando não.
-- [ ] 4. Temas antigos (sem os campos novos) continuam renderizando via normalização, sem migração destrutiva.
-- [ ] 5. Textos novos em i18n pt-BR + en-US; contraste AA verificado nos dois temas.
-- [ ] 6. Testes unitários cobrem a normalização e a validação do tema.
-- [ ] 7. `npm run build`, `npm run lint`, `npm run typecheck` e `npm run test:unit` passam.
+- [x] 1. O editor permite escolher cor de fundo, cor de botão, fonte e formato de botão, com validação server-side dos valores.
+- [x] 2. O perfil público aplica as quatro escolhas, com fonte carregada sem bloquear a pintura.
+- [x] 3. Blocos sociais usam a cor oficial da marca quando o tema estiver em modo "marca", e o estilo do tema quando não.
+- [x] 4. Temas antigos (sem os campos novos) continuam renderizando via normalização, sem migração destrutiva.
+- [x] 5. Textos novos em i18n pt-BR + en-US; contraste AA verificado nos dois temas.
+- [x] 6. Testes unitários cobrem a normalização e a validação do tema.
+- [x] 7. `npm run build`, `npm run lint`, `npm run typecheck` e `npm run test:unit` passam.
 
 ## Referências
 
@@ -37,4 +37,6 @@ A Fase 1 pede catálogo de marca com cor oficial — hoje só há ícone.)
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: · Evidência final: · Docs atualizados:
+- Commits: `TCK-0014: customização de tema e catálogo de cores de marca`
+- Evidência final: log entradas [3], [5] e [6]
+- Docs atualizados: — (roadmap em TCK-0017)

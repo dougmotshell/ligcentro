@@ -184,7 +184,31 @@
         "dark": "Dark",
         "purple": "Purple",
         "green": "Green"
-      }
+      },
+      "presetsLegend": "Ready-made themes",
+      "customLegend": "Fine-tuning",
+      "customDescription": "Hex colors, font and button shape. Every change saves right away.",
+      "fields": {
+        "bg": "Background color",
+        "btnBg": "Button color",
+        "btnText": "Button text color",
+        "font": "Font",
+        "buttonShape": "Button shape",
+        "useBrandColors": "Use official network colors"
+      },
+      "fonts": {
+        "sans": "Sans-serif",
+        "serif": "Serif",
+        "mono": "Monospace",
+        "rounded": "Rounded"
+      },
+      "shapes": {
+        "square": "Square",
+        "rounded": "Rounded",
+        "pill": "Pill"
+      },
+      "brandColorsHint": "Social blocks use each brand color instead of the theme color.",
+      "error": "Could not save the theme right now. Please try again."
     },
     "share": {
       "title": "Publish and share",
