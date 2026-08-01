@@ -59,7 +59,13 @@
       "request_failed": "The request could not be completed right now.",
       "handleTaken": "This handle is already taken.",
       "handleReserved": "This handle is reserved.",
-      "handleFormat": "Use 3 to 30 lowercase letters, numbers, hyphens or underscores."
+      "handleFormat": "Use 3 to 30 lowercase letters, numbers, hyphens or underscores.",
+      "oauth_state": "Social login validation failed. Please try again.",
+      "oauth_failed": "We could not complete the social login. Please try again.",
+      "confirm_invalid": "The confirmation link is invalid or incomplete.",
+      "confirm_failed": "The confirmation link expired or was already used. Request a new one.",
+      "auth_not_configured": "Authentication is not configured in this environment.",
+      "account_already_exists": "An account with this email already exists. Log in instead of creating another."
     },
     "login": {
       "title": "Log in",
@@ -82,7 +88,10 @@
       "hasAccount": "Already have an account?",
       "loginLink": "Log in",
       "handleChecking": "Checking availability...",
-      "handleAvailable": "Handle available."
+      "handleAvailable": "Handle available.",
+      "confirmEmailTitle": "Confirm your email",
+      "confirmEmailDescription": "We sent a confirmation link to {email}. Open the link to activate your account.",
+      "confirmEmailHandleReserved": "Your handle is already reserved — nobody can take it while you confirm."
     },
     "dashboard": {
       "eyebrow": "Protected dashboard",
@@ -103,7 +112,8 @@
     "tabs": {
       "profile": "Profile",
       "blocks": "Blocks",
-      "themes": "Themes"
+      "themes": "Themes",
+      "account": "My data"
     },
     "themesTitle": "Ready-made themes",
     "themesDescription": "Choose a visual base and update the public profile instantly.",
@@ -120,7 +130,13 @@
       "chooseFile": "Choose file",
       "upload": "Upload avatar",
       "uploading": "Uploading...",
-      "avatarError": "The file could not be uploaded."
+      "avatarError": "The file could not be uploaded.",
+      "invalid_file_type": "Unsupported format. Upload PNG, JPG, WebP, GIF or AVIF.",
+      "file_too_large": "The image is over 2 MB. Please upload a smaller one.",
+      "empty_file": "The file is empty.",
+      "storage_not_configured": "Image storage is not configured in this environment.",
+      "storage_service_key_missing": "The storage service key is missing in this environment.",
+      "storage_upload_failed": "Storage rejected the upload. Please try again shortly."
     },
     "blocks": {
       "title": "Profile blocks",
@@ -169,7 +185,66 @@
         "dark": "Dark",
         "purple": "Purple",
         "green": "Green"
-      }
+      },
+      "presetsLegend": "Ready-made themes",
+      "customLegend": "Fine-tuning",
+      "customDescription": "Hex colors, font and button shape. Every change saves right away.",
+      "fields": {
+        "bg": "Background color",
+        "btnBg": "Button color",
+        "btnText": "Button text color",
+        "font": "Font",
+        "buttonShape": "Button shape",
+        "useBrandColors": "Use official network colors"
+      },
+      "fonts": {
+        "sans": "Sans-serif",
+        "serif": "Serif",
+        "mono": "Monospace",
+        "rounded": "Rounded"
+      },
+      "shapes": {
+        "square": "Square",
+        "rounded": "Rounded",
+        "pill": "Pill"
+      },
+      "brandColorsHint": "Social blocks use each brand color instead of the theme color.",
+      "error": "Could not save the theme right now. Please try again."
+    },
+    "share": {
+      "title": "Publish and share",
+      "description": "Your page is only visible to the public once published.",
+      "statusPublished": "Published",
+      "statusDraft": "Draft",
+      "publishedHint": "Anyone with the link can see your page.",
+      "draftHint": "Nobody can see your page yet — publish it when you are ready.",
+      "publish": "Publish page",
+      "unpublish": "Unpublish",
+      "saving": "Saving...",
+      "copyUrl": "Copy link",
+      "copied": "Link copied!",
+      "downloadQr": "Download QR code",
+      "qrAriaLabel": "QR code for @{handle} page",
+      "error": "Could not save right now. Please try again."
+    },
+    "account": {
+      "title": "Your data",
+      "description": "Taking your data with you and deleting your account — two sides of the same right.",
+      "exportTitle": "Export data",
+      "exportDescription": "Download profile, blocks and analytics as JSON. No request, no waiting.",
+      "exportCta": "Download my data (JSON)",
+      "deleteTitle": "Delete my account",
+      "deleteDescription": "This cannot be undone. On confirmation we delete:",
+      "deleteItems": {
+        "profile": "your profile, avatar, title and bio;",
+        "blocks": "all your blocks and links;",
+        "analytics": "your entire history of views and clicks;",
+        "handle": "and your handle becomes available to someone else."
+      },
+      "confirmLabel": "Type {handle} to confirm",
+      "deleteCta": "Delete my account",
+      "deleting": "Deleting...",
+      "deleteError": "Could not delete the account right now. Please try again."
     }
   },
   "AnalyticsPage": {

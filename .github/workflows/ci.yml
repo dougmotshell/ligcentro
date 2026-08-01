@@ -42,11 +42,28 @@ jobs:
     needs: detect
     if: needs.detect.outputs.has_app == 'true'
     runs-on: ubuntu-latest
+    # Parte da suíte prova isolamento RLS e integridade da ingestão contra um
+    # Postgres real — sem banco, esses casos se pulariam e o verde não valeria.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ligcentro
+          POSTGRES_PASSWORD: ligcentro
+          POSTGRES_DB: ligcentro
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ligcentro -d ligcentro"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ligcentro:ligcentro@localhost:5432/ligcentro
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
+      - name: Aplica as migrações
+        run: npm run db:migrate
       - run: npm run test:unit -- --coverage
       - uses: actions/upload-artifact@v4
         if: always()
@@ -69,14 +86,30 @@ jobs:
   e2e:
     name: Testes E2E (Playwright)
     needs: [detect, build]
-    # Suspenso provisoriamente até os fluxos e2e reais serem implementados.
-    if: ${{ false }}
+    if: needs.detect.outputs.has_app == 'true'
     runs-on: ubuntu-latest
+    # O `webServer` do Playwright faz o build e sobe o app; aqui só o banco.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ligcentro
+          POSTGRES_PASSWORD: ligcentro
+          POSTGRES_DB: ligcentro
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ligcentro -d ligcentro"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ligcentro:ligcentro@localhost:5432/ligcentro
+      E2E_DATABASE_URL: postgresql://ligcentro:ligcentro@localhost:5432/ligcentro
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
+      - name: Aplica as migrações
+        run: npm run db:migrate
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
@@ -93,6 +126,9 @@ jobs:
         with: { fetch-depth: 0 }
       - name: Secret scanning (gitleaks)
         uses: gitleaks/gitleaks-action@v2
+        env:
+          # Allowlist de falsos positivos comprovados; ver .gitleaks.toml.
+          GITLEAKS_CONFIG: .gitleaks.toml
       - name: Auditoria de dependências
         if: hashFiles('package.json') != ''
         run: |
@@ -113,7 +149,19 @@ jobs:
           if [ "${{ needs.detect.outputs.has_app }}" != "true" ]; then
             echo "Repo sem app (só docs) — CI verde por padrão."; exit 0
           fi
-          for r in "${{ needs.lint-type.result }}" "${{ needs.unit.result }}" "${{ needs.build.result }}" "${{ needs.e2e.result }}" "${{ needs.security.result }}"; do
-            if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then echo "Job falhou: $r"; exit 1; fi
+          # Jobs de teste têm de passar de verdade: aceitar "skipped" foi o que
+          # permitiu o E2E ficar desligado com o portão verde (TCK-0016).
+          for job in lint-type unit build e2e security; do
+            case "$job" in
+              lint-type) r="${{ needs.lint-type.result }}" ;;
+              unit)      r="${{ needs.unit.result }}" ;;
+              build)     r="${{ needs.build.result }}" ;;
+              e2e)       r="${{ needs.e2e.result }}" ;;
+              security)  r="${{ needs.security.result }}" ;;
+            esac
+
+            if [ "$r" != "success" ]; then
+              echo "Job obrigatório não passou: $job ($r)"; exit 1
+            fi
           done
           echo "Todos os jobs de CI passaram."

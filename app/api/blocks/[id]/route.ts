@@ -1,7 +1,6 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getSession } from '@/adapters/auth';
+import { resolveSession } from '@/lib/auth/session';
 import { normalizeBlockInput, type BlockPayloadInput } from '@/lib/blocks/normalize';
 import {
   deleteDashboardBlock,
@@ -18,8 +17,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const cookieStore = await cookies();
-  const session = await getSession(cookieStore);
+  const session = await resolveSession();
 
   if (!session) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -34,7 +32,7 @@ export async function PUT(
     const { id } = await params;
     const body = (await request.json()) as BlockPayloadInput;
     const payload = normalizeBlockInput(body);
-    const block = await updateDashboardBlock(profile.id, id, payload);
+    const block = await updateDashboardBlock(session.id, profile.id, id, payload);
 
     if (!block) {
       return NextResponse.json({ error: 'block_not_found' }, { status: 404 });
@@ -55,8 +53,7 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const cookieStore = await cookies();
-  const session = await getSession(cookieStore);
+  const session = await resolveSession();
 
   if (!session) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -68,7 +65,7 @@ export async function DELETE(
   }
 
   const { id } = await params;
-  const deleted = await deleteDashboardBlock(profile.id, id);
+  const deleted = await deleteDashboardBlock(session.id, profile.id, id);
 
   if (!deleted) {
     return NextResponse.json({ error: 'block_not_found' }, { status: 404 });

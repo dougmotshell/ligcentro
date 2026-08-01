@@ -1,7 +1,7 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getMockSessionCookieValue, getSession } from '@/adapters/auth';
+import { isMockAuthActive } from '@/adapters/auth';
+import { applySessionCookies, resolveSession } from '@/lib/auth/session';
 import { getDashboardProfile, isHandleAvailable, updateDashboardProfile } from '@/lib/db/dashboard';
 import { normalizeTheme } from '@/lib/theme/presets';
 import { normalizeHandle, validateHandle } from '@/lib/handle/validate';
@@ -12,8 +12,7 @@ function revalidateProfilePaths(handle: string) {
 }
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const session = await getSession(cookieStore);
+  const session = await resolveSession();
 
   if (!session) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -29,8 +28,7 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const cookieStore = await cookies();
-  const session = await getSession(cookieStore);
+  const session = await resolveSession();
 
   if (!session) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -64,7 +62,7 @@ export async function PUT(request: Request) {
     }
   }
 
-  const profile = await updateDashboardProfile(currentProfile.id, {
+  const profile = await updateDashboardProfile(session.id, currentProfile.id, {
     ...(body.displayName !== undefined ? { displayName: body.displayName.trim() || currentProfile.display_name } : {}),
     ...(body.bio !== undefined ? { bio: body.bio?.trim() || null } : {}),
     ...(body.theme ? { theme: normalizeTheme(body.theme) } : {}),
@@ -76,20 +74,11 @@ export async function PUT(request: Request) {
   revalidateProfilePaths(profile.handle);
 
   const response = NextResponse.json({ profile });
-  if (body.handle !== undefined) {
-    response.cookies.set({
-      name: 'mock-auth',
-      value: getMockSessionCookieValue({
-        id: session.id,
-        email: session.email,
-        handle: profile.handle,
-        profileId: profile.id,
-      }),
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7,
-    });
+  // Só o cookie mock carrega o handle dentro de si e precisa ser reemitido. Com
+  // Supabase o handle vem do banco a cada leitura de sessão; reescrever o cookie
+  // de acesso aqui apenas esticaria sua validade sem atualizar `sb-expires-at`.
+  if (body.handle !== undefined && isMockAuthActive()) {
+    applySessionCookies(response, { ...session, handle: profile.handle, profileId: profile.id });
   }
 
   return response;

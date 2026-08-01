@@ -1,6 +1,9 @@
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
+import { MOCK_AUTH_COOKIE } from '@/lib/auth/cookies';
+import { isUuid } from '@/lib/uuid';
 
-export const MOCK_AUTH_COOKIE = 'mock-auth';
+export { MOCK_AUTH_COOKIE };
+
 export const MOCK_USER = {
   id: '00000000-0000-0000-0000-000000000001',
   email: 'demo@ligcentro.dev',
@@ -14,6 +17,9 @@ export interface AuthSession {
   handle: string;
   profileId?: string;
   accessToken?: string;
+  refreshToken?: string | null;
+  /** Epoch em segundos; presente só na sessão Supabase. */
+  expiresAt?: number | null;
 }
 
 export interface AuthCredentials {
@@ -24,6 +30,16 @@ export interface AuthCredentials {
   profileId?: string;
 }
 
+/**
+ * Resultado do cadastro. `session` vem `null` quando o provedor exige
+ * confirmação de e-mail antes de emitir token.
+ */
+export interface SignUpResult {
+  session: AuthSession | null;
+  userId: string;
+  pendingEmailConfirmation: boolean;
+}
+
 function encodeSession(session: AuthSession): string {
   return Buffer.from(JSON.stringify(session)).toString('base64url');
 }
@@ -32,7 +48,10 @@ function decodeSession(value: string): AuthSession | null {
   try {
     const parsed = JSON.parse(Buffer.from(value, 'base64url').toString('utf8')) as AuthSession;
 
-    if (!parsed.id || !parsed.email || !parsed.handle) {
+    // O cookie mock não é assinado (é ferramenta de desenvolvimento): qualquer
+    // campo pode vir do usuário. Um id que não é uuid faria a política RLS
+    // estourar na conversão, então aqui isso já não é sessão.
+    if (!isUuid(parsed.id) || !parsed.email || !parsed.handle) {
       return null;
     }
 
@@ -55,7 +74,9 @@ export function getMockSessionCookieValue(session: AuthSession = MOCK_USER): str
   return encodeSession(session);
 }
 
-export async function getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession | null> {
+export async function getSession(
+  cookieStore: Pick<ReadonlyRequestCookies, 'get'>
+): Promise<AuthSession | null> {
   const cookie = cookieStore.get(MOCK_AUTH_COOKIE);
 
   if (!cookie?.value) {
@@ -69,7 +90,9 @@ export async function getSession(cookieStore: Pick<ReadonlyRequestCookies, 'get'
   return decodeSession(cookie.value);
 }
 
-export async function requireAuth(cookieStore: Pick<ReadonlyRequestCookies, 'get'>): Promise<AuthSession> {
+export async function requireAuth(
+  cookieStore: Pick<ReadonlyRequestCookies, 'get'>
+): Promise<AuthSession> {
   const session = await getSession(cookieStore);
 
   if (!session) {
@@ -88,17 +111,19 @@ export async function signIn(credentials: AuthCredentials): Promise<AuthSession>
   };
 }
 
-export async function signUp(credentials: AuthCredentials): Promise<AuthSession> {
-  return {
-    id: credentials.userId ?? MOCK_USER.id,
-    email: credentials.email,
-    handle: credentials.handle ?? MOCK_USER.handle,
-    profileId: credentials.profileId ?? MOCK_USER.profileId,
-  };
+export async function signUp(credentials: AuthCredentials): Promise<SignUpResult> {
+  const session = await signIn(credentials);
+
+  return { session, userId: session.id, pendingEmailConfirmation: false };
 }
 
 export async function signOut(): Promise<void> {
   return;
+}
+
+/** O mock não expira — a renovação existe só para satisfazer a interface. */
+export async function refreshSession(): Promise<AuthSession | null> {
+  return null;
 }
 
 export const mockAuthAdapter = {
@@ -107,4 +132,5 @@ export const mockAuthAdapter = {
   signIn,
   signUp,
   signOut,
+  refreshSession,
 };

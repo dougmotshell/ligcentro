@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validateHandle } from '@/lib/handle/validate';
@@ -25,20 +25,20 @@ const signupSchema = z.object({
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
-type HandleState = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
+/** Resultado da consulta de disponibilidade; a validação de formato é derivada. */
+type AvailabilityState = 'idle' | 'checking' | 'available' | 'taken';
 
 export function SignupForm({ locale }: Props) {
   const t = useTranslations('Auth');
   const router = useRouter();
-  const [handleState, setHandleState] = useState<HandleState>('idle');
-  const [handleErrorKey, setHandleErrorKey] = useState<string | null>(null);
+  const [availability, setAvailability] = useState<AvailabilityState>('idle');
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const {
     register,
-    watch,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-    clearErrors,
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -48,62 +48,56 @@ export function SignupForm({ locale }: Props) {
     },
   });
 
-  const handleValue = watch('handle');
+  // `useWatch` e não `watch`: `watch()` não é a API reativa — não garante nova
+  // renderização, então a dependência do efeito nunca mudava e a verificação de
+  // disponibilidade nunca era disparada (TCK-0019).
+  const normalizedHandle = (useWatch({ control, name: 'handle' }) ?? '').trim().toLowerCase();
+
+  // Formato e reserva são função pura do valor: calculados na renderização, sem
+  // estado espelhado. Só a consulta ao servidor precisa de estado e de efeito —
+  // e assim o efeito não chama `setState` de forma sincrônica.
+  const formatError = normalizedHandle ? validateHandle(normalizedHandle).error : undefined;
 
   useEffect(() => {
-    const normalized = handleValue.trim().toLowerCase();
-
-    if (!normalized) {
-      setHandleState('idle');
-      setHandleErrorKey(null);
-      return;
-    }
-
-    const validation = validateHandle(normalized);
-    if (!validation.valid) {
-      const nextErrorKey =
-        validation.error === 'reserved'
-          ? 'handleReserved'
-          : validation.error === 'format' || validation.error === 'length'
-            ? 'handleFormat'
-            : 'handleFormat';
-      setHandleState('invalid');
-      setHandleErrorKey(nextErrorKey);
-      setError('handle', { message: nextErrorKey });
+    if (!normalizedHandle || formatError) {
       return;
     }
 
     const controller = new AbortController();
+    let cancelled = false;
+
     const timer = window.setTimeout(async () => {
-      setHandleState('checking');
-      const response = await fetch(`/api/auth/check-handle?handle=${encodeURIComponent(normalized)}`, {
-        signal: controller.signal,
-      }).catch(() => null);
+      setAvailability('checking');
 
-      if (!response) {
-        setHandleState('idle');
+      const response = await fetch(
+        `/api/auth/check-handle?handle=${encodeURIComponent(normalizedHandle)}`,
+        { signal: controller.signal }
+      ).catch(() => null);
+
+      if (cancelled) {
         return;
       }
 
-      const result = (await response.json()) as { available: boolean };
-
-      if (result.available) {
-        setHandleState('available');
-        setHandleErrorKey(null);
-        clearErrors('handle');
+      if (!response?.ok) {
+        setAvailability('idle');
         return;
       }
 
-      setHandleState('taken');
-      setHandleErrorKey('handleTaken');
-      setError('handle', { message: 'handleTaken' });
+      const result = (await response.json().catch(() => null)) as { available: boolean } | null;
+
+      if (cancelled) {
+        return;
+      }
+
+      setAvailability(result?.available ? 'available' : 'taken');
     }, 350);
 
     return () => {
+      cancelled = true;
       controller.abort();
       window.clearTimeout(timer);
     };
-  }, [clearErrors, handleValue, setError]);
+  }, [formatError, normalizedHandle]);
 
   const onSubmit = handleSubmit(async (values) => {
     const response = await fetch('/api/auth/signup', {
@@ -116,8 +110,27 @@ export function SignupForm({ locale }: Props) {
     });
 
     if (!response.ok) {
-      const result = (await response.json().catch(() => ({ error: 'request_failed' }))) as { error?: string };
-      setError('root', { message: result.error === 'handle_taken' ? 'handleTaken' : 'request_failed' });
+      const result = (await response.json().catch(() => ({ error: 'request_failed' }))) as {
+        error?: string;
+      };
+      const errorKey =
+        result.error === 'handle_taken'
+          ? 'handleTaken'
+          : result.error === 'account_already_exists'
+            ? 'account_already_exists'
+            : 'request_failed';
+      setError('root', { message: errorKey });
+      return;
+    }
+
+    const result = (await response.json().catch(() => ({}))) as {
+      pendingEmailConfirmation?: boolean;
+    };
+
+    // Com confirmação de e-mail ligada no Supabase, a conta existe e o handle já
+    // está reservado, mas a sessão só nasce quando o link do e-mail é aberto.
+    if (result.pendingEmailConfirmation) {
+      setPendingEmail(values.email);
       return;
     }
 
@@ -125,19 +138,52 @@ export function SignupForm({ locale }: Props) {
     router.refresh();
   });
 
-  const handleStatusText =
-    handleState === 'checking'
-      ? t('signup.handleChecking')
-      : handleState === 'available'
-        ? t('signup.handleAvailable')
-        : handleErrorKey
-          ? t(`errors.${handleErrorKey}`)
+  const handleErrorKey = formatError
+    ? formatError === 'reserved'
+      ? 'handleReserved'
+      : 'handleFormat'
+    : availability === 'taken'
+      ? 'handleTaken'
+      : null;
+
+  const handleStatusText = !normalizedHandle
+    ? null
+    : handleErrorKey
+      ? t(`errors.${handleErrorKey}`)
+      : availability === 'checking'
+        ? t('signup.handleChecking')
+        : availability === 'available'
+          ? t('signup.handleAvailable')
           : null;
+
+  if (pendingEmail) {
+    return (
+      <div className="mx-auto w-full max-w-md rounded-3xl border border-border bg-white p-8 text-center shadow-sm dark:bg-gray-900">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          {t('signup.confirmEmailTitle')}
+        </h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {t('signup.confirmEmailDescription', { email: pendingEmail })}
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t('signup.confirmEmailHandleReserved')}
+        </p>
+        <Link
+          href={`/${locale}/login`}
+          className="mt-6 inline-block font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {t('signup.loginLink')}
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-md rounded-3xl border border-border bg-white p-8 shadow-sm dark:bg-gray-900">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">{t('signup.title')}</h1>
+        <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
+          {t('signup.title')}
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">{t('signup.subtitle')}</p>
       </div>
 
@@ -149,7 +195,9 @@ export function SignupForm({ locale }: Props) {
             {...register('email')}
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
           />
-          {errors.email ? <span className="mt-1 block text-sm text-red-600">{t('errors.invalidEmail')}</span> : null}
+          {errors.email ? (
+            <span className="mt-1 block text-sm text-red-600">{t('errors.invalidEmail')}</span>
+          ) : null}
         </label>
 
         <label className="block text-sm font-medium text-gray-900 dark:text-white">
@@ -159,7 +207,9 @@ export function SignupForm({ locale }: Props) {
             {...register('password')}
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
           />
-          {errors.password ? <span className="mt-1 block text-sm text-red-600">{t('errors.passwordMin')}</span> : null}
+          {errors.password ? (
+            <span className="mt-1 block text-sm text-red-600">{t('errors.passwordMin')}</span>
+          ) : null}
         </label>
 
         <label className="block text-sm font-medium text-gray-900 dark:text-white">
@@ -172,7 +222,9 @@ export function SignupForm({ locale }: Props) {
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 lowercase outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
           />
           {handleStatusText ? (
-            <span className={`mt-1 block text-sm ${handleState === 'available' ? 'text-green-600' : 'text-red-600'}`}>
+            <span
+              className={`mt-1 block text-sm ${!handleErrorKey ? 'text-green-600' : 'text-red-600'}`}
+            >
               {handleStatusText}
             </span>
           ) : null}
@@ -184,7 +236,7 @@ export function SignupForm({ locale }: Props) {
 
         <button
           type="submit"
-          disabled={isSubmitting || handleState === 'checking'}
+          disabled={isSubmitting || availability === 'checking' || Boolean(handleErrorKey)}
           className="w-full rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSubmitting ? t('signup.submitting') : t('signup.submit')}

@@ -28,11 +28,11 @@
 
 No dashboard do projeto: **Settings → API**
 
-| Variável | Onde encontrar | Descrição |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Project URL | URL pública do projeto |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` `public` key | Chave pública (usada no cliente) |
-| `SUPABASE_SERVICE_ROLE_KEY` | `service_role` key | Chave secreta (somente server-side; necessária para operações administrativas server-side) |
+| Variável                        | Onde encontrar      | Descrição                                                                                  |
+| ------------------------------- | ------------------- | ------------------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Project URL         | URL pública do projeto                                                                     |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` `public` key | Chave pública (usada no cliente)                                                           |
+| `SUPABASE_SERVICE_ROLE_KEY`     | `service_role` key  | Chave secreta (somente server-side; necessária para operações administrativas server-side) |
 
 > ⚠️ **A `service_role` key nunca vai para o cliente nem para o commit.** Ela bypassa o RLS — use só em Route Handlers server-side.
 
@@ -81,6 +81,7 @@ No dashboard: **Storage → New bucket**
 - Max file size: `5 MB`
 
 Política de Storage (executar no SQL Editor):
+
 ```sql
 -- Qualquer um pode ler avatares
 CREATE POLICY "avatars_public_read"
@@ -209,20 +210,41 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000      # URL base pública
 
 ### Variáveis obrigatórias por ambiente
 
-| Variável | Dev local | Staging/Prod |
-|---|---|---|
-| `DATABASE_URL` | ✅ (docker postgres) | ✅ (Supabase pooler) |
-| `NEXT_PUBLIC_SUPABASE_URL` | ❌ (não necessário) | ✅ |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ❌ | ✅ |
-| `SUPABASE_SERVICE_ROLE_KEY` | ❌ | ✅ |
-| `NEXTAUTH_SECRET` | ✅ (qualquer valor) | ✅ (valor forte) |
-| `NEXT_PUBLIC_APP_URL` | ✅ | ✅ |
+| Variável                        | Dev local            | Staging/Prod         |
+| ------------------------------- | -------------------- | -------------------- |
+| `DATABASE_URL`                  | ✅ (docker postgres) | ✅ (Supabase pooler) |
+| `NEXT_PUBLIC_SUPABASE_URL`      | ❌ (não necessário)  | ✅                   |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ❌                   | ✅                   |
+| `SUPABASE_SERVICE_ROLE_KEY`     | ❌                   | ✅                   |
+| `NEXTAUTH_SECRET`               | ✅ (qualquer valor)  | ✅ (valor forte)     |
+| `NEXT_PUBLIC_APP_URL`           | ✅                   | ✅                   |
 
 ---
 
+## Ordem obrigatória: migrar antes de subir o código
+
+O deploy da Vercel dispara no push para a `main`, e o código a partir da migração
+`0006` **depende** da role `ligcentro_app` existir no banco. Se o código subir
+antes da migração, toda requisição autenticada falha com `app_role_missing`.
+
+Sequência correta para qualquer release que inclua migração:
+
+1. Aplicar as migrações pendentes de `db/migrations/` **em ordem numérica** no
+   banco de produção (Supabase → SQL Editor, ou `psql` com a connection string).
+2. Só então fazer o push para a `main`.
+
+A migração `0001` traz um stub de `auth.uid()` para o Postgres local. Em bancos
+que aplicaram a versão anterior dessa migração, a função nativa do Supabase pode
+ter sido sobrescrita — conferir no SQL Editor se `auth.uid()` lê
+`request.jwt.claims` (nativa) e não `request.jwt.claim.sub` (stub); se for o
+stub, restaurar a definição oficial do provedor.
+
 ## Checklist de configuração para ir a produção
 
-- [ ] Projeto Supabase criado e migrações aplicadas
+- [ ] Projeto Supabase criado e migrações aplicadas **antes** do deploy do código
+- [ ] Role `ligcentro_app` existe (migração 0006) e não tem BYPASSRLS
+- [ ] `auth.uid()` no Supabase é a função nativa do provedor, não o stub da 0001
+- [ ] Redirect URL `/api/auth/confirm` cadastrada no Supabase Auth
 - [ ] Bucket `avatars` criado com políticas de Storage
 - [ ] OAuth Google configurado e ativo no Supabase
 - [ ] OAuth GitHub configurado e ativo no Supabase

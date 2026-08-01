@@ -6,8 +6,13 @@ import { BlockClickTracker } from '@/components/blocks/BlockClickTracker';
 import { BlockContact } from '@/components/blocks/BlockContact';
 import { BlockLink } from '@/components/blocks/BlockLink';
 import { BlockSocial } from '@/components/blocks/BlockSocial';
-import { getFallbackProfileByHandle, getProfileByHandle, getPublishedHandles } from '@/lib/db/profiles';
+import {
+  getFallbackProfileByHandle,
+  getProfileByHandle,
+  getPublishedHandles,
+} from '@/lib/db/profiles';
 import { getSafeImageUrl } from '@/lib/safe-url';
+import { THEME_FONTS } from '@/lib/theme/presets';
 
 interface Props {
   params: Promise<{ locale: string; handle: string }>;
@@ -98,7 +103,12 @@ export default async function ProfilePage({ params }: Props) {
   const avatarUrl = getSafeImageUrl(profile.avatar_url);
 
   return (
-    <main className="min-h-screen px-4 py-12" style={{ backgroundColor: profile.theme.bg }}>
+    <main
+      className="min-h-screen px-4 py-12"
+      // A fonte escolhida é aplicada por pilha do sistema: nenhuma requisição de
+      // webfont, então não há bloqueio de pintura nem flash de texto.
+      style={{ backgroundColor: profile.theme.bg, fontFamily: THEME_FONTS[profile.theme.font] }}
+    >
       <div className="mx-auto max-w-md rounded-[2rem] bg-white/80 p-8 shadow-xl ring-1 ring-black/5 backdrop-blur dark:bg-gray-900/80">
         <div className="mb-8 text-center">
           {avatarUrl ? (
@@ -118,13 +128,19 @@ export default async function ProfilePage({ params }: Props) {
               style={{ backgroundColor: profile.theme.btnBg, color: profile.theme.btnText }}
               aria-hidden="true"
             >
-              <span className="text-3xl font-bold">{profile.display_name.charAt(0).toUpperCase()}</span>
+              <span className="text-3xl font-bold">
+                {profile.display_name.charAt(0).toUpperCase()}
+              </span>
             </div>
           )}
 
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.display_name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            {profile.display_name}
+          </h1>
 
-          {profile.bio ? <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{profile.bio}</p> : null}
+          {profile.bio ? (
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{profile.bio}</p>
+          ) : null}
         </div>
 
         <div className="space-y-3">
@@ -157,7 +173,9 @@ export default async function ProfilePage({ params }: Props) {
           })}
         </div>
 
-        <p className="mt-10 text-center text-xs text-gray-500 dark:text-gray-400">{t('poweredBy')}</p>
+        <p className="mt-10 text-center text-xs text-gray-500 dark:text-gray-400">
+          {t('poweredBy')}
+        </p>
         <AnalyticsTracker profileId={profile.id} />
       </div>
     </main>

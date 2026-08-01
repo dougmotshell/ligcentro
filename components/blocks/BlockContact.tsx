@@ -1,6 +1,7 @@
 import type { CSSProperties, ComponentType } from 'react';
 import { FaEnvelope, FaPhone, FaWhatsapp } from 'react-icons/fa';
 import { getSafeExternalUrl } from '@/lib/safe-url';
+import { getButtonStyle } from '@/lib/theme/presets';
 import type { Block, ThemeConfig } from '@/lib/db/types';
 
 const CONTACT_ICONS: Record<string, ComponentType<{ className?: string }>> = {
@@ -23,12 +24,7 @@ export function BlockContact({ block, theme }: Props) {
 
   const contactType = typeof block.config.type === 'string' ? block.config.type : 'email';
   const Icon = CONTACT_ICONS[contactType] ?? FaEnvelope;
-  const style: CSSProperties | undefined = theme
-    ? {
-        backgroundColor: theme.btnBg,
-        color: theme.btnText,
-      }
-    : undefined;
+  const style: CSSProperties | undefined = getButtonStyle(theme);
 
   return (
     <a
@@ -36,7 +32,7 @@ export function BlockContact({ block, theme }: Props) {
       target="_blank"
       rel="noopener noreferrer"
       style={style}
-      className="flex w-full items-center justify-center gap-3 rounded-xl border border-transparent px-6 py-3 font-medium shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex w-full items-center justify-center gap-3 border border-transparent px-6 py-3 font-medium shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={block.label ?? contactType}
     >
       <Icon className="h-5 w-5" aria-hidden="true" />

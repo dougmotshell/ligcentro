@@ -35,3 +35,6 @@ npm-debug.log*
 
 .next-app/
 .vercel
+
+# Avatares gravados pelo storage local (dado de usuário — nunca versionar)
+/public/uploads/

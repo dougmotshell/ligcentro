@@ -1,7 +1,6 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getSession } from '@/adapters/auth';
+import { resolveSession } from '@/lib/auth/session';
 import { normalizeBlockInput, type BlockPayloadInput } from '@/lib/blocks/normalize';
 import { createDashboardBlock, getDashboardProfile, listDashboardBlocks } from '@/lib/db/dashboard';
 
@@ -11,8 +10,7 @@ function revalidateProfilePaths(handle: string) {
 }
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const session = await getSession(cookieStore);
+  const session = await resolveSession();
 
   if (!session) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -24,13 +22,12 @@ export async function GET() {
     return NextResponse.json({ error: 'profile_not_found' }, { status: 404 });
   }
 
-  const blocks = await listDashboardBlocks(profile.id);
+  const blocks = await listDashboardBlocks(session.id, profile.id);
   return NextResponse.json({ blocks });
 }
 
 export async function POST(request: Request) {
-  const cookieStore = await cookies();
-  const session = await getSession(cookieStore);
+  const session = await resolveSession();
 
   if (!session) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -45,7 +42,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as BlockPayloadInput;
     const payload = normalizeBlockInput(body);
-    const block = await createDashboardBlock(profile.id, payload);
+    const block = await createDashboardBlock(session.id, profile.id, payload);
     revalidateProfilePaths(profile.handle);
     return NextResponse.json({ block }, { status: 201 });
   } catch (error) {

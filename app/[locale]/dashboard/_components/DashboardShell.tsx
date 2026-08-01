@@ -6,17 +6,22 @@ import { useTranslations } from 'next-intl';
 import type { ProfileWithBlocks } from '@/lib/db/types';
 import { AvatarUpload } from './AvatarUpload';
 import { BlockList } from './BlockList';
+import { DangerZone } from './DangerZone';
 import { ProfileForm } from './ProfileForm';
+import { SharePanel } from './SharePanel';
 import { ThemeSelector } from './ThemeSelector';
 
 interface Props {
   locale: string;
   initialProfile: ProfileWithBlocks;
+  /** URL pública canônica e o QR dela, gerados no servidor. */
+  publicUrl: string;
+  qrSvg: string;
 }
 
-type TabKey = 'profile' | 'blocks' | 'themes';
+type TabKey = 'profile' | 'blocks' | 'themes' | 'account';
 
-export function DashboardShell({ locale, initialProfile }: Props) {
+export function DashboardShell({ locale, initialProfile, publicUrl, qrSvg }: Props) {
   const t = useTranslations('Dashboard');
   const [activeTab, setActiveTab] = useState<TabKey>('profile');
   const [profile, setProfile] = useState(initialProfile);
@@ -26,7 +31,9 @@ export function DashboardShell({ locale, initialProfile }: Props) {
       <section className="flex flex-col gap-4 rounded-3xl border border-border bg-white p-8 shadow-sm dark:bg-gray-900 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
-          <h1 className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{t('title')}</h1>
+          <h1 className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">
+            {t('title')}
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground">{t('description')}</p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -45,14 +52,23 @@ export function DashboardShell({ locale, initialProfile }: Props) {
         </div>
       </section>
 
+      <SharePanel
+        profile={profile}
+        publicUrl={publicUrl}
+        qrSvg={qrSvg}
+        onSaved={(nextProfile) => setProfile((current) => ({ ...current, ...nextProfile }))}
+      />
+
       <nav className="flex flex-wrap gap-3" aria-label={t('tabsAriaLabel')}>
-        {(['profile', 'blocks', 'themes'] as TabKey[]).map((tab) => (
+        {(['profile', 'blocks', 'themes', 'account'] as TabKey[]).map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => setActiveTab(tab)}
             className={`rounded-xl px-4 py-3 text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-ring ${
-              activeTab === tab ? 'bg-primary text-primary-foreground' : 'border border-border bg-white hover:bg-secondary dark:bg-gray-900'
+              activeTab === tab
+                ? 'bg-primary text-primary-foreground'
+                : 'border border-border bg-white hover:bg-secondary dark:bg-gray-900'
             }`}
           >
             {t(`tabs.${tab}`)}
@@ -83,13 +99,20 @@ export function DashboardShell({ locale, initialProfile }: Props) {
         </section>
       ) : null}
 
+      {activeTab === 'account' ? <DangerZone locale={locale} handle={profile.handle} /> : null}
+
       {activeTab === 'themes' ? (
         <section className="rounded-3xl border border-border bg-white p-8 shadow-sm dark:bg-gray-900">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('themesTitle')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {t('themesTitle')}
+            </h2>
             <p className="text-sm text-muted-foreground">{t('themesDescription')}</p>
           </div>
-          <ThemeSelector profile={profile} onSaved={(nextProfile) => setProfile((current) => ({ ...current, ...nextProfile }))} />
+          <ThemeSelector
+            profile={profile}
+            onSaved={(nextProfile) => setProfile((current) => ({ ...current, ...nextProfile }))}
+          />
         </section>
       ) : null}
     </div>

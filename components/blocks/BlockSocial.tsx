@@ -11,6 +11,8 @@ import {
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { getSafeExternalUrl } from '@/lib/safe-url';
+import { getButtonStyle } from '@/lib/theme/presets';
+import { getBrandColor } from './brand-colors';
 import type { Block, ThemeConfig } from '@/lib/db/types';
 
 const SOCIAL_ICONS: Record<string, ComponentType<{ className?: string }>> = {
@@ -38,12 +40,11 @@ export function BlockSocial({ block, theme }: Props) {
 
   const brand = typeof block.config.brand === 'string' ? block.config.brand : 'link';
   const Icon = SOCIAL_ICONS[brand] ?? FaLink;
-  const style: CSSProperties | undefined = theme
-    ? {
-        backgroundColor: theme.btnBg,
-        color: theme.btnText,
-      }
-    : undefined;
+  // Com `useBrandColors`, o botão usa a cor oficial da marca; sem, segue o tema.
+  const brandColor = theme?.useBrandColors ? getBrandColor(brand) : null;
+  const style: CSSProperties | undefined = brandColor
+    ? { ...getButtonStyle(theme), backgroundColor: brandColor.bg, color: brandColor.text }
+    : getButtonStyle(theme);
 
   return (
     <a
@@ -51,7 +52,7 @@ export function BlockSocial({ block, theme }: Props) {
       target="_blank"
       rel="noopener noreferrer"
       style={style}
-      className="flex w-full items-center justify-center gap-3 rounded-xl border border-transparent px-6 py-3 font-medium shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex w-full items-center justify-center gap-3 border border-transparent px-6 py-3 font-medium shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label={block.label ?? brand}
     >
       <Icon className="h-5 w-5" aria-hidden="true" />

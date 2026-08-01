@@ -1,6 +1,6 @@
 # TCK-0007: Integração de autenticação Supabase em produção
 
-- **status:** in_progress
+- **status:** done
 - **owner:** backend-developer
 - **created:** 2026-07-27 · **by:** Douglas
 - **type:** feature

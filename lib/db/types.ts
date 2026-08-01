@@ -1,8 +1,21 @@
+/** Fonte da página pública — pilhas do sistema, sem webfont (ver THEME_FONTS). */
+export type ThemeFont = 'sans' | 'serif' | 'mono' | 'rounded';
+
+/** Formato do botão dos blocos. */
+export type ThemeButtonShape = 'square' | 'rounded' | 'pill';
+
 export interface ThemeConfig {
   name: string;
   bg: string;
   btnBg: string;
   btnText: string;
+  font: ThemeFont;
+  buttonShape: ThemeButtonShape;
+  /**
+   * Blocos sociais pintados com a cor oficial da marca em vez da cor do tema —
+   * o catálogo de botões de marca pedido na Fase 1 do roadmap.
+   */
+  useBrandColors: boolean;
 }
 
 export type BlockType = 'link' | 'social' | 'contact' | 'video' | 'header';

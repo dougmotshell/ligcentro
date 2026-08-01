@@ -1,6 +1,6 @@
 # TCK-0008: OAuth Google e GitHub
 
-- **status:** in_progress
+- **status:** done
 - **owner:** backend-developer + frontend-developer
 - **created:** 2026-07-27 · **by:** Douglas
 - **type:** feature

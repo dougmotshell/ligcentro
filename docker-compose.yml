@@ -37,6 +37,10 @@ services:
       DATABASE_URL: postgresql://ligcentro:ligcentro@db:5432/ligcentro
       NEXT_PUBLIC_APP_URL: "http://localhost:${APP_PORT:-3000}"
       NODE_ENV: production
+      # Este ambiente roda com NODE_ENV=production e sem Supabase; o opt-in
+      # explícito é o que autoriza a sessão mock aqui — em produção de verdade a
+      # variável não existe e o app recusa autenticar sem Supabase.
+      ALLOW_MOCK_AUTH: "true"
     depends_on:
       db:
         condition: service_healthy

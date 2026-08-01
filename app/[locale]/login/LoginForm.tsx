@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 interface Props {
   locale: string;
+  /** Código de erro vindo de um redirecionamento (`?error=`), resolvido no servidor. */
+  redirectError?: string | null;
 }
 
 const loginSchema = z.object({
@@ -18,7 +20,19 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export function LoginForm({ locale }: Props) {
+/** Falhas que chegam por redirecionamento (OAuth e confirmação de e-mail). */
+const REDIRECT_ERRORS = new Set([
+  'oauth_state',
+  'oauth_failed',
+  'confirm_invalid',
+  'confirm_failed',
+  'auth_not_configured',
+]);
+
+/** As credenciais do perfil semeado só ajudam em desenvolvimento. */
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+export function LoginForm({ locale, redirectError = null }: Props) {
   const t = useTranslations('Auth');
   const router = useRouter();
   const {
@@ -29,8 +43,8 @@ export function LoginForm({ locale }: Props) {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'demo@ligcentro.dev',
-      password: '123456',
+      email: isDevelopment ? 'demo@ligcentro.dev' : '',
+      password: isDevelopment ? '123456' : '',
     },
   });
 
@@ -56,6 +70,12 @@ export function LoginForm({ locale }: Props) {
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">{t('login.title')}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{t('login.subtitle')}</p>
       </div>
+
+      {redirectError && REDIRECT_ERRORS.has(redirectError) ? (
+        <p role="alert" className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">
+          {t(`errors.${redirectError}`)}
+        </p>
+      ) : null}
 
       <form className="space-y-5" onSubmit={onSubmit}>
         <label className="block text-sm font-medium text-gray-900 dark:text-white">
