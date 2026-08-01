@@ -1,6 +1,6 @@
 # TCK-0016: Suíte de testes real e portão de CI honesto
 
-- **status:** triaged
+- **status:** done
 - **owner:** devops-engineer
 - **created:** 2026-08-01 · **by:** Douglas
 - **type:** infra
@@ -23,12 +23,12 @@ scripts usam `--passWithNoTests` e o job E2E está desligado com
 
 ## Critérios de aceite (máx. 7, verificáveis)
 
-- [ ] 1. Existem testes unitários dos módulos de regra de negócio (handle, blocos, tema, analytics, storage) e eles rodam sem `--passWithNoTests`.
-- [ ] 2. Existe e2e Playwright do fluxo crítico: cadastro → editar perfil → publicar → ver perfil público → registrar clique.
-- [ ] 3. `playwright.config.ts` sobe o app automaticamente (`webServer`) e o e2e roda contra o Postgres do compose.
-- [ ] 4. O job E2E do CI está reativado e o gate `CI aprovado` não aceita mais `skipped` para os jobs de teste.
-- [ ] 5. Existe runner de migração idempotente (`npm run db:migrate` aplica todas as migrações, com controle de versão aplicada).
-- [ ] 6. `npm run build`, `npm run lint`, `npm run typecheck`, `npm run test:unit` e `npm run test:e2e` passam localmente com evidência.
+- [x] 1. Existem testes unitários dos módulos de regra de negócio (handle, blocos, tema, analytics, storage) e eles rodam sem `--passWithNoTests`.
+- [x] 2. Existe e2e Playwright do fluxo crítico: cadastro → editar perfil → publicar → ver perfil público → registrar clique.
+- [x] 3. `playwright.config.ts` sobe o app automaticamente (`webServer`) e o e2e roda contra o Postgres do compose.
+- [x] 4. O job E2E do CI está reativado e o gate `CI aprovado` não aceita mais `skipped` para os jobs de teste.
+- [x] 5. Existe runner de migração idempotente (`npm run db:migrate` aplica todas as migrações, com controle de versão aplicada).
+- [x] 6. `npm run build`, `npm run lint`, `npm run typecheck`, `npm run test:unit` e `npm run test:e2e` passam localmente com evidência.
 
 ## Referências
 
@@ -36,4 +36,6 @@ scripts usam `--passWithNoTests` e o job E2E está desligado com
 
 ## Resolução (preenchido ao fechar)
 
-- Commits: · Evidência final: · Docs atualizados:
+- Commits: `TCK-0016: suíte de testes real e portão de CI honesto`
+- Evidência final: log entradas [3] a [6]; 84 unitários + 3 e2e
+- Docs atualizados: `docs/setup/local-development.md` (em TCK-0017)
