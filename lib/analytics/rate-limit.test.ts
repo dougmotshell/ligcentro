@@ -28,12 +28,15 @@ describe('RateLimiter', () => {
     expect(limiter.check('perfil-b', 0).allowed).toBe(true);
   });
 
-  it('não guarda nada além da chave recebida — nenhum dado de visitante', () => {
+  it('conta por perfil, não por visitante: chamadas distintas compartilham a janela', () => {
     const limiter = new RateLimiter(2, 60_000);
-    limiter.check('view:11111111-1111-1111-1111-111111111111', 0);
+    const key = 'view:11111111-1111-1111-1111-111111111111';
 
-    // O estado é interno, mas o contrato é o que importa: `check` só recebe uma
-    // chave e um instante. Não há parâmetro de IP, cookie ou fingerprint.
-    expect(RateLimiter.prototype.check.length).toBe(2);
+    // Duas visitas de pessoas diferentes chegam com a mesma chave — a única
+    // entrada que o limitador aceita é o id do perfil. Não há como distinguir
+    // visitante aqui, o que é o comportamento exigido pela LGPD (regra 7).
+    expect(limiter.check(key, 0).hits).toBe(1);
+    expect(limiter.check(key, 10).hits).toBe(2);
+    expect(limiter.check(key, 20).allowed).toBe(false);
   });
 });

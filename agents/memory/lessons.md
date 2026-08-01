@@ -97,3 +97,10 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Causa raiz: o driver `postgres` devolve coluna `date` como objeto `Date`, mas o tipo declarado no código era `string`. O next-intl, ao receber objeto numa interpolação, entende como rich text e recusa.
 - Como evitar: quando a data é usada como texto, converter na consulta (`to_char(day, 'YYYY-MM-DD')`) em vez de confiar no tipo declarado — anotação de tipo não converte nada em tempo de execução.
 - Refs: `lib/db/analytics.ts`, `app/[locale]/dashboard/analytics/page.tsx`.
+
+## [L-012] 2026-08-01 — qa — veredito antes da saída completa da suíte — erro
+- Contexto: fechamento do TCK-0012; a entrada de QA foi escrita no mesmo comando que rodava build, typecheck, testes e commit.
+- Erro: o veredito "aprovado, 55 testes" foi registrado e o commit feito enquanto 1 teste falhava; a falha apareceu na saída depois do commit.
+- Causa raiz: encadear a validação e o commit no mesmo comando faz o registro deixar de depender do resultado — o log passa a afirmar o que se esperava, não o que aconteceu.
+- Como evitar: rodar a suíte como comando **próprio**, ler a saída, e só então escrever o veredito e commitar. Nunca colocar `git commit` na mesma linha de `npm run test:*`.
+- Refs: `tickets/TCK-0012-analytics-integrity/log.md` entradas [7] e [8].

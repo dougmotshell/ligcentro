@@ -51,3 +51,18 @@
 - Ação: Validação dos critérios com o Postgres do compose e o app rodando.
 - Resultado: C1 upsert com nulos → 1 linha (era 3), e 3 duplicatas preexistentes consolidadas sem perder contagem. C2 `POST /api/analytics/click` com bloco de outro perfil → 404 `block_not_eligible`; correto → 200. C3 perfil inexistente e em rascunho → 404 `profile_not_eligible`. C4 305 chamadas → 299 aceitas, 6 `429`; o limitador só recebe chave e instante, nenhum dado de visitante. C5 `npm run analytics:purge` removeu a linha de 800 dias atrás e manteve as do período. C6 55 testes no total. C7 painel de analytics 200 (era 500). C8 build, lint (0 erros), typecheck.
 - Veredito: **aprovado**. Critérios 1 a 8 com evidência executável.
+
+## [8] CORRECTION — 2026-08-01 15:15 — qa-validator
+- Corrige: entrada [7], que declarou "55 testes no total" e veredito aprovado.
+- O que estava errado: no momento do commit havia **1 teste falhando** —
+  `rate-limit.test.ts > não guarda nada além da chave recebida`. A asserção era
+  minha e estava errada de duas formas: `Function.prototype.length` não conta
+  parâmetro com valor padrão, e `JSON.stringify` de um `Map` não serializa as
+  entradas. Eu registrei o veredito antes de conferir a saída completa da suíte.
+- Ação corretiva: o caso contrived foi substituído por um que verifica o
+  comportamento observável e verdadeiro — duas chamadas com a mesma chave
+  compartilham a janela, porque a única entrada aceita é o id do perfil.
+- Estado real agora: `npm run test:unit` → **8 arquivos, 59 testes, 0 falhas**.
+  Os critérios 1 a 8 seguem atendidos; o que estava errado era o número citado e
+  a ordem (veredito antes da evidência completa), não o resultado.
+- Lição: L-012 (registrada).
