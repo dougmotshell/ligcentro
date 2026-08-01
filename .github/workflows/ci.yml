@@ -119,7 +119,8 @@ jobs:
   security:
     name: Segurança (SCA + segredos + SAST)
     runs-on: ubuntu-latest
-    permissions: { security-events: write, contents: read, actions: read }
+    # pull-requests: read — o gitleaks consulta os commits do PR pela API.
+    permissions: { security-events: write, contents: read, actions: read, pull-requests: read }
     steps:
       # fetch-depth: 0 — o gitleaks escaneia o range de commits do push.
       - uses: actions/checkout@v4
@@ -127,6 +128,12 @@ jobs:
       - name: Secret scanning (gitleaks)
         uses: gitleaks/gitleaks-action@v2
         env:
+          # Obrigatório desde o v2 para escanear pull requests (a action lê a
+          # lista de commits do PR pela API); sem ele o job falha de saída.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Sem comentário automático no PR: manter o token em somente-leitura.
+          # O achado aparece no log do job e reprova o portão de qualquer forma.
+          GITLEAKS_ENABLE_COMMENTS: false
           # Allowlist de falsos positivos comprovados; ver .gitleaks.toml.
           GITLEAKS_CONFIG: .gitleaks.toml
       - name: Auditoria de dependências
