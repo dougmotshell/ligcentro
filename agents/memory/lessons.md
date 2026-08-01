@@ -111,3 +111,10 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Causa raiz: usar a cor da marca como está assume que ela foi pensada para texto sobreposto; várias foram pensadas para logo, não para botão com rótulo.
 - Como evitar: ao adicionar cor de marca, calcular o contraste e escurecer o mínimo necessário, deixando o motivo comentado. Teste que percorre o catálogo inteiro impede a próxima adição de passar batido.
 - Refs: `components/blocks/brand-colors.ts`, `components/blocks/brand-colors.test.ts`.
+
+## [L-014] 2026-08-01 — backend — `SECURITY DEFINER` com id por argumento anula a RLS — erro
+- Contexto: TCK-0015, função de exclusão de conta criada como `delete_account(target_user_id UUID)`.
+- Erro: por ser `SECURITY DEFINER`, a função ignora RLS e filtra só pelo argumento — atuando como o usuário A, chamar com o id de B apagava a conta de B. Descoberto por um teste de escopo escrito para "confirmar" o comportamento seguro.
+- Causa raiz: `SECURITY DEFINER` transfere a autorização para dentro da função; quando o alvo vem por parâmetro, a autorização deixou de existir e passou a depender de todo chamador ser correto.
+- Como evitar: função `SECURITY DEFINER` deriva o sujeito de `current_app_user_id()` (ou equivalente da sessão), nunca de argumento. Se um argumento de identidade parecer necessário, a função precisa validar que ele bate com a sessão. Remover a assinatura antiga com `DROP FUNCTION` — `CREATE OR REPLACE` não substitui uma sobrecarga.
+- Refs: `db/migrations/0008_account_deletion.sql`, `lib/db/account.test.ts`, `tickets/TCK-0015-account-deletion-lgpd/log.md` entradas [4] e [5].

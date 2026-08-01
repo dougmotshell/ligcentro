@@ -112,7 +112,8 @@
     "tabs": {
       "profile": "Profile",
       "blocks": "Blocks",
-      "themes": "Themes"
+      "themes": "Themes",
+      "account": "My data"
     },
     "themesTitle": "Ready-made themes",
     "themesDescription": "Choose a visual base and update the public profile instantly.",
@@ -225,6 +226,25 @@
       "downloadQr": "Download QR code",
       "qrAriaLabel": "QR code for @{handle} page",
       "error": "Could not save right now. Please try again."
+    },
+    "account": {
+      "title": "Your data",
+      "description": "Taking your data with you and deleting your account — two sides of the same right.",
+      "exportTitle": "Export data",
+      "exportDescription": "Download profile, blocks and analytics as JSON. No request, no waiting.",
+      "exportCta": "Download my data (JSON)",
+      "deleteTitle": "Delete my account",
+      "deleteDescription": "This cannot be undone. On confirmation we delete:",
+      "deleteItems": {
+        "profile": "your profile, avatar, title and bio;",
+        "blocks": "all your blocks and links;",
+        "analytics": "your entire history of views and clicks;",
+        "handle": "and your handle becomes available to someone else."
+      },
+      "confirmLabel": "Type {handle} to confirm",
+      "deleteCta": "Delete my account",
+      "deleting": "Deleting...",
+      "deleteError": "Could not delete the account right now. Please try again."
     }
   },
   "AnalyticsPage": {

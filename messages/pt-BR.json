@@ -112,7 +112,8 @@
     "tabs": {
       "profile": "Perfil",
       "blocks": "Blocos",
-      "themes": "Temas"
+      "themes": "Temas",
+      "account": "Meus dados"
     },
     "themesTitle": "Temas prontos",
     "themesDescription": "Escolha uma base visual e atualize instantaneamente o perfil público.",
@@ -225,6 +226,25 @@
       "downloadQr": "Baixar QR code",
       "qrAriaLabel": "QR code da página de @{handle}",
       "error": "Não foi possível salvar agora. Tente novamente."
+    },
+    "account": {
+      "title": "Seus dados",
+      "description": "Levar seus dados embora e apagar sua conta — os dois lados do mesmo direito.",
+      "exportTitle": "Exportar dados",
+      "exportDescription": "Baixe perfil, blocos e analytics em JSON. Sem pedido, sem espera.",
+      "exportCta": "Baixar meus dados (JSON)",
+      "deleteTitle": "Apagar minha conta",
+      "deleteDescription": "Ação irreversível. Ao confirmar, apagamos:",
+      "deleteItems": {
+        "profile": "seu perfil, avatar, título e bio;",
+        "blocks": "todos os seus blocos e links;",
+        "analytics": "todo o histórico de visitas e cliques;",
+        "handle": "e seu handle volta a ficar disponível para outra pessoa."
+      },
+      "confirmLabel": "Digite {handle} para confirmar",
+      "deleteCta": "Apagar minha conta",
+      "deleting": "Apagando...",
+      "deleteError": "Não foi possível apagar a conta agora. Tente novamente."
     }
   },
   "AnalyticsPage": {

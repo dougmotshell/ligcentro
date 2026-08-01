@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import type { ProfileWithBlocks } from '@/lib/db/types';
 import { AvatarUpload } from './AvatarUpload';
 import { BlockList } from './BlockList';
+import { DangerZone } from './DangerZone';
 import { ProfileForm } from './ProfileForm';
 import { SharePanel } from './SharePanel';
 import { ThemeSelector } from './ThemeSelector';
@@ -18,7 +19,7 @@ interface Props {
   qrSvg: string;
 }
 
-type TabKey = 'profile' | 'blocks' | 'themes';
+type TabKey = 'profile' | 'blocks' | 'themes' | 'account';
 
 export function DashboardShell({ locale, initialProfile, publicUrl, qrSvg }: Props) {
   const t = useTranslations('Dashboard');
@@ -59,7 +60,7 @@ export function DashboardShell({ locale, initialProfile, publicUrl, qrSvg }: Pro
       />
 
       <nav className="flex flex-wrap gap-3" aria-label={t('tabsAriaLabel')}>
-        {(['profile', 'blocks', 'themes'] as TabKey[]).map((tab) => (
+        {(['profile', 'blocks', 'themes', 'account'] as TabKey[]).map((tab) => (
           <button
             key={tab}
             type="button"
@@ -97,6 +98,8 @@ export function DashboardShell({ locale, initialProfile, publicUrl, qrSvg }: Pro
           />
         </section>
       ) : null}
+
+      {activeTab === 'account' ? <DangerZone locale={locale} handle={profile.handle} /> : null}
 
       {activeTab === 'themes' ? (
         <section className="rounded-3xl border border-border bg-white p-8 shadow-sm dark:bg-gray-900">

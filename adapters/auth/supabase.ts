@@ -185,3 +185,34 @@ export const supabaseAuthAdapter = {
 };
 
 export { ACCESS_TOKEN_COOKIE };
+
+/**
+ * Remove o usuário no provedor de auth (Admin API).
+ *
+ * Exige a service role key. Sem ela, devolve `false`: os dados de produto já
+ * foram apagados e a rota registra a pendência, em vez de fingir sucesso — o
+ * direito de eliminação não pode depender de uma variável de ambiente estar lá.
+ */
+export async function deleteAuthUser(userId: string): Promise<boolean> {
+  const resolved = resolveSupabaseAuthConfig();
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!resolved || !serviceRoleKey) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${resolved.url}/auth/v1/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${serviceRoleKey}`,
+        apikey: serviceRoleKey,
+      },
+      cache: 'no-store',
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
