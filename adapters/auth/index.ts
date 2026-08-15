@@ -1,6 +1,7 @@
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import type { AuthCredentials, AuthSession, SignUpResult } from './mock';
 import { isSupabaseAuthConfigured } from '@/lib/supabase/config';
+import { isMockAuthAllowed } from '@/lib/auth/mock-allowed';
 import { mockAuthAdapter } from './mock';
 import { supabaseAuthAdapter } from './supabase';
 
@@ -20,10 +21,11 @@ export { isSupabaseAuthConfigured };
  * explícito (`ALLOW_MOCK_AUTH=true`, usado pelo `docker compose` de QA, que roda
  * com `NODE_ENV=production` sem Supabase) — nunca por fallback silencioso, que
  * transformaria a falta de uma variável de ambiente em autenticação forjável.
+ *
+ * A regra mora em `lib/auth/mock-allowed` para o middleware (Edge) aplicar a
+ * mesma decisão sem importar este módulo, que puxa o driver do banco.
  */
-export function isMockAuthAllowed(): boolean {
-  return process.env.NODE_ENV !== 'production' || process.env.ALLOW_MOCK_AUTH === 'true';
-}
+export { isMockAuthAllowed };
 
 export function createAuthAdapter(): AuthAdapter {
   if (isSupabaseAuthConfigured()) {

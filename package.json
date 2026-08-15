@@ -5,11 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "node scripts/migrate-on-build.mjs && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
+    "test:a11y": "playwright test e2e/accessibility.spec.ts",
+    "manual:capture": "tsx e2e/manual/capture.ts",
+    "perf": "next build && node scripts/measure-performance.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "sync-agent-tools": "node scripts/sync-agent-tools.mjs",
@@ -33,6 +37,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/eslintrc": "^3.3.6",
     "@playwright/test": "^1.61.1",
     "@swc/helpers": "0.5.23",
@@ -49,13 +54,17 @@
     "postcss": "^8.5.20",
     "prettier": "^3.9.5",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.23.12",
     "typescript": "^5.9.3",
     "vite": "^8.1.5",
     "vitest": "^4.1.10"
   },
   "overrides": {
     "@typescript-eslint/typescript-estree": {
-      "brace-expansion": "5.0.8"
+      "brace-expansion": "5.0.9"
+    },
+    "minimatch": {
+      "brace-expansion": "1.1.18"
     },
     "next": {
       "postcss": "8.5.23",
