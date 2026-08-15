@@ -1,6 +1,6 @@
 # 03 — Roadmap do MVP
 
-> **Estado em 2026-08-01.** Cada item marcado `[x]` tem evidência executável
+> **Estado em 2026-08-15.** Cada item marcado `[x]` tem evidência executável
 > (teste, saída de comando ou SQL) registrada no `log.md` do ticket que o
 > entregou. Item aberto traz o ticket responsável entre parênteses. Itens que
 > dependem de credencial de produção estão listados como "Validação em produção
@@ -64,11 +64,17 @@ _Objetivo: pronto para usuários reais no plano grátis._
 
 - [x] Onboarding guiado (primeiro perfil em poucos passos).
 - [x] Exclusão de conta e dados, par da exportação (LGPD — TCK-0015).
-- [~] Acessibilidade AA nos dois temas; navegação por teclado. O catálogo de cores de marca tem contraste AA verificado por teste (TCK-0014) e os controles novos são elementos nativos focáveis; **falta uma auditoria AA da interface inteira**.
+- [x] Acessibilidade AA nos dois temas; navegação por teclado. Auditoria automatizada com axe-core sobre todas as telas principais, nos dois temas, com zero violações A/AA (`npm run test:a11y`, TCK-0021). Quatro defeitos reais foram corrigidos no caminho — inclusive o site inteiro servido sem `lang` e a cor primária reprovando por 0,04.
 - [x] Página de marketing / landing.
-- [ ] Manual do usuário gerado por Playwright ([`/user-manual`](../../.agents/skills/user-manual/SKILL.md)) — **aberto**, agora viável: existe suíte e2e e o app sobe sozinho.
-- [ ] Auditoria de segurança (squad `agents/security/`) + revisão de performance — **aberto**. O LCP mobile p75 < 1,2 s (regra 5) nunca foi medido.
+- [x] Manual do usuário gerado por Playwright ([`/user-manual`](../../.agents/skills/user-manual/SKILL.md)) — `npm run manual:capture` gera 10 capítulos e 80 imagens (2 temas × 2 idiomas × mobile/desktop), de forma determinística (TCK-0024).
+- [x] Auditoria de segurança (squad `agents/security/`) — relatório em [`security/reports/2026-08-15-squad.md`](../../security/reports/2026-08-15-squad.md), com 5 achados corrigidos e 1 aberto que depende de configuração na Vercel (TCK-0023).
+- [x] Revisão de performance — **LCP mobile p75 medido pela primeira vez**: 436 ms em laboratório e 564 ms em produção, contra o orçamento de 1200 ms da regra 5 (TCK-0022). Ver [`docs/performance/`](../performance/README.md).
 - **Pronto quando:** o grátis é um produto completo e defensável (sem branding forçado, com analytics por link).
+
+> **Bloqueio de produção (2026-08-15).** A Fase 4 está completa no código, mas o
+> app publicado **não está funcional**: falta `DATABASE_URL` nas variáveis de
+> ambiente do projeto na Vercel, então cadastro, login e editor respondem 500.
+> O schema já foi aplicado (TCK-0025). Passos em [`docs/runbook.md`](../runbook.md).
 
 ## Além do MVP (backlog priorizado, não comprometido)
 

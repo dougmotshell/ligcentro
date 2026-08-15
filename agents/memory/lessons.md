@@ -132,3 +132,31 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Causa raiz: o servidor de desenvolvimento do Next 16 **bloqueia recursos `/_next/`** vindos de origem diferente da que o iniciou (`127.0.0.1` vs `localhost`), então o bundle do cliente não carrega. É silencioso: o HTML renderiza normalmente.
 - Como evitar: `webServer` do Playwright roda `npm run build && next start` — além de não ter esse bloqueio, é o ambiente que o usuário recebe. Se precisar mesmo de `next dev`, usar exatamente o mesmo host do `baseURL` ou declarar `allowedDevOrigins`.
 - Refs: `playwright.config.ts`, `tickets/TCK-0016-test-suite-ci/log.md`.
+
+## [L-017] 2026-08-15 — devops — schema de produção nunca aplicado, e nada no pipeline aplicava — erro
+- Contexto: TCK-0025. Login com Google falhava em produção com `?error=oauth_failed`.
+- Erro: o banco de produção não tinha **nenhuma** tabela da aplicação. As 9 migrações jamais foram aplicadas, e o app foi publicado assim desde o primeiro deploy. O sintoma apareceu a três camadas de distância da causa: o OAuth funcionava (o Supabase emitiu o token, HTTP 200), mas o passo seguinte lia `profiles` e recebia `42P01: relation does not exist`.
+- Causa raiz: o deploy de produção é a integração Git da Vercel e nenhuma etapa aplicava `db/migrations/`. Código e schema podiam divergir sem que nada avisasse — e divergiram desde o início. O `release.yml` roda a suíte e publica o release; não migra.
+- Como evitar: o build de produção aplica as migrações pendentes e **falha** se não puder (`scripts/migrate-on-build.mjs`). Publicar código sem o schema correspondente deixa de ser possível. Preview não migra: compartilha o banco com produção. E desconfiar de "está no ar" como prova de saúde — o perfil público é SSG com fallback embutido, então respondia 200 sem banco algum.
+- Refs: `scripts/migrate-on-build.mjs`, `tickets/TCK-0025-production-schema-gate/log.md`.
+
+## [L-018] 2026-08-15 — frontend — "acessibilidade AA" sem teste executável é AA de uma vez só — erro
+- Contexto: TCK-0021, primeira auditoria automatizada da interface inteira.
+- Erro: quatro defeitos reais e sistêmicos, todos presentes desde a primeira versão das telas e nenhum percebido em revisão visual: `<html>` sem `lang` no site inteiro (o comentário do layout afirmava o contrário), cor primária reprovando por uma casa decimal (4,46:1 contra 4,5:1) em todo botão do produto, gráfico de analytics mudo (`aria-label` em `div` sem `role` é ignorado por especificação) e perfil público misturando o tema do dono com a preferência do visitante, produzindo 3,72:1.
+- Causa raiz: acessibilidade estava sendo verificada por leitura de código e olho, o que não mede contraste nem detecta atributo ausente. Comentário afirmando que algo é feito não é evidência de que é feito.
+- Como evitar: axe-core no Playwright sobre todas as telas e nos dois temas, falhando em violação A/AA; e travar o que é sistêmico no **token**, com teste unitário que lê o CSS de verdade. Contraste que depende de cor escolhida pelo usuário precisa de teste sobre uma grade de cores, não só sobre os presets.
+- Refs: `e2e/accessibility.spec.ts`, `app/theme-tokens.test.ts`, `lib/theme/surface.ts`.
+
+## [L-019] 2026-08-15 — backend — cache de pool invertido em produção vira DoS — erro
+- Contexto: TCK-0024. A captura do manual (80 páginas) falhava sempre por volta da 70ª.
+- Erro: `getDb()` guardava o pool em cache **apenas fora de produção**; em produção cada chamada abria um pool novo de até 10 conexões que nunca fechava. O Postgres chegava a `FATAL 53300: sorry, too many clients already` — negação de serviço alcançável por tráfego normal.
+- Causa raiz: o padrão "cachear no global só em dev" existe para sobreviver ao hot reload, e foi copiado como se a produção não precisasse de cache. Inverteu exatamente o propósito de haver um pool.
+- Como evitar: pool é sempre singleton do processo. E ler falha progressiva (funciona no começo, quebra depois de N operações) como esgotamento de recurso, não como flakiness — a primeira reação foi adicionar retry, que teria escondido o defeito.
+- Refs: `lib/db/client.ts`, `lib/db/client.test.ts`.
+
+## [L-020] 2026-08-15 — segurança — mitigação que não mitiga passa por "já tratado" — erro
+- Contexto: TCK-0023, auditoria de dependências.
+- Erro: o `package.json` tinha um `override` fixando `brace-expansion: 5.0.8` — dentro da faixa vulnerável do próprio aviso que pretendia mitigar (4.0.0–5.0.8). A presença do override fazia o item parecer resolvido.
+- Causa raiz: fixar versão para "resolver" um aviso sem conferir a faixa corrigida. O `npm audit` continuava acusando, mas o ruído era lido como falso positivo já endereçado.
+- Como evitar: ao fixar versão por segurança, comparar com a faixa do aviso e registrar no ticket qual versão corrige. Um `override` de segurança sem número de aviso e sem reteste é decoração.
+- Refs: `package.json`, `security/reports/2026-08-15-squad.md`.
