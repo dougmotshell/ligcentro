@@ -5,7 +5,9 @@ import { routing } from '@/i18n/routing';
 
 /**
  * Layout de locale — envolve todas as páginas com o provider de tradução.
- * O atributo lang é definido aqui para SEO correto.
+ *
+ * O atributo `lang` **não** é definido aqui: este layout não renderiza o
+ * `<html>`. Ele sai do layout raiz, que lê o locale resolvido (`getLocale`).
  * Nota: em Next.js 15, params é uma Promise (await obrigatório).
  */
 export default async function LocaleLayout({
