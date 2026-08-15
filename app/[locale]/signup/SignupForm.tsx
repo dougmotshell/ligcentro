@@ -8,9 +8,16 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validateHandle } from '@/lib/handle/validate';
+import { AuthRedirectAlert } from '@/components/auth/AuthRedirectAlert';
+import { SocialAuthButtons } from '@/components/auth/SocialAuthButtons';
 
 interface Props {
   locale: string;
+  /**
+   * Código de erro vindo de um redirecionamento (`?error=`). O cadastro também
+   * inicia fluxo OAuth, então a falha volta para cá — não para o login.
+   */
+  redirectError?: string | null;
 }
 
 const signupSchema = z.object({
@@ -28,7 +35,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 /** Resultado da consulta de disponibilidade; a validação de formato é derivada. */
 type AvailabilityState = 'idle' | 'checking' | 'available' | 'taken';
 
-export function SignupForm({ locale }: Props) {
+export function SignupForm({ locale, redirectError = null }: Props) {
   const t = useTranslations('Auth');
   const router = useRouter();
   const [availability, setAvailability] = useState<AvailabilityState>('idle');
@@ -187,6 +194,8 @@ export function SignupForm({ locale }: Props) {
         <p className="mt-2 text-sm text-muted-foreground">{t('signup.subtitle')}</p>
       </div>
 
+      <AuthRedirectAlert error={redirectError} />
+
       <form className="space-y-5" onSubmit={onSubmit}>
         <label className="block text-sm font-medium text-gray-900 dark:text-white">
           <span>{t('fields.email')}</span>
@@ -242,6 +251,10 @@ export function SignupForm({ locale }: Props) {
           {isSubmitting ? t('signup.submitting') : t('signup.submit')}
         </button>
       </form>
+
+      {/* Cadastro social na mesma tela: antes só existia no login, e quem chegava
+          aqui precisava descobrir sozinho que a opção morava em outra página. */}
+      <SocialAuthButtons locale={locale} from="signup" />
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {t('signup.hasAccount')}{' '}
