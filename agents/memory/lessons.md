@@ -160,3 +160,10 @@ Lições L-001 a L-004 antecedem o campo de tipo — todas são do tipo "erro".
 - Causa raiz: fixar versão para "resolver" um aviso sem conferir a faixa corrigida. O `npm audit` continuava acusando, mas o ruído era lido como falso positivo já endereçado.
 - Como evitar: ao fixar versão por segurança, comparar com a faixa do aviso e registrar no ticket qual versão corrige. Um `override` de segurança sem número de aviso e sem reteste é decoração.
 - Refs: `package.json`, `security/reports/2026-08-15-squad.md`.
+
+## [L-021] 2026-08-16 — devops — `buildCommand` no `vercel.json` desliga o `vercel-build` — erro
+- Contexto: TCK-0025. O portão de migração foi criado como script `vercel-build` (`node scripts/migrate-on-build.mjs && next build`) e dado como ativo — o log do ticket chegou a afirmar que "o portão já cobre essa classe de falha".
+- Erro: o `vercel.json` fixava `"buildCommand": "npm run build"` desde o TCK-0007, e um `buildCommand` explícito **tem precedência** sobre o script `vercel-build` do `package.json`. O portão nunca rodou em nenhum deploy: o log do build mostra `Running "npm run build"` → `next build`, sem uma única linha `[migrate-on-build]`. O deploy do merge da Fase 4 publicou com o portão inerte.
+- Causa raiz: o ticket verificou o portão pelo script criado, não pelo comando que a plataforma executa. Havia duas fontes de verdade para o comando de build e só uma foi olhada.
+- Como evitar: portão de deploy se verifica **no log do build da plataforma**, procurando a linha que o próprio portão imprime — não na existência do script. Ao adicionar um `vercel-build`, conferir se há `buildCommand` em `vercel.json` sobrescrevendo-o. Regra geral: "criei o mecanismo" nunca é evidência de "o mecanismo executa".
+- Refs: `vercel.json`, `scripts/migrate-on-build.mjs`, `tickets/TCK-0025-production-schema-gate/log.md` entrada [5].

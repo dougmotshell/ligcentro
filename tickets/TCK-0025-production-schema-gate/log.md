@@ -74,3 +74,29 @@
   Passos em `docs/runbook.md`.
 - Nota: o portão criado neste ticket já cobre essa classe de falha — o build de
   produção passa a falhar quando `DATABASE_URL` não existe, em vez de publicar.
+
+## [5] ACTION — 2026-08-16 — devops-engineer (portão inerte)
+
+- Ação: Após o merge do PR #2 (`b2f3d8a`), acompanhei o deploy de produção para
+  confirmar o critério 7. O deploy ficou `Ready` em 33s, mas
+  `check-handle?handle=verificacaomerge0816` continuou respondendo **500** em 20
+  tentativas ao longo de ~7 minutos.
+- Resultado: o log de build da Vercel não tem **nenhuma** linha
+  `[migrate-on-build]`. O que rodou foi `Running "npm run build"` → `next build`.
+  Causa: `vercel.json` fixa `"buildCommand": "npm run build"` desde o TCK-0007, e
+  um `buildCommand` explícito tem precedência sobre o script `vercel-build` do
+  `package.json`. **O portão criado neste ticket nunca executou em deploy algum** —
+  a nota final da entrada [4] ("o portão já cobre essa classe de falha") estava
+  errada, e este é o registro da correção.
+- Correção: `vercel.json` passa a apontar para `npm run vercel-build`.
+- Segundo fato, independente: `DATABASE_URL` existe no projeto desde 20 dias atrás
+  (`vercel env ls production`) — não estava ausente como a entrada [4] concluiu; o
+  Douglas **atualizou o valor** em 2026-08-16, depois do build das 17:40:22Z. Um
+  deploy só enxerga o valor vigente no momento em que é criado, então o deploy do
+  merge subiu com o valor antigo. O deploy desta correção é o primeiro a rodar com
+  o valor novo **e** com o portão ativo.
+- Consequência esperada: se a string de conexão estiver correta, o build aplica as
+  migrações pendentes (ou confirma que não há) e publica; se estiver errada, o
+  build **falha** em vez de publicar — que é exatamente o comportamento pedido
+  pelo critério 3, agora exercitado de verdade.
+- Lição: L-021 (registrada).
