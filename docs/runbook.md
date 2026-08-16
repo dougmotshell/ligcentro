@@ -7,22 +7,54 @@
 
 ## Pendências abertas
 
-### 1. `DATABASE_URL` na Vercel — **bloqueia o produto inteiro**
+### 1. `DATABASE_URL` na Vercel aponta para a conexão direta (IPv6) — **bloqueia o produto inteiro**
 
 Cadastro, login e editor respondem **500** em produção. Durante uma rajada de
-requisições, o Supabase não registrou nenhuma conexão vinda da Vercel: o app não
-chega a tentar conectar, porque a variável não existe.
+requisições, o Supabase não registrou nenhuma conexão vinda da Vercel.
+
+**Causa, com a evidência que faltou por 20 dias.** A variável existe desde o
+início e o valor é uma string de conexão válida — só que aponta para a **conexão
+direta** do Supabase, `db.<project-ref>.supabase.co:5432`, que resolve
+**apenas em IPv6**. A Vercel não tem rede IPv6 de saída, no build nem nas
+funções. O erro exato, do primeiro build em que o portão de schema realmente
+rodou (2026-08-16):
+
+```
+[migrate-on-build] aplicando migrações pendentes em produção...
+Falha na migração: connect ENETUNREACH 2600:1f1e:90b:a702:...:5432
+[migrate-on-build] a migração falhou — build interrompido de propósito.
+```
+
+`ENETUNREACH` é o kernel dizendo que não existe rota para aquele endereço — o
+pacote nunca sai da máquina. É por isso que o `pg_stat_activity` do lado do
+Supabase ficava vazio: não havia o que registrar. O sintoma parecia "variável
+ausente" e era, na verdade, "endereço inalcançável".
 
 **O que fazer:** no painel da Vercel → projeto ligcentro → Settings →
 Environment Variables, definir `DATABASE_URL` no escopo **Production** com a
-string do **pooler** do Supabase (modo Transaction) — a mesma que está comentada
-no `.env` local. Depois, redeploy.
+string do **pooler** (Supavisor, modo Transaction), que atende em IPv4:
 
-> A variável pode **existir com valor errado** — foi o caso aqui: ela estava
-> cadastrada havia 20 dias e ainda assim nenhuma conexão chegava ao Supabase.
-> `vercel env ls production` mostra que ela existe, não que o valor conecta.
-> E um deploy só enxerga o valor vigente **no momento em que é criado**: mudar a
-> variável não afeta o deploy que já está no ar — **redeploy é obrigatório**.
+```
+postgresql://postgres.<project-ref>:<senha>@aws-0-<região>.pooler.supabase.com:6543/postgres
+```
+
+Copie-a pronta em Supabase → Project Settings → Database → Connection string →
+**Transaction pooler**. Depois, redeploy.
+
+> Duas armadilhas nessa troca:
+>
+> 1. **O usuário muda.** Na conexão direta é `postgres`; no pooler é
+>    `postgres.<project-ref>` (o ref colado por ponto). Com `postgres` puro o
+>    Supavisor responde `Tenant or user not found`.
+> 2. **A variável pode existir com valor errado** — foi exatamente o caso.
+>    `vercel env ls production` mostra que ela existe, não que o valor conecta.
+>    E um deploy só enxerga o valor vigente **no momento em que é criado**:
+>    editar a variável não afeta o deploy que já está no ar — **redeploy é
+>    obrigatório**.
+
+Se a migração falhar no pooler em modo Transaction, use o **Session pooler**
+(mesmo host, porta `5432`): o modo Transaction não mantém estado entre
+statements, e há DDL que não sobrevive a isso.
 
 Como conferir que resolveu (deve responder `{"available":true}`, não 500):
 
