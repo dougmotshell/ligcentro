@@ -14,9 +14,15 @@ requisições, o Supabase não registrou nenhuma conexão vinda da Vercel: o app
 chega a tentar conectar, porque a variável não existe.
 
 **O que fazer:** no painel da Vercel → projeto ligcentro → Settings →
-Environment Variables, criar `DATABASE_URL` no escopo **Production** com a string
-do **pooler** do Supabase (modo Transaction) — a mesma que está comentada no
-`.env` local. Depois, redeploy.
+Environment Variables, definir `DATABASE_URL` no escopo **Production** com a
+string do **pooler** do Supabase (modo Transaction) — a mesma que está comentada
+no `.env` local. Depois, redeploy.
+
+> A variável pode **existir com valor errado** — foi o caso aqui: ela estava
+> cadastrada havia 20 dias e ainda assim nenhuma conexão chegava ao Supabase.
+> `vercel env ls production` mostra que ela existe, não que o valor conecta.
+> E um deploy só enxerga o valor vigente **no momento em que é criado**: mudar a
+> variável não afeta o deploy que já está no ar — **redeploy é obrigatório**.
 
 Como conferir que resolveu (deve responder `{"available":true}`, não 500):
 
