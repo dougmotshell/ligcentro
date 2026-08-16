@@ -33,18 +33,26 @@ export default async function DashboardAnalyticsPage({
       <div className="mx-auto max-w-6xl space-y-8">
         <header className="rounded-3xl border border-border bg-white p-8 shadow-sm dark:bg-gray-900">
           <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
-          <h1 className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{t('title')}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{t('description', { handle: profile.handle })}</p>
+          <h1 className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">
+            {t('title')}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t('description', { handle: profile.handle })}
+          </p>
         </header>
 
         <section className="grid gap-4 md:grid-cols-3">
           <article className="rounded-3xl border border-border bg-white p-6 shadow-sm dark:bg-gray-900">
             <p className="text-sm text-muted-foreground">{t('cards.views')}</p>
-            <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{analytics.totalViews}</p>
+            <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">
+              {analytics.totalViews}
+            </p>
           </article>
           <article className="rounded-3xl border border-border bg-white p-6 shadow-sm dark:bg-gray-900">
             <p className="text-sm text-muted-foreground">{t('cards.clicks')}</p>
-            <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{analytics.totalClicks}</p>
+            <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">
+              {analytics.totalClicks}
+            </p>
           </article>
           <article className="rounded-3xl border border-border bg-white p-6 shadow-sm dark:bg-gray-900">
             <p className="text-sm text-muted-foreground">{t('cards.ctr')}</p>
@@ -57,29 +65,65 @@ export default async function DashboardAnalyticsPage({
         <section className="rounded-3xl border border-border bg-white p-8 shadow-sm dark:bg-gray-900">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('chart.title')}</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                {t('chart.title')}
+              </h2>
               <p className="text-sm text-muted-foreground">{t('chart.description')}</p>
             </div>
           </div>
-          <div className="grid grid-cols-5 gap-3 md:grid-cols-10 lg:grid-cols-15 xl:grid-cols-30">
+          {/*
+            O gráfico é uma imagem única com rótulo próprio, e os dados vêm numa
+            tabela equivalente para quem usa leitor de tela.
+
+            Antes, cada barra era uma `div` com `aria-label` e sem `role`: a
+            especificação manda ignorar `aria-label` em elemento genérico, então
+            o gráfico inteiro era mudo — 30 rótulos escritos e nenhum anunciado
+            (TCK-0021). Trinta "imagens" seguidas também não seria leitura útil.
+          */}
+          <div
+            role="img"
+            aria-label={t('chart.chartAriaLabel', { days: analytics.series.length })}
+            className="grid grid-cols-5 gap-3 md:grid-cols-10 lg:grid-cols-15 xl:grid-cols-30"
+          >
             {analytics.series.map((item) => (
               <div key={item.day} className="flex flex-col items-center gap-2">
                 <div className="flex h-36 w-full items-end rounded-2xl bg-gray-100 p-2 dark:bg-gray-800">
                   <div
                     className="w-full rounded-xl bg-primary"
-                    style={{ height: `${Math.max((item.views / maxViews) * 100, item.views > 0 ? 10 : 0)}%` }}
+                    style={{
+                      height: `${Math.max((item.views / maxViews) * 100, item.views > 0 ? 10 : 0)}%`,
+                    }}
                     title={`${item.day}: ${item.views}`}
-                    aria-label={t('chart.barAriaLabel', { day: item.day, count: item.views })}
                   />
                 </div>
                 <span className="text-[11px] text-muted-foreground">{item.day.slice(5)}</span>
               </div>
             ))}
           </div>
+
+          <table className="sr-only">
+            <caption>{t('chart.tableCaption')}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t('chart.dayColumn')}</th>
+                <th scope="col">{t('chart.viewsColumn')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analytics.series.map((item) => (
+                <tr key={item.day}>
+                  <th scope="row">{item.day}</th>
+                  <td>{item.views}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
 
         <section className="rounded-3xl border border-border bg-white p-8 shadow-sm dark:bg-gray-900">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('topBlocks.title')}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {t('topBlocks.title')}
+          </h2>
           <p className="mt-2 text-sm text-muted-foreground">{t('topBlocks.description')}</p>
           <div className="mt-6 overflow-x-auto">
             <table className="min-w-full divide-y divide-border">

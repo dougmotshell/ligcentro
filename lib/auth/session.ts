@@ -43,7 +43,19 @@ export function toPublicSession(session: AuthSession): PublicSession {
  */
 export async function resolveSession(): Promise<AuthSession | null> {
   const cookieStore = await cookies();
-  const session = await getSession(cookieStore);
+
+  let session: AuthSession | null;
+  try {
+    session = await getSession(cookieStore);
+  } catch (error) {
+    // Provedor de auth ausente (nem Supabase, nem mock autorizado). Para quem
+    // chama, o resultado é o mesmo de não ter sessão — e a rota responde 401 em
+    // vez de estourar 500 em toda requisição. A causa vai para o log do
+    // servidor: má configuração silenciosa foi exatamente o que custou um ciclo
+    // inteiro de investigação no TCK-0025.
+    console.error(`[auth] sessão não pôde ser resolvida: ${(error as Error).message}`);
+    return null;
+  }
 
   if (session) {
     return session;

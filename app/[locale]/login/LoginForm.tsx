@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AuthRedirectAlert } from '@/components/auth/AuthRedirectAlert';
+import { SocialAuthButtons } from '@/components/auth/SocialAuthButtons';
 
 interface Props {
   locale: string;
@@ -19,15 +21,6 @@ const loginSchema = z.object({
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
-
-/** Falhas que chegam por redirecionamento (OAuth e confirmação de e-mail). */
-const REDIRECT_ERRORS = new Set([
-  'oauth_state',
-  'oauth_failed',
-  'confirm_invalid',
-  'confirm_failed',
-  'auth_not_configured',
-]);
 
 /** As credenciais do perfil semeado só ajudam em desenvolvimento. */
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -71,11 +64,7 @@ export function LoginForm({ locale, redirectError = null }: Props) {
         <p className="mt-2 text-sm text-muted-foreground">{t('login.subtitle')}</p>
       </div>
 
-      {redirectError && REDIRECT_ERRORS.has(redirectError) ? (
-        <p role="alert" className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">
-          {t(`errors.${redirectError}`)}
-        </p>
-      ) : null}
+      <AuthRedirectAlert error={redirectError} />
 
       <form className="space-y-5" onSubmit={onSubmit}>
         <label className="block text-sm font-medium text-gray-900 dark:text-white">
@@ -85,7 +74,9 @@ export function LoginForm({ locale, redirectError = null }: Props) {
             {...register('email')}
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
           />
-          {errors.email ? <span className="mt-1 block text-sm text-red-600">{t('errors.invalidEmail')}</span> : null}
+          {errors.email ? (
+            <span className="mt-1 block text-sm text-red-600">{t('errors.invalidEmail')}</span>
+          ) : null}
         </label>
 
         <label className="block text-sm font-medium text-gray-900 dark:text-white">
@@ -95,7 +86,9 @@ export function LoginForm({ locale, redirectError = null }: Props) {
             {...register('password')}
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
           />
-          {errors.password ? <span className="mt-1 block text-sm text-red-600">{t('errors.passwordMin')}</span> : null}
+          {errors.password ? (
+            <span className="mt-1 block text-sm text-red-600">{t('errors.passwordMin')}</span>
+          ) : null}
         </label>
 
         {errors.root?.message ? (
@@ -111,23 +104,7 @@ export function LoginForm({ locale, redirectError = null }: Props) {
         </button>
       </form>
 
-      <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground" aria-hidden="true">
-        <span className="h-px flex-1 bg-border" />
-        <span>{t('login.orContinueWith')}</span>
-        <span className="h-px flex-1 bg-border" />
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        {(['google', 'github'] as const).map((provider) => (
-          <a
-            key={provider}
-            href={`/api/auth/oauth/${provider}?locale=${encodeURIComponent(locale)}`}
-            className="rounded-xl border border-border px-4 py-3 text-center text-sm font-medium transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            {t(`login.continueWith.${provider}`)}
-          </a>
-        ))}
-      </div>
+      <SocialAuthButtons locale={locale} from="login" />
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {t('login.noAccount')}{' '}

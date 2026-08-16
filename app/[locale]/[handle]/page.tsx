@@ -12,6 +12,7 @@ import {
   getPublishedHandles,
 } from '@/lib/db/profiles';
 import { getSafeImageUrl } from '@/lib/safe-url';
+import { resolveSurface } from '@/lib/theme/surface';
 import { THEME_FONTS } from '@/lib/theme/presets';
 
 interface Props {
@@ -101,6 +102,7 @@ export default async function ProfilePage({ params }: Props) {
   }
 
   const avatarUrl = getSafeImageUrl(profile.avatar_url);
+  const surface = resolveSurface(profile.theme.bg);
 
   return (
     <main
@@ -109,7 +111,15 @@ export default async function ProfilePage({ params }: Props) {
       // webfont, então não há bloqueio de pintura nem flash de texto.
       style={{ backgroundColor: profile.theme.bg, fontFamily: THEME_FONTS[profile.theme.font] }}
     >
-      <div className="mx-auto max-w-md rounded-[2rem] bg-white/80 p-8 shadow-xl ring-1 ring-black/5 backdrop-blur dark:bg-gray-900/80">
+      {/*
+        Superfície derivada do tema do dono, não da preferência do visitante: o
+        cartão translúcido com variante `dark:` compunha cores imprevisíveis
+        sobre o fundo escolhido pelo criador e reprovava AA (TCK-0021).
+      */}
+      <div
+        className="mx-auto max-w-md rounded-[2rem] p-8 shadow-xl ring-1 ring-black/5"
+        style={{ backgroundColor: surface.background, color: surface.text }}
+      >
         <div className="mb-8 text-center">
           {avatarUrl ? (
             <>
@@ -134,12 +144,14 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           )}
 
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold" style={{ color: surface.text }}>
             {profile.display_name}
           </h1>
 
           {profile.bio ? (
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{profile.bio}</p>
+            <p className="mt-2 text-sm" style={{ color: surface.mutedText }}>
+              {profile.bio}
+            </p>
           ) : null}
         </div>
 
@@ -173,7 +185,7 @@ export default async function ProfilePage({ params }: Props) {
           })}
         </div>
 
-        <p className="mt-10 text-center text-xs text-gray-500 dark:text-gray-400">
+        <p className="mt-10 text-center text-xs" style={{ color: surface.mutedText }}>
           {t('poweredBy')}
         </p>
         <AnalyticsTracker profileId={profile.id} />

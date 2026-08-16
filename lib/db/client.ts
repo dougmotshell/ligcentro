@@ -32,9 +32,15 @@ export function getDb(): Sql {
     max: 10,
   });
 
-  if (process.env.NODE_ENV !== 'production') {
-    globalForDb.db = db;
-  }
+  // O pool é guardado **sempre**, inclusive em produção.
+  //
+  // Antes, o cache valia só fora de produção: em produção cada chamada abria um
+  // pool novo de até 10 conexões que nunca era fechado, e o banco caminhava para
+  // `sorry, too many clients already` conforme o tráfego. O sintoma que revelou
+  // isto foi a captura do manual falhando sempre por volta da 70ª página
+  // servida (TCK-0024). A razão de existir um cache é justamente não abrir
+  // conexão por requisição — inverter isso em produção anulava o propósito.
+  globalForDb.db = db;
 
   return db;
 }

@@ -65,18 +65,24 @@
       "confirm_invalid": "O link de confirmação é inválido ou está incompleto.",
       "confirm_failed": "O link de confirmação expirou ou já foi usado. Peça um novo.",
       "auth_not_configured": "A autenticação não está configurada neste ambiente.",
-      "account_already_exists": "Já existe uma conta com este e-mail. Entre em vez de criar outra."
+      "account_already_exists": "Já existe uma conta com este e-mail. Entre em vez de criar outra.",
+      "oauth_profile_failed": "Sua conta foi autenticada, mas não conseguimos preparar seu perfil. Tente novamente em instantes."
+    },
+    "social": {
+      "dividerLogin": "ou continue com",
+      "dividerSignup": "ou cadastre-se com",
+      "continueWith": "Continuar com {provider}",
+      "signUpWith": "Cadastrar-se com {provider}",
+      "providers": {
+        "google": "Google",
+        "github": "GitHub"
+      }
     },
     "login": {
       "title": "Entrar",
       "subtitle": "Acesse seu dashboard no ambiente local com auth mock.",
       "submit": "Entrar",
       "submitting": "Entrando...",
-      "orContinueWith": "ou continue com",
-      "continueWith": {
-        "google": "Google",
-        "github": "GitHub"
-      },
       "noAccount": "Ainda não tem conta?",
       "signupLink": "Criar conta"
     },
@@ -259,7 +265,10 @@
     "chart": {
       "title": "Série temporal",
       "description": "Visualização diária de visitas agregadas.",
-      "barAriaLabel": "Dia {day} com {count} visitas"
+      "chartAriaLabel": "Gráfico de barras com as visitas dos últimos {days} dias. Os mesmos números estão na tabela a seguir.",
+      "tableCaption": "Visitas por dia",
+      "dayColumn": "Dia",
+      "viewsColumn": "Visitas"
     },
     "topBlocks": {
       "title": "Top 5 blocos",

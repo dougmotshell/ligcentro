@@ -15,6 +15,9 @@ const BASE_URL = `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: './e2e',
+  // `e2e/manual/` é o gerador do manual do usuário, não suíte de teste: roda por
+  // `npm run manual:capture` e não deve subir junto de `npx playwright test`.
+  testIgnore: '**/manual/**',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

@@ -34,7 +34,12 @@ ligcentro. Mantenedor: **Douglas Matos da Silva**.
 | `scripts/`                                 | Runner de migrações (`migrate.mjs`), expurgo de analytics, gerador dos wrappers de agentes         | Ao migrar banco, operar retenção ou criar/renomear skill |
 | `app/`, `components/`, `lib/`, `adapters/` | Código do produto: rotas do App Router, componentes, regras e o específico de plataforma isolado   | Ao implementar qualquer coisa                            |
 | `db/migrations/`                           | Migrações SQL numeradas e versionadas (`schema_migrations`)                                        | Antes de qualquer mudança de schema                      |
-| `e2e/`                                     | Fluxo crítico em Playwright                                                                        | Ao mexer em cadastro, editor, publicação ou analytics    |
+| `e2e/`                                     | Playwright: fluxo crítico, telas de auth, acessibilidade (axe) e cabeçalhos de segurança            | Ao mexer em cadastro, editor, publicação ou analytics    |
+| `e2e/manual/`                              | Gerador do manual do usuário (não é suíte de teste)                                                | Ao adicionar tela nova — entrada em `screens.ts`         |
+| `docs/user-manual/`                        | Manual gerado (capítulos + 80 capturas). **Nunca editar à mão**                                    | Para ver o produto como ele é hoje                       |
+| `docs/performance/`                        | Medição de LCP p75 do perfil público, laboratório e produção                                       | Antes de afirmar qualquer coisa sobre performance        |
+| `docs/runbook.md`                          | Configuração de produção e diagnóstico de incidentes                                               | Quando algo falha no ar, ou antes de um deploy           |
+| `security/reports/`                        | Relatórios datados das auditorias da squad                                                         | Antes de rediscutir uma superfície já auditada           |
 | `docs/adr/`                                | Decisões arquiteturais registradas                                                                 | Antes de rediscutir uma decisão já tomada                |
 
 ## Regras para agentes
@@ -76,7 +81,7 @@ Os diretórios `.github/prompts/`, `.github/agents/`, `.gemini/commands/`, `.age
 
 ## Estado atual
 
-**Atualizado em 2026-08-01.**
+**Atualizado em 2026-08-15.**
 
 - **Pesquisa de mercado concluída** em `docs/market-research/` (concorrentes + engenharia reversa do Linktree).
 - **Planos de implementação escritos** em `docs/implementation-plan/`.
@@ -87,6 +92,12 @@ Os diretórios `.github/prompts/`, `.github/agents/`, `.gemini/commands/`, `.age
   - analytics agregado sem PII, com ingestão validada no banco, limite de taxa e expurgo de retenção;
   - exportação e **exclusão** de dados (LGPD);
   - **RLS efetiva**: toda consulta em nome de um usuário roda sob role sem bypass, com teste de acesso cruzado automatizado;
-  - CI com lint, typecheck, 84 testes unitários, 3 e2e e auditoria de segredos — o portão exige `success`, não aceita mais job pulado.
-- **Pendente para o grátis ficar completo** (Fase 4): manual do usuário gerado por Playwright, auditoria da squad de segurança e revisão de performance (LCP p75 < 1,2 s ainda não medido). Ver o [roadmap](docs/implementation-plan/03-mvp-roadmap.md), que aponta o ticket de cada item aberto.
+  - CI com lint, typecheck, 105 testes unitários, 20 e2e e auditoria de segredos — o portão exige `success`, não aceita mais job pulado;
+  - **acessibilidade AA auditada** por axe-core nas telas principais, nos dois temas, com zero violações A/AA (`npm run test:a11y`);
+  - **performance medida**: LCP mobile p75 de 436 ms em laboratório e 564 ms em produção, contra o orçamento de 1200 ms da regra 5 (`npm run perf`, relatório em `docs/performance/`);
+  - **manual do usuário** gerado do app real, determinístico (`npm run manual:capture` → `docs/user-manual/`);
+  - **auditoria de segurança** da squad executada, com relatório em `security/reports/2026-08-15-squad.md`; cabeçalhos de segurança, 0 vulnerabilidades em dependências;
+  - migrações aplicadas no build de produção, com o deploy falhando quando o schema não puder acompanhar o código.
+- **A Fase 4 está completa no código.** O que falta é **configuração de produção**, não desenvolvimento: falta `DATABASE_URL` no projeto da Vercel, e sem ela cadastro, login e editor respondem 500 no ar. Passos em [`docs/runbook.md`](docs/runbook.md).
+- **Não use a home nem o perfil de exemplo como prova de saúde**: o perfil público é SSG e tem caminho de fallback, então responde 200 mesmo com o banco fora. O runbook explica o que checar.
 - **Decisões duras** deste ciclo estão em `docs/adr/`; comportamentos verificáveis estão nos testes, que são a spec executável.

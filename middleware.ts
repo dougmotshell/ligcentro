@@ -13,6 +13,7 @@ import {
   shouldRefresh,
 } from './lib/auth/cookies';
 import { requestRefreshedTokens, type RefreshedTokens } from './lib/auth/refresh';
+import { isMockAuthAllowed } from './lib/auth/mock-allowed';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -40,7 +41,12 @@ export default async function middleware(request: NextRequest) {
 
   const isLocalizedDashboard = isLocale(maybeLocale) && segments[1] === 'dashboard';
 
-  const mockCookie = request.cookies.get(MOCK_AUTH_COOKIE)?.value;
+  // O cookie mock só conta como sessão onde a sessão mock é permitida. Sem esta
+  // checagem, um cookie forjado passava pelo middleware em produção e o erro só
+  // aparecia na camada de dados — como 500 opaco em vez de "entre novamente"
+  // (auditoria TCK-0023). O acesso em si nunca foi concedido; o que faltava era
+  // a defesa em profundidade responder a coisa certa.
+  const mockCookie = isMockAuthAllowed() ? request.cookies.get(MOCK_AUTH_COOKIE)?.value : undefined;
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
   const expiresAt = parseExpiresAt(request.cookies.get(EXPIRES_AT_COOKIE)?.value);

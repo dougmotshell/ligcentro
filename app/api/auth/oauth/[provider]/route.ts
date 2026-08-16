@@ -56,5 +56,18 @@ export async function GET(request: Request, context: { params: Promise<{ provide
       maxAge: ONE_HOUR,
     }
   );
+  // Tela de origem, para o callback devolver o erro onde a pessoa estava: quem
+  // começou o fluxo no cadastro não deve cair no login sem entender por quê.
+  response.cookies.set(
+    'oauth-origin',
+    url.searchParams.get('from') === 'signup' ? 'signup' : 'login',
+    {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure,
+      path: '/',
+      maxAge: ONE_HOUR,
+    }
+  );
   return response;
 }

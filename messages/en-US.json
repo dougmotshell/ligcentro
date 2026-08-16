@@ -65,18 +65,24 @@
       "confirm_invalid": "The confirmation link is invalid or incomplete.",
       "confirm_failed": "The confirmation link expired or was already used. Request a new one.",
       "auth_not_configured": "Authentication is not configured in this environment.",
-      "account_already_exists": "An account with this email already exists. Log in instead of creating another."
+      "account_already_exists": "An account with this email already exists. Log in instead of creating another.",
+      "oauth_profile_failed": "Your account was authenticated, but we could not set up your profile. Please try again shortly."
+    },
+    "social": {
+      "dividerLogin": "or continue with",
+      "dividerSignup": "or sign up with",
+      "continueWith": "Continue with {provider}",
+      "signUpWith": "Sign up with {provider}",
+      "providers": {
+        "google": "Google",
+        "github": "GitHub"
+      }
     },
     "login": {
       "title": "Log in",
       "subtitle": "Access your local dashboard with the mock auth flow.",
       "submit": "Log in",
       "submitting": "Logging in...",
-      "orContinueWith": "or continue with",
-      "continueWith": {
-        "google": "Google",
-        "github": "GitHub"
-      },
       "noAccount": "Don't have an account yet?",
       "signupLink": "Create one"
     },
@@ -259,7 +265,10 @@
     "chart": {
       "title": "Timeline",
       "description": "Daily aggregated view counts.",
-      "barAriaLabel": "Day {day} with {count} views"
+      "chartAriaLabel": "Bar chart of visits over the last {days} days. The same numbers are in the table below.",
+      "tableCaption": "Visits per day",
+      "dayColumn": "Day",
+      "viewsColumn": "Visits"
     },
     "topBlocks": {
       "title": "Top 5 blocks",

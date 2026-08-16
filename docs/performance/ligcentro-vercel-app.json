@@ -1,0 +1,24 @@
+{
+  "measuredAt": "2026-08-15T13:40:02.367Z",
+  "url": "https://ligcentro.vercel.app/pt-BR/demo",
+  "runs": 8,
+  "conditions": {
+    "device": "Pixel 5",
+    "cpuThrottling": "4x",
+    "network": "Slow 4G"
+  },
+  "budgetMs": 1200,
+  "lcp": {
+    "p75": 564,
+    "p50": 536,
+    "min": 512,
+    "max": 664
+  },
+  "fcpP75": 564,
+  "ttfbP75": 77.2,
+  "clsP75": 0,
+  "tbtP75": 264,
+  "transferredBytesP75": 175530,
+  "environment": "produção",
+  "passed": true
+}

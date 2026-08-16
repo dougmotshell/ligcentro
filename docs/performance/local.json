@@ -1,0 +1,24 @@
+{
+  "measuredAt": "2026-08-15T13:39:29.329Z",
+  "url": "http://localhost:3311/pt-BR/demo",
+  "runs": 10,
+  "conditions": {
+    "device": "Pixel 5",
+    "cpuThrottling": "4x",
+    "network": "Slow 4G"
+  },
+  "budgetMs": 1200,
+  "lcp": {
+    "p75": 436,
+    "p50": 432,
+    "min": 420,
+    "max": 680
+  },
+  "fcpP75": 436,
+  "ttfbP75": 90.6,
+  "clsP75": 0,
+  "tbtP75": 270,
+  "transferredBytesP75": 171614,
+  "environment": "laboratório local",
+  "passed": true
+}
