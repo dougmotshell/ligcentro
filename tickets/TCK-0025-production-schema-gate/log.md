@@ -100,3 +100,32 @@
   build **falha** em vez de publicar — que é exatamente o comportamento pedido
   pelo critério 3, agora exercitado de verdade.
 - Lição: L-021 (registrada).
+
+## [6] ACTION — 2026-08-16 — devops-engineer (causa raiz real)
+
+- Ação: Com o portão corrigido (entrada [5]) e mergeado, o deploy de produção do
+  commit `a62b1c7` falhou em **4 segundos** — pela primeira vez com log útil.
+- Resultado:
+
+  ```
+  [migrate-on-build] aplicando migrações pendentes em produção...
+  Falha na migração: connect ENETUNREACH 2600:1f1e:90b:a702:...:5432
+  ```
+
+  `DATABASE_URL` aponta para a **conexão direta** do Supabase
+  (`db.<ref>.supabase.co:5432`), que resolve **apenas em IPv6**; a Vercel não tem
+  saída IPv6. `ENETUNREACH` é ausência de rota — o pacote morre no kernel, nunca
+  chega à rede.
+- Isto corrige o diagnóstico da entrada [4]: a variável **não estava ausente**
+  (`vercel env ls production` mostra criação há 20 dias). Estava apontando para um
+  endereço que a Vercel não alcança. O `pg_stat_activity` vazio, usado lá como
+  prova de "variável ausente", é igualmente compatível com "endereço sem rota" —
+  as duas hipóteses produzem o mesmo silêncio dos dois lados.
+- Correção pendente (ação no painel, do Douglas): trocar o valor para a string do
+  pooler (Supavisor, Transaction mode, IPv4), lembrando que o usuário passa de
+  `postgres` para `postgres.<ref>`. Passos e armadilhas em `docs/runbook.md` §1.
+- Observação sobre o próprio portão: ele funcionou como projetado — o build falhou
+  **em vez de publicar**, e o deploy anterior seguiu no ar. Critério 3 exercitado
+  de verdade; critério 4 confirmado no preview do PR #3
+  (`[migrate-on-build] pulado: VERCEL_ENV=preview`).
+- Lição: L-022 (registrada).
